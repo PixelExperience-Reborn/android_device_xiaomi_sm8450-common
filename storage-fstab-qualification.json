@@ -70,5 +70,7 @@
     "allow_recovery_encryption_downgrade": false,
     "allow_avb_disable_flags": false,
     "source_only": true
-  }
+  },
+  "reference_source_commit_sha": "6e0022f5100e09ac97980095b6ed8528f4ff823f",
+  "reference_source_tree_sha": "09ad1e54e88d17016c7129edcebce11f45fd846c"
 }
