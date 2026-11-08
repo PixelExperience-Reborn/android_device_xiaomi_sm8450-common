@@ -33,6 +33,8 @@ class StorageContractTests(unittest.TestCase):
         self.assertEqual(self.d["soc"], "SM8475")
         board = (ROOT / "BoardConfigCommon.mk").read_text(encoding="utf-8")
         self.assertIn("BOARD_USES_METADATA_PARTITION := true", board)
+        self.assertIn("TARGET_BOOTLOADER_BOARD_NAME := taro", board)
+        self.assertIn("TARGET_NO_BOOTLOADER := true", board)
         for name in ("ODM", "PRODUCT", "SYSTEM_EXT", "VENDOR", "VENDOR_DLKM"):
             self.assertIn(f"TARGET_COPY_OUT_{name} :=", board)
 
