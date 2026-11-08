@@ -1,0 +1,14 @@
+name: Android 17 native common scaffold (source only)
+
+on:
+  push:
+    branches: [seventeen, 'bringup/**']
+  pull_request:
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check independent hardware source boundaries
+        run: python3 -m unittest discover -s tests -v
