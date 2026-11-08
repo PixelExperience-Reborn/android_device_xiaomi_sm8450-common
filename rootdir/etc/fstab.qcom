@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# PixelExperience-Reborn / mondrian (SM8475) — candidate normal-boot fstab.
+# SOURCE-ONLY: not packaged in vendor_boot, vendor, or recovery.
+# Filesystem and crypto choices track reviewed device evidence, NOT boot proof.
+# No GSI public AVB keys, permissive AVB flags, or format-on-error actions.
+
+#<dev>                                      <mount>          <type> <mount_options>                     <fs_mgr_flags>
+system                                      /system          erofs  ro                                  wait,slotselect,avb=vbmeta_system,logical,first_stage_mount
+system_ext                                  /system_ext      erofs  ro                                  wait,slotselect,avb=vbmeta_system,logical,first_stage_mount
+product                                     /product         erofs  ro                                  wait,slotselect,avb=vbmeta_system,logical,first_stage_mount
+vendor                                      /vendor          erofs  ro                                  wait,slotselect,avb,logical,first_stage_mount
+odm                                         /odm             erofs  ro                                  wait,slotselect,avb,logical,first_stage_mount
+vendor_dlkm                                 /vendor_dlkm     erofs  ro                                  wait,slotselect,avb,logical,first_stage_mount
+
+/dev/block/by-name/metadata                /metadata        ext4   noatime,nosuid,nodev                 wait,check,first_stage_mount
+/dev/block/bootdevice/by-name/userdata      /data            f2fs   noatime,nosuid,nodev,discard,inlinecrypt latemount,wait,check,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized+wrappedkey_v0,keydirectory=/metadata/vold/metadata_encryption,metadata_encryption=aes-256-xts:wrappedkey_v0,quota,reservedsize=128M,sysfs_path=/sys/devices/platform/soc/1d84000.ufshc,checkpoint=fs
+/dev/block/bootdevice/by-name/misc          /misc            emmc   defaults                            defaults
+
+# Intentionally NOT included until vendor/HAL and partition maps are qualified:
+# persist, modem, dsp, bluetooth, qmcs, vm-bootsys, external storage and OTG.
