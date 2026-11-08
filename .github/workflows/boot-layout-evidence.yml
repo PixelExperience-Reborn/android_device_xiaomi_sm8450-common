@@ -1,0 +1,23 @@
+name: Mondrian AOSP17 immutable boot layout provenance (read only)
+on:
+  push:
+    branches: ['bringup/**']
+    paths:
+      - 'boot-partition-qualification.json'
+      - 'tools/verify_reference_boot_layout.py'
+      - '.github/workflows/boot-layout-evidence.yml'
+  pull_request:
+    paths:
+      - 'boot-partition-qualification.json'
+      - 'tools/verify_reference_boot_layout.py'
+      - '.github/workflows/boot-layout-evidence.yml'
+permissions:
+  contents: read
+jobs:
+  verify-historical-snapshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check pinned public boot header and partition source facts
+        run: python3 tools/verify_reference_boot_layout.py --online
