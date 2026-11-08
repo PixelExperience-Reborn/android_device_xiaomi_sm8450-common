@@ -68,6 +68,10 @@ class NativeMondrianFstabTests(unittest.TestCase):
     def test_invalid_or_duplicate_fstab_entry_is_rejected(self):
         with self.assertRaises(ValueError):
             parse_fstab("vendor /vendor erofs ro\n")
+        with self.assertRaisesRegex(ValueError, "expected exactly 5 fields"):
+            parse_fstab("vendor /vendor erofs ro wait unexpected\n")
+        with self.assertRaisesRegex(ValueError, "duplicate fs_mgr flag"):
+            parse_fstab("vendor /vendor erofs ro wait,wait\n")
         with self.assertRaises(ValueError):
             parse_fstab("vendor /vendor erofs ro wait\nvendor /vendor erofs ro wait\n")
 
