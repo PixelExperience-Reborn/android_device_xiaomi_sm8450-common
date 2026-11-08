@@ -105,5 +105,7 @@
     "no_blanket_service_import": true,
     "no_disable_of_required_vendor_services_without_proof": true,
     "android17_init_selinux_vintf_runtime_tests_pending": true
-  }
+  },
+  "reference_source_commit_sha": "6e0022f5100e09ac97980095b6ed8528f4ff823f",
+  "reference_source_tree_sha": "09ad1e54e88d17016c7129edcebce11f45fd846c"
 }
