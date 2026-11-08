@@ -135,6 +135,9 @@ class MondrianFinalArtifactTests(unittest.TestCase):
         self.assertIn("BOARD_BOOT_HEADER_VERSION := 4", images)
         self.assertIn("TARGET_NEEDS_DTBOIMAGE := true", images)
         self.assertIn("BOARD_KERNEL_IMAGE_NAME := Image", images)  # compiler input only
+        self.assertIn("TARGET_KERNEL_EXT_MODULE_ROOT := kernel/xiaomi/sm8450-modules", images)
+        self.assertIn("BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true", images)
+        self.assertNotIn("BOARD_USES_QCOM_MERGE_DTBS_SCRIPT := true", images)
         self.assertIn("BOARD_DTBOIMG_PARTITION_SIZE := 0x01800000", images)
         self.assertIn("BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 0x06000000", images)
         for name in ("boot", "dtbo", "recovery", "vendor_boot", "vendor_dlkm"):
