@@ -63,7 +63,9 @@
     "official_lineage24_reference_type": "ext4",
     "lf52406_reference_type": "erofs",
     "selected_for_production": false,
-    "verified_on_target": false
+    "verified_on_target": false,
+    "erofs_selected_for_board_config": true,
+    "image_format_build_verified": false
   },
   "release_gates": {
     "on_device_partition_sizes_verified": false,
