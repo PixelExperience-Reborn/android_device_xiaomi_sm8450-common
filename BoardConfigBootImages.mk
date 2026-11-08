@@ -34,6 +34,8 @@ TARGET_KERNEL_CONFIG := \
     vendor/debugfs.config
 BOARD_KERNEL_IMAGE_NAME := Image
 TARGET_KERNEL_ADDITIONAL_FLAGS := TARGET_PRODUCT=mondrian
+# Qualcomm Kbuild external modules must come from the same matched BSP.
+TARGET_KERNEL_EXT_MODULE_ROOT := kernel/xiaomi/sm8450-modules
 
 # Real Qualcomm/Xiaomi board reference; header v4 is the Android product
 # mkbootimg output, distinct from the historical Qualcomm stand-alone
@@ -50,12 +52,18 @@ BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 # Kernel DTBO output must be built from actual mondrian overlays: cape base,
 # mondrian PM8008, M11A display, and camera. Never package generic DTBOs.
 TARGET_NEEDS_DTBOIMAGE := true
+# Do NOT copy BOARD_USES_QCOM_MERGE_DTBS_SCRIPT from the reference ROM:
+# it relies on an unimported ROM-specific kernel helper. The independent
+# AOSP17 product must integrate actual DTB/DTBO compilation explicitly.
 
 # Vendor boot is a SEPARATE v4 output, hosting the vendor ramdisk.
 # Actual module lists/fragments, fstab copying and DTB selection must be
 # supplied by the qualified vendor/kernel integration (not guessed here).
 BOARD_VENDOR_RAMDISK_FRAGMENTS := dlkm
 BOARD_VENDOR_RAMDISK_FRAGMENT.dlkm.KERNEL_MODULE_DIRS := top
+# Stock-derived mondrian board has a distinct recovery partition and a
+# recovery ramdisk instead of a second independently compiled kernel image.
+BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true
 
 # Device-specific partition reference values, subject to hardware validation.
 BOARD_BOOTIMAGE_PARTITION_SIZE := 0x0C000000
