@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "platform": "AOSP 17",
+  "device_scope": "mondrian",
+  "soc": "SM8475",
+  "board_family": "taro",
+  "reference_sources": {
+    "main_fstab": {
+      "repository": "LF52406/mondrian_android_device_xiaomi_sm8450-common",
+      "ref": "lineage-24.0",
+      "path": "rootdir/etc/fstab.qcom",
+      "git_blob_sha": "d99d20cc2b420067ad190915183b0713b1c29f03"
+    },
+    "recovery_fstab": {
+      "repository": "LF52406/mondrian_android_device_xiaomi_sm8450-common",
+      "ref": "lineage-24.0",
+      "path": "rootdir/etc/recovery.fstab",
+      "git_blob_sha": "5f3818cf78cf4a51cd8c4b6c05e6bda246b8e97d"
+    },
+    "second_stage_modules": {
+      "path": "modules.list.second_stage",
+      "git_blob_sha": "afc533f8658285dbec04ec358d4d5dcc5d9a00a5"
+    },
+    "vendor_dlkm_modules": {
+      "path": "modules.list.vendor_dlkm",
+      "git_blob_sha": "5e86b2d8cea707681e5a100d2394f219f26ac336"
+    }
+  },
+  "partition_mount_reference": {
+    "metadata": {
+      "type": "ext4",
+      "dedicated": true
+    },
+    "data": {
+      "type": "f2fs",
+      "main_fbe": "fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized+wrappedkey_v0",
+      "recovery_fbe": "fileencryption=ice"
+    },
+    "logical_partition_names": [
+      "system",
+      "system_ext",
+      "product",
+      "vendor",
+      "odm",
+      "vendor_dlkm"
+    ],
+    "main_logical_filesystem": "erofs",
+    "recovery_logical_filesystem": "ext4",
+    "difference_requires_review": true
+  },
+  "module_reference_exclusions": [
+    "radio-i2c-rtc6226-qca.ko",
+    "bt_fm_slim.ko"
+  ],
+  "production_selection": {
+    "filesystem_type": "erofs",
+    "active_fstab_path": null,
+    "active_recovery_fstab_path": null,
+    "encryption_policy": null,
+    "avb_keys": null,
+    "rollback_index": null,
+    "super_partition_size": null,
+    "userdata_fstab_qualified": false,
+    "recovery_mounts_qualified": false,
+    "module_load_order_qualified": false,
+    "boot_build_proven": false,
+    "active_erofs_board_policy": true,
+    "logical_partitions": [
+      "system",
+      "system_ext",
+      "product",
+      "vendor",
+      "odm",
+      "vendor_dlkm"
+    ],
+    "userdata_filesystem": "f2fs",
+    "metadata_filesystem": "ext4",
+    "filesystem_images_built": false,
+    "first_stage_fstab_qualified": false
+  },
+  "safety": {
+    "enable_fm_radio": false,
+    "allow_recovery_encryption_downgrade": false,
+    "allow_avb_disable_flags": false,
+    "source_only": true
+  },
+  "reference_source_commit_sha": "6e0022f5100e09ac97980095b6ed8528f4ff823f",
+  "reference_source_tree_sha": "09ad1e54e88d17016c7129edcebce11f45fd846c",
+  "native_candidate_staging": {
+    "normal_fstab": "rootdir/etc/fstab.qcom",
+    "recovery_fstab": "rootdir/etc/recovery.fstab",
+    "selected": false,
+    "installed_in_product": false,
+    "partition_formats_qualified": false,
+    "keymint_fbe_qualified": false,
+    "first_stage_vendor_ramdisk_qualified": false,
+    "normal_recovery_consistent_source_only": true,
+    "blocked_mounts_pending_vendor": [
+      "/mnt/vendor/persist",
+      "/vendor/firmware_mnt",
+      "/vendor/dsp",
+      "/vendor/bt_firmware",
+      "/vendor/vm-system",
+      "/mnt/vendor/qmcs"
+    ],
+    "reason": "staging lacks all vendor firmware mounts, AVB descriptor signing, real GPT validation, kernel modules and real /data decryption",
+    "board_erofs_selected": true
+  }
+}

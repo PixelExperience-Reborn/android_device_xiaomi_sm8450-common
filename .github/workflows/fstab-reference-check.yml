@@ -1,0 +1,25 @@
+name: Mondrian source-fstab mismatch evidence (read only)
+on:
+  push:
+    branches: ['bringup/**']
+    paths:
+      - 'storage-fstab-qualification.json'
+      - 'tools/compare_fstab_pair.py'
+      - 'tools/verify_reference_storage.py'
+      - '.github/workflows/fstab-reference-check.yml'
+  pull_request:
+    paths:
+      - 'storage-fstab-qualification.json'
+      - 'tools/compare_fstab_pair.py'
+      - 'tools/verify_reference_storage.py'
+      - '.github/workflows/fstab-reference-check.yml'
+permissions:
+  contents: read
+jobs:
+  pinned-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare verified upstream first-stage and recovery fstab blobs
+        run: python3 tools/verify_reference_storage.py

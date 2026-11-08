@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "platform": "AOSP 17",
+  "device": "mondrian",
+  "soc": "SM8475",
+  "board_platform": "taro",
+  "qualification": "reference_only_unselected",
+  "references": [
+    {
+      "repo": "LineageOS/android_device_xiaomi_sm8450-common",
+      "ref": "lineage-24.0",
+      "commit": "67a471734b636f65605102d2e7cf449b7e861d57",
+      "root_tree": "4af8b36e0ef908b3f35714d597f8c78cf11a603d",
+      "path": "BoardConfigCommon.mk",
+      "blob": "d821ec3e90b1f0cd2df3e026e4882003c7b19517",
+      "logical_fs": "ext4"
+    },
+    {
+      "repo": "LF52406/mondrian_android_device_xiaomi_sm8450-common",
+      "ref": "lineage-24.0",
+      "commit": "6e0022f5100e09ac97980095b6ed8528f4ff823f",
+      "root_tree": "09ad1e54e88d17016c7129edcebce11f45fd846c",
+      "path": "BoardConfigCommon.mk",
+      "blob": "e466edf280341982abd145515631f6b718bed38c",
+      "logical_fs": "erofs"
+    }
+  ],
+  "matching_reference_fields": {
+    "BOARD_KERNEL_PAGESIZE": 4096,
+    "BOARD_BOOT_HEADER_VERSION": 4,
+    "BOARD_BOOTIMAGE_PARTITION_SIZE": 201326592,
+    "BOARD_DTBOIMG_PARTITION_SIZE": 25165824,
+    "BOARD_RECOVERYIMAGE_PARTITION_SIZE": 104857600,
+    "BOARD_SUPER_PARTITION_SIZE": 9126805504,
+    "BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE": 100663296,
+    "BOARD_QTI_DYNAMIC_PARTITIONS_SIZE": 9122611200
+  },
+  "dynamic_partition_names": [
+    "odm",
+    "product",
+    "system",
+    "system_ext",
+    "vendor",
+    "vendor_dlkm"
+  ],
+  "reference_ab_ota_partitions": [
+    "boot",
+    "dtbo",
+    "odm",
+    "product",
+    "recovery",
+    "system",
+    "system_ext",
+    "vbmeta",
+    "vbmeta_system",
+    "vendor",
+    "vendor_boot",
+    "vendor_dlkm"
+  ],
+  "super_metadata_reserve_bytes": 4194304,
+  "filesystem_decision": {
+    "candidate_fstab_type": "erofs",
+    "official_lineage24_reference_type": "ext4",
+    "lf52406_reference_type": "erofs",
+    "selected_for_production": false,
+    "verified_on_target": false,
+    "erofs_selected_for_board_config": true,
+    "image_format_build_verified": false
+  },
+  "release_gates": {
+    "on_device_partition_sizes_verified": false,
+    "aosp17_boot_kernel_vendor_boot_qualified": false,
+    "actual_dtbo_qualified": false,
+    "compiled_kernel_modules_qualified": false,
+    "sufficient_first_stage_ramdisk": false,
+    "dynamic_super_and_ota_proven": false,
+    "recovery_ramdisk_boot_tested": false,
+    "verified_boot_chain_configured": false,
+    "real_boot_tested": false
+  },
+  "active_boardconfig_values_whitelist": [
+    "TARGET_BOARD_PLATFORM",
+    "TARGET_BOOTLOADER_BOARD_NAME",
+    "TARGET_NO_BOOTLOADER",
+    "BOARD_USES_METADATA_PARTITION",
+    "TARGET_COPY_OUT_ODM",
+    "TARGET_COPY_OUT_PRODUCT",
+    "TARGET_COPY_OUT_SYSTEM_EXT",
+    "TARGET_COPY_OUT_VENDOR",
+    "TARGET_COPY_OUT_VENDOR_DLKM"
+  ]
+}
