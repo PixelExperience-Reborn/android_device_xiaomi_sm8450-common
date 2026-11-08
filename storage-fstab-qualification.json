@@ -72,5 +72,24 @@
     "source_only": true
   },
   "reference_source_commit_sha": "6e0022f5100e09ac97980095b6ed8528f4ff823f",
-  "reference_source_tree_sha": "09ad1e54e88d17016c7129edcebce11f45fd846c"
+  "reference_source_tree_sha": "09ad1e54e88d17016c7129edcebce11f45fd846c",
+  "native_candidate_staging": {
+    "normal_fstab": "rootdir/etc/fstab.qcom",
+    "recovery_fstab": "rootdir/etc/recovery.fstab",
+    "selected": false,
+    "installed_in_product": false,
+    "partition_formats_qualified": false,
+    "keymint_fbe_qualified": false,
+    "first_stage_vendor_ramdisk_qualified": false,
+    "normal_recovery_consistent_source_only": true,
+    "blocked_mounts_pending_vendor": [
+      "/mnt/vendor/persist",
+      "/vendor/firmware_mnt",
+      "/vendor/dsp",
+      "/vendor/bt_firmware",
+      "/vendor/vm-system",
+      "/mnt/vendor/qmcs"
+    ],
+    "reason": "staging lacks all vendor firmware mounts, AVB descriptor signing, real GPT validation, kernel modules and real /data decryption"
+  }
 }
