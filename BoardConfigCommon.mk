@@ -40,3 +40,13 @@ TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
 # The OEM-derived mondrian fstab has a dedicated /metadata mount.
 # Actual encryption/wrapped-key configuration remains unselected.
 BOARD_USES_METADATA_PARTITION := true
+
+
+# Explicit opt-in to the reviewed Android image packaging configuration.
+# Ordinary source audit and device-tree builds never activate this until the
+# kernel, vendor HAL/firmware, first-stage ramdisk, FBE and AVB are qualified.
+ifeq ($(PE_MONDRIAN_BOOT_STAGE),qualified)
+include $(COMMON_DEVICE_PATH)/BoardConfigBootImages.mk
+else ifneq ($(strip $(PE_MONDRIAN_BOOT_STAGE)),)
+$(error Unsupported PE_MONDRIAN_BOOT_STAGE; only 'qualified' is allowed)
+endif
