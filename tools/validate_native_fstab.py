@@ -89,9 +89,16 @@ def validate_uninstalled():
         for line in (board + "\n" + device).splitlines()
         if line.strip() and not line.lstrip().startswith("#")
     )
+    # Native EROFS partition formats are a real active board decision,
+    # unlike fstab installation, decryption and verified-boot signing.
+    for partition in ("ODM", "PRODUCT", "SYSTEM", "SYSTEM_EXT", "VENDOR", "VENDOR_DLKM"):
+        require(f"BOARD_{partition}IMAGE_FILE_SYSTEM_TYPE := erofs" in board,
+                f"active EROFS policy missing for {partition}")
+    require("TARGET_USERIMAGES_USE_EROFS := true" in board,
+            "native EROFS output not selected")
     for token in ("TARGET_RECOVERY_FSTAB", "BOARD_RECOVERY_FSTAB", "fstab.qcom",
                   "rootdir/etc/recovery.fstab", "TARGET_COPY_OUT_VENDOR_RAMDISK",
-                  "TARGET_USERIMAGES_USE_EROFS", "BOARD_AVB_ENABLE"):
+                  "BOARD_AVB_ENABLE"):
         require(token not in active, f"fstab/boot choice active before vendor validation: {token}")
 
 
