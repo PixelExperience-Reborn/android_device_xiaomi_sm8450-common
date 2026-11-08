@@ -20,9 +20,9 @@ def parse_fstab(text):
         if not line:
             continue
         cols = line.split()
-        if len(cols) < 5:
-            raise ValueError(f"line {line_number}: expected at least 5 fields, got {len(cols)}")
-        device, mount, fs_type, mount_opts, mgr = cols[:5]
+        if len(cols) != 5:
+            raise ValueError(f"line {line_number}: expected exactly 5 fields, got {len(cols)}")
+        device, mount, fs_type, mount_opts, mgr = cols
         if not mount.startswith("/"):
             raise ValueError(f"line {line_number}: invalid mount point {mount!r}")
         if mount in rows:
@@ -32,8 +32,8 @@ def parse_fstab(text):
             if not value:
                 continue
             key, sep, val = value.partition("=")
-            if key in flags and flags[key] != (val if sep else None):
-                raise ValueError(f"line {line_number}: contradictory flag {key!r}")
+            if key in flags:
+                raise ValueError(f"line {line_number}: duplicate fs_mgr flag {key!r}")
             flags[key] = val if sep else None
         rows[mount] = {"device": device, "filesystem": fs_type, "options": mount_opts, "flags": flags}
     return rows
