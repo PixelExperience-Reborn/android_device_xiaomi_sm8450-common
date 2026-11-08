@@ -133,6 +133,10 @@ class MondrianFinalArtifactTests(unittest.TestCase):
                     "PE_MONDRIAN_AVB_SIGNING_VERIFIED"):
             self.assertIn(f"ifneq ($({key}),true)", images)
         self.assertIn("BOARD_BOOT_HEADER_VERSION := 4", images)
+        self.assertIn("TARGET_USERIMAGES_USE_EROFS := true", board)
+        for part in ("SYSTEM", "SYSTEM_EXT", "PRODUCT", "VENDOR", "ODM", "VENDOR_DLKM"):
+            self.assertIn(f"BOARD_{part}IMAGE_FILE_SYSTEM_TYPE := erofs", board)
+        self.assertNotIn("BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs", images)
         self.assertIn("TARGET_NEEDS_DTBOIMAGE := true", images)
         self.assertIn("BOARD_KERNEL_IMAGE_NAME := Image", images)  # compiler input only
         self.assertIn("TARGET_KERNEL_EXT_MODULE_ROOT := kernel/xiaomi/sm8450-modules", images)
