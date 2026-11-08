@@ -41,3 +41,31 @@ product**. It does not include another ROM product makefile or service stack.
 No vendor blobs, boot image layout, dtbo, kernel config, SELinux policy,
 partition sizes, VINTF matrix or production keys are supplied by this stub.
 Do **not** treat passing host source checks as Soong/CTS/VTS or device proof.
+
+
+## 2026-11-08 — independent common platform implementation
+
+`BoardConfigCommon.mk` now declares the device's confirmed `taro`
+bootloader ownership (`TARGET_BOOTLOADER_BOARD_NAME`, no bootloader
+build), standard Android output partition roots for
+`odm/product/system_ext/vendor/vendor_dlkm`, and presence of a
+separate metadata partition. These are early board properties, **not**
+proof of boot image, OTA, super layout, FBE or AVB compatibility.
+
+Storage/recovery source audit exposed a concrete risk: the inspected
+main fstab mounts logical partitions as EROFS, but the reference
+recovery fstab still declares ext4 and uses different /data encryption
+flags. `tools/compare_fstab_pair.py` and
+`tests/test_storage_contract.py` now block incompatible candidate
+fstab pairs; **no fstab has been enabled in this new tree**.
+
+The reviewed Qualcomm init reference has core QRTR/peripheral
+manager/audio/sensors services, and old networking/debug helpers.
+`docs/INIT_SERVICE_OWNERSHIP.md` prevents treating those services as
+unnecessary background processes without vendor binary, VINTF and
+SELinux evidence. No old init service is imported or modified.
+
+The old module list contains FM-related drivers; they are explicitly
+excluded from our initial product. No upstream LineageOS service,
+old AVB test key, AOSP14-specific HAL, or unverified system property
+is activated.
