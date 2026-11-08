@@ -60,7 +60,7 @@ class BootLayoutReferenceTests(unittest.TestCase):
     def test_missing_ota_partition_is_rejected(self):
         r = self.profile["references"][0]
         raw = synthetic_board(self.profile, r["logical_fs"])
-        raw = raw.replace("    vendor_dlkm\n", "")
+        raw = "\n".join(line for line in raw.splitlines() if line.strip() != "vendor_dlkm") + "\n"
         with self.assertRaises(ValueError):
             verify_source(raw, r, self.profile)
 
