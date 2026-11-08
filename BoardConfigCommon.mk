@@ -19,6 +19,11 @@ TARGET_2ND_CPU_VARIANT := generic
 
 TARGET_BOARD_PLATFORM := taro
 
+# Hardware bootloader is supplied by Xiaomi, not built by PE-Reborn.
+# Boot/vendor_boot header format and AVB remain separate release gates.
+TARGET_BOOTLOADER_BOARD_NAME := taro
+TARGET_NO_BOOTLOADER := true
+
 # Deliberately deferred until a verified kernel/vendor/boot-chain BOM exists:
 # TARGET_KERNEL_SOURCE, TARGET_KERNEL_CONFIG, boot image layout, DTBO,
 # module lists, super partition layout, fstab, SELinux, VINTF and AVB.
