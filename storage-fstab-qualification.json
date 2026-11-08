@@ -53,7 +53,7 @@
     "bt_fm_slim.ko"
   ],
   "production_selection": {
-    "filesystem_type": null,
+    "filesystem_type": "erofs",
     "active_fstab_path": null,
     "active_recovery_fstab_path": null,
     "encryption_policy": null,
@@ -63,7 +63,20 @@
     "userdata_fstab_qualified": false,
     "recovery_mounts_qualified": false,
     "module_load_order_qualified": false,
-    "boot_build_proven": false
+    "boot_build_proven": false,
+    "active_erofs_board_policy": true,
+    "logical_partitions": [
+      "system",
+      "system_ext",
+      "product",
+      "vendor",
+      "odm",
+      "vendor_dlkm"
+    ],
+    "userdata_filesystem": "f2fs",
+    "metadata_filesystem": "ext4",
+    "filesystem_images_built": false,
+    "first_stage_fstab_qualified": false
   },
   "safety": {
     "enable_fm_radio": false,
@@ -90,6 +103,7 @@
       "/vendor/vm-system",
       "/mnt/vendor/qmcs"
     ],
-    "reason": "staging lacks all vendor firmware mounts, AVB descriptor signing, real GPT validation, kernel modules and real /data decryption"
+    "reason": "staging lacks all vendor firmware mounts, AVB descriptor signing, real GPT validation, kernel modules and real /data decryption",
+    "board_erofs_selected": true
   }
 }
