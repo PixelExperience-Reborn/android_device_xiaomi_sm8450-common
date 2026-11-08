@@ -42,6 +42,25 @@ TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
 BOARD_USES_METADATA_PARTITION := true
 
 
+
+# Native mondrian filesystem policy -- always active, independent of
+# the still-unqualified kernel/AVB image packaging stage.
+# All six logical dynamic partitions are read-only EROFS.
+# /data remains F2FS; /metadata remains ext4 (mount configuration must
+# be validated separately against KeyMint and the actual device).
+# Stock-derived choice; do not silently revert to ext4 on logical partitions.
+TARGET_USERIMAGES_USE_EROFS := true
+TARGET_USERIMAGES_USE_F2FS := true
+TARGET_USERIMAGES_USE_EXT4 := true
+BOARD_EROFS_COMPRESSOR := lz4hc,9
+BOARD_EROFS_PCLUSTER_SIZE := 65536
+BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
+
 # Explicit opt-in to the reviewed Android image packaging configuration.
 # Ordinary source audit and device-tree builds never activate this until the
 # kernel, vendor HAL/firmware, first-stage ramdisk, FBE and AVB are qualified.
