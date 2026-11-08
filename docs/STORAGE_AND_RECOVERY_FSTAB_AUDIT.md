@@ -65,3 +65,14 @@ Source references (read-only):
 - https://github.com/LF52406/mondrian_android_device_xiaomi_sm8450-common/blob/lineage-24.0/rootdir/etc/fstab.qcom
 - https://github.com/LF52406/mondrian_android_device_xiaomi_sm8450-common/blob/lineage-24.0/rootdir/etc/recovery.fstab
 - https://github.com/LF52406/mondrian_android_device_xiaomi_sm8450-common/blob/lineage-24.0/modules.list.second_stage
+
+## Pinned evidence verification
+
+`tools/verify_reference_storage.py` downloads the two **historical
+reference** fstabs from a single immutable LF52406 commit, validates
+their original Git blob IDs and expects the EROFS versus ext4 and
+`fileencryption` differences to be detected. The result is checked
+by the source-only GitHub workflow
+`.github/workflows/fstab-reference-check.yml`. A successful result
+means the mismatch has been reproduced and **must still be fixed**
+before enabling recovery, not that recovery is functional.
