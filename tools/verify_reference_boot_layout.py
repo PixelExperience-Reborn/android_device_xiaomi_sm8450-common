@@ -82,9 +82,14 @@ def load():
     require(not d["filesystem_decision"]["selected_for_production"],
             "filesystem selected without validated images")
     active = parse_assignments((ROOT / "BoardConfigCommon.mk").read_text(encoding="utf-8"))
-    disallowed = set(fields) | {"TARGET_USERIMAGES_USE_EROFS", "BOARD_AVB_ENABLE",
-                               "BOARD_EROFS_COMPRESSOR", "BOARD_RECOVERY_FSTAB",
+    disallowed = set(fields) | {"BOARD_AVB_ENABLE",
+                               "BOARD_RECOVERY_FSTAB",
                                "TARGET_RECOVERY_FSTAB", "BOARD_SUPER_PARTITION_GROUPS"}
+    require(active.get("TARGET_USERIMAGES_USE_EROFS") == "true",
+            "own mondrian EROFS policy not active")
+    for partition in ("ODM", "PRODUCT", "SYSTEM", "SYSTEM_EXT", "VENDOR", "VENDOR_DLKM"):
+        require(active.get(f"BOARD_{partition}IMAGE_FILE_SYSTEM_TYPE") == "erofs",
+                f"own mondrian {partition} output is not EROFS")
     require(not (set(active) & disallowed),
             "unverified boot/partition setting enabled: " + str(sorted(set(active) & disallowed)))
     return d
