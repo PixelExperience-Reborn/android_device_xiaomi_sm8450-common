@@ -93,18 +93,6 @@ AB_OTA_PARTITIONS += \
 # Match independently authored fstab candidates only once validated on
 # a physical mondrian with vendor firmware and complete KeyMint/FBE stack.
 TARGET_RECOVERY_FSTAB := $(COMMON_DEVICE_PATH)/rootdir/etc/recovery.fstab
-TARGET_USERIMAGES_USE_EROFS := true
-TARGET_USERIMAGES_USE_F2FS := true
-TARGET_USERIMAGES_USE_EXT4 := true
-BOARD_EROFS_COMPRESSOR := lz4hc,9
-BOARD_EROFS_PCLUSTER_SIZE := 65536
-BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := erofs
-BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs
-BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs
-BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
-BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
-BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
-
 # Deliberately do not hard-code public test keys or disable verification.
 # Production key paths, vbmeta descriptors, signing algorithms and rollback
 # indexes must be configured in a separate audited security-owned file.
