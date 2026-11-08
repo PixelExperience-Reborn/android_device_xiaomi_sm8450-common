@@ -22,3 +22,16 @@ TARGET_BOARD_PLATFORM := taro
 # Deliberately deferred until a verified kernel/vendor/boot-chain BOM exists:
 # TARGET_KERNEL_SOURCE, TARGET_KERNEL_CONFIG, boot image layout, DTBO,
 # module lists, super partition layout, fstab, SELinux, VINTF and AVB.
+
+# Stable logical partition output paths for the own PE-Reborn product.
+# Declaring copy-out mount roots does not choose filesystem type, super
+# sizing, AB/AVB flags, fstab contents or recovery boot semantics.
+TARGET_COPY_OUT_ODM := odm
+TARGET_COPY_OUT_PRODUCT := product
+TARGET_COPY_OUT_SYSTEM_EXT := system_ext
+TARGET_COPY_OUT_VENDOR := vendor
+TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
+
+# The OEM-derived mondrian fstab has a dedicated /metadata mount.
+# Actual encryption/wrapped-key configuration remains unselected.
+BOARD_USES_METADATA_PARTITION := true
