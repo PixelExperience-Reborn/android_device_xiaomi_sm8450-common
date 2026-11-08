@@ -40,7 +40,8 @@ class StorageContractTests(unittest.TestCase):
 
     def test_unselected_release_settings(self):
         p = self.d["production_selection"]
-        for key in ("filesystem_type", "active_fstab_path",
+        self.assertEqual(p["filesystem_type"], "erofs")
+        for key in ("active_fstab_path",
                     "active_recovery_fstab_path", "encryption_policy",
                     "avb_keys", "rollback_index", "super_partition_size"):
             self.assertIsNone(p[key])
