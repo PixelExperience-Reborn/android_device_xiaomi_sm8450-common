@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "device": "mondrian",
+  "platform": "AOSP 17",
+  "reference_repos": [
+    {
+      "repository": "LF52406/mondrian_android_device_xiaomi_sm8450-common",
+      "ref": "lineage-24.0",
+      "path": "rootdir/etc/init.qcom.rc",
+      "blob_sha": "a78ea7c0e8963ac39771a25ec4df075774f9eeb4",
+      "service_declarations": 55
+    },
+    {
+      "repository": "LF52406/mondrian_android_device_xiaomi_sm8450-common",
+      "ref": "lineage-24.0",
+      "path": "rootdir/etc/init.target.rc",
+      "blob_sha": "50c43e079818ede007ee9f06e41a5bae10bd05df",
+      "service_declarations": 7
+    },
+    {
+      "repository": "LF52406/mondrian_android_device_xiaomi_sm8450-common",
+      "ref": "lineage-24.0",
+      "path": "rootdir/etc/init.xiaomi_sm8450.rc",
+      "blob_sha": "daeddd6472e34563134bde697d1ee81eac46d94d",
+      "service_declarations": 3
+    },
+    {
+      "repository": "LF52406/mondrian_android_device_xiaomi_sm8450-common",
+      "ref": "lineage-24.0",
+      "path": "rootdir/etc/init.qti.kernel.rc",
+      "blob_sha": "6c4349f630b368e7b9e797b51c4fc3ff2e41f244",
+      "service_declarations": 4
+    }
+  ],
+  "key_service_candidates": [
+    {
+      "name": "vendor.qrtr-ns",
+      "category": "qualcomm_modem_subsystem",
+      "requires_binary": "/vendor/bin/qrtr-ns",
+      "status": "blocked_until_vendor_abi_and_policy"
+    },
+    {
+      "name": "vendor.pd_mapper",
+      "category": "qualcomm_peripheral_mapper",
+      "requires_binary": "/vendor/bin/pd-mapper",
+      "status": "blocked_until_vendor_abi_and_policy"
+    },
+    {
+      "name": "vendor.per_mgr",
+      "category": "qualcomm_peripheral_manager",
+      "requires_binary": "/vendor/bin/pm-service",
+      "status": "blocked_until_vendor_abi_and_policy"
+    },
+    {
+      "name": "vendor.audio-hal",
+      "category": "audio_hal",
+      "requires_binary": "/vendor/bin/hw/android.hardware.audio.service",
+      "status": "blocked_until_interface_vintf_and_policy"
+    },
+    {
+      "name": "vendor.sensors-hal-multihal",
+      "category": "sensors_hal",
+      "requires_binary": "/vendor/bin/hw/android.hardware.sensors-service.xiaomi-multihal",
+      "status": "blocked_until_interface_vintf_and_policy"
+    },
+    {
+      "name": "vendor.modprobe",
+      "category": "qualcomm_kernel_modules",
+      "requires_binary": "/vendor/bin/vendor_modprobe.sh",
+      "status": "blocked_until_kernel_modules_abi"
+    },
+    {
+      "name": "vendor.msm_irqbalance",
+      "category": "performance",
+      "requires_binary": "/vendor/bin/msm_irqbalance",
+      "status": "defer_until_irq_profile"
+    },
+    {
+      "name": "vendor_f2fs_tune",
+      "category": "storage_optimization",
+      "requires_binary": "/vendor/bin/init.f2fs_tune.sh",
+      "status": "defer_until_f2fs_and_fbe_validated"
+    },
+    {
+      "name": "qti-testscripts",
+      "category": "testing_debug",
+      "requires_binary": "/product/etc/init.qcom.testscripts.sh",
+      "status": "not_selected"
+    },
+    {
+      "name": "dhcpcd_wlan0",
+      "category": "legacy_network_client",
+      "requires_binary": "/system/bin/dhcpcd",
+      "status": "not_selected"
+    }
+  ],
+  "new_tree": {
+    "copied_init_service_definitions": 0,
+    "active_vendor_services_approved": 0,
+    "active_vendor_services_built": 0
+  },
+  "constraints": {
+    "rom_init_independence": true,
+    "no_fm_radio": true,
+    "no_blanket_service_import": true,
+    "no_disable_of_required_vendor_services_without_proof": true,
+    "android17_init_selinux_vintf_runtime_tests_pending": true
+  }
+}
