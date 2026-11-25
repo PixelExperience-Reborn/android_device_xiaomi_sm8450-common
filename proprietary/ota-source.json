@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "device": "mondrian",
+  "description": "Official Xiaomi full OTA from which the proprietary files are reproduced. Nothing here is redistributed.",
+  "ota": {
+    "file": "mondrian-ota_full-OS3.0.8.0.VMNCNXM-user-15.0-3fb07519a6.zip",
+    "size": 6373064548,
+    "urls": [
+      "https://bigota.d.miui.com/OS3.0.8.0.VMNCNXM/mondrian-ota_full-OS3.0.8.0.VMNCNXM-user-15.0-3fb07519a6.zip",
+      "https://bkt-sgp-miui-ota-update-alisgp.oss-ap-southeast-1.aliyuncs.com/OS3.0.8.0.VMNCNXM/mondrian-ota_full-OS3.0.8.0.VMNCNXM-user-15.0-3fb07519a6.zip"
+    ],
+    "post_build": "Redmi/mondrian/mondrian:15/AQ3A.250226.002/OS3.0.8.0.VMNCNXM:user/release-keys",
+    "post_security_patch_level": "2026-05-01",
+    "payload_metadata": {
+      "offset": 4489,
+      "size": 249727,
+      "sha256": "47a555e363dab58fbc54038270462ffda833f52e02cd27d5b02355cbbea8f12b"
+    }
+  },
+  "partitions": {
+    "vendor": {
+      "size": 1612394496,
+      "sha256": "4c77f4040d566b8d9f0ad0b8724734363e3d50be0f7a20c070e9b0ff0a643165",
+      "filesystem": "erofs",
+      "build_fingerprint": "Redmi/mondrian/mondrian:12/SKQ1.230401.001/OS3.0.8.0.VMNCNXM:user/release-keys",
+      "board_api_level": 31,
+      "vendor_security_patch": "2026-02-01"
+    }
+  },
+  "verified": {
+    "payload_metadata_identical_on_all_urls": true,
+    "every_operation_and_partition_hash_checked": true
+  }
+}

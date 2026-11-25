@@ -69,3 +69,14 @@ The old module list contains FM-related drivers; they are explicitly
 excluded from our initial product. No upstream LineageOS service,
 old AVB test key, AOSP14-specific HAL, or unverified system property
 is activated.
+
+
+## 2026-11-25 — proprietary file lists
+
+`proprietary-files.txt` (this tree) and `device/xiaomi/mondrian/proprietary-files.txt`
+list the closed vendor files of the official OTA OS3.0.8.0.VMNCNXM with their
+SHA-256. The files themselves are **not** redistributed (see the policy above):
+`tools/extract_proprietary.py` reproduces them from the OTA pinned in
+`proprietary/ota-source.json`. Method, exclusions and compatibility evidence:
+`docs/PROPRIETARY_FILES.md`. VINTF, platform init, build rules and SELinux for
+these files are still to be authored and validated in an AOSP 17 tree.

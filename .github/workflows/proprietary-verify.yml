@@ -1,0 +1,42 @@
+name: Verify proprietary files against the official Xiaomi OTA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['bringup/**']
+    paths:
+      - proprietary-files.txt
+      - proprietary/**
+      - tools/ota_payload.py
+      - tools/extract_proprietary.py
+      - .github/workflows/proprietary-verify.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check out the mondrian list from the same branch
+        run: |
+          set -euo pipefail
+          url=https://github.com/PixelExperience-Reborn/android_device_xiaomi_mondrian
+          if git ls-remote --exit-code --heads "$url" "$GITHUB_REF_NAME" >/dev/null; then
+            git clone -q --depth 1 -b "$GITHUB_REF_NAME" "$url" "$RUNNER_TEMP/mondrian"
+          fi
+      - name: Install EROFS tools
+        run: sudo apt-get install -y -q erofs-utils
+      - name: Reproduce the vendor partition and check every listed file
+        run: |
+          set -euo pipefail
+          lists=(--list "proprietary-files.txt=$RUNNER_TEMP/out/sm8450-common")
+          if [ -f "$RUNNER_TEMP/mondrian/proprietary-files.txt" ]; then
+            lists+=(--list "$RUNNER_TEMP/mondrian/proprietary-files.txt=$RUNNER_TEMP/out/mondrian")
+          fi
+          python3 tools/extract_proprietary.py --verify-only --work "$RUNNER_TEMP" "${lists[@]}"
+          echo "[PASS] Every listed file matches the official OTA OS3.0.8.0.VMNCNXM" >> "$GITHUB_STEP_SUMMARY"
