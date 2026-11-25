@@ -7,6 +7,7 @@ on:
     paths:
       - proprietary-files.txt
       - proprietary/**
+      - tests/test_proprietary_files.py
       - tools/ota_payload.py
       - tools/extract_proprietary.py
       - .github/workflows/proprietary-verify.yml
@@ -22,21 +23,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Check out the mondrian list from the same branch
-        run: |
-          set -euo pipefail
-          url=https://github.com/PixelExperience-Reborn/android_device_xiaomi_mondrian
-          if git ls-remote --exit-code --heads "$url" "$GITHUB_REF_NAME" >/dev/null; then
-            git clone -q --depth 1 -b "$GITHUB_REF_NAME" "$url" "$RUNNER_TEMP/mondrian"
-          fi
+      - name: Unit tests of the list and the extraction tool
+        run: python3 -m unittest discover -s tests -p 'test_proprietary_files.py' -v
       - name: Install EROFS tools
         run: sudo apt-get install -y -q erofs-utils
       - name: Reproduce the vendor partition and check every listed file
+        # Only this repository's list: the mondrian list is verified by the
+        # mondrian repository itself, so the result of a commit here never
+        # depends on later changes in another repository.
         run: |
           set -euo pipefail
-          lists=(--list "proprietary-files.txt=$RUNNER_TEMP/out/sm8450-common")
-          if [ -f "$RUNNER_TEMP/mondrian/proprietary-files.txt" ]; then
-            lists+=(--list "$RUNNER_TEMP/mondrian/proprietary-files.txt=$RUNNER_TEMP/out/mondrian")
-          fi
-          python3 tools/extract_proprietary.py --verify-only --work "$RUNNER_TEMP" "${lists[@]}"
-          echo "[PASS] Every listed file matches the official OTA OS3.0.8.0.VMNCNXM" >> "$GITHUB_STEP_SUMMARY"
+          python3 tools/extract_proprietary.py --verify-only --work "$RUNNER_TEMP" \
+            --list "proprietary-files.txt=$RUNNER_TEMP/out/sm8450-common"
+          echo "[PASS] Every sm8450-common file matches the official OTA OS3.0.8.0.VMNCNXM" >> "$GITHUB_STEP_SUMMARY"
