@@ -84,7 +84,9 @@ def load():
     active = parse_assignments((ROOT / "BoardConfigCommon.mk").read_text(encoding="utf-8"))
     disallowed = set(fields) | {"BOARD_AVB_ENABLE",
                                "BOARD_RECOVERY_FSTAB",
-                               "TARGET_RECOVERY_FSTAB", "BOARD_SUPER_PARTITION_GROUPS"}
+                               "BOARD_SUPER_PARTITION_GROUPS"}
+    # TARGET_RECOVERY_FSTAB is active: the stock-derived fstab.qcom is checked
+    # against OS3.0.8.0 by tools/validate_fstab.py.
     require(active.get("TARGET_USERIMAGES_USE_EROFS") == "true",
             "own mondrian EROFS policy not active")
     for partition in ("ODM", "PRODUCT", "SYSTEM", "SYSTEM_EXT", "VENDOR", "VENDOR_DLKM"):

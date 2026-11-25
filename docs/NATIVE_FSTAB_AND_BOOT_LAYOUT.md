@@ -6,28 +6,35 @@ kernel, recovery, vendor partition or complete target ROM has been produced.**
 Target is **POCO F5 Pro / Redmi K60 (mondrian, SM8475)**, with a shared
 taro/SM8450-named BSP. This is not a claim that the physical SoC is SM8450.
 
-## 1. Native source (already added)
+## 1. fstab (stock-derived, installed)
 
-- `rootdir/etc/fstab.qcom`: independently authored **normal-boot candidate**.
-- `rootdir/etc/recovery.fstab`: independently authored **recovery candidate**,
-  with the same logical filesystem and /data encryption contract.
-- `tools/validate_native_fstab.py`: strict source-level comparison and AVB,
-  mount-stage and encryption guards.
-- `tools/compare_fstab_pair.py`: generic main/recovery consistency parser,
-  now rejecting malformed/duplicate fields.
-- `tests/test_native_fstab.py`: actual candidate regression and negative tests.
+`rootdir/etc/fstab.qcom` is derived entry by entry from the stock
+`vendor/etc/fstab.qcom` of OS3.0.8.0.VMNCNXM (sha256 `c19019a1...ace372`),
+which stock also uses as the `first_stage_ramdisk` fstab of `vendor_boot`.
+`common.mk` installs it to both places and `TARGET_RECOVERY_FSTAB` uses it, so
+first stage, Android and recovery share one file.
 
-Neither fstab is referenced by active `PRODUCT_COPY_FILES` or
-`TARGET_RECOVERY_FSTAB`. **Do not install** until verified product image
-filesystem, bootloader layout and storage HAL/KeyMint are available.
+Deliberate differences from stock:
 
-| Mounts | Candidate format | Selection |
-| --- | --- | --- |
-| `/system`, `/system_ext`, `/product` | EROFS; A/B logical first stage; `vbmeta_system` | Not qualified for production |
-| `/vendor`, `/odm`, `/vendor_dlkm` | EROFS; A/B logical first stage; primary AVB | Not qualified for production |
-| `/metadata` | ext4; first-stage mount | Not qualified for production |
-| `/data` | F2FS, v2 FBE + inlinecrypt + wrappedkey_v0; matching recovery flags | Not decrypted or boot tested |
-| `/misc` | block device / emmc reference | Not bootloader validated |
+- `/data`: no `age_extent_cache` (Linux 6.2 F2FS option, rejected by our
+  5.10.81 kernel). All other stock F2FS options are parsed by our kernel.
+- no `mi_ext` partition and no MIUI overlay mounts on `/product` and `/system`.
+- no SD card entry (mondrian has no slot).
+
+Kept from stock: EROFS and ext4 entries for the six logical partitions (images
+are EROFS), GSI `avb_keys` on `/system`, `/metadata` and `/data` with
+`formattable`, FBE v2 + wrappedkey_v0 and metadata encryption, `persist`,
+`modem` (`/vendor/firmware_mnt`), `dsp`, `bluetooth`, `qmcs` and USB OTG.
+
+`tools/validate_fstab.py` checks the entries, AVB, encryption, kernel support of
+every `/data` option and the installation; `--stock PATH` compares the file with
+the stock fstab line by line (it matches except for the documented differences).
+`tests/test_fstab.py` covers it, including negative cases.
+
+Open before the first flash: the mount point directories `/vendor/firmware_mnt`,
+`/vendor/dsp` and `/vendor/bt_firmware` must exist in the vendor image, and the
+SELinux types used by the `context=` options must be defined.
+
 
 These choices are deliberate candidates based on the LF52406 mondrian
 reference. **No automatic format action** is allowed in the candidate:
@@ -103,8 +110,8 @@ proprietary vendor binaries, old FM-radio modules or other device configs.
 
 ```bash
 python3 -m unittest discover -s tests -v
-python3 tools/validate_native_fstab.py
-python3 tools/verify_reference_storage.py
+python3 tools/validate_fstab.py
+python3 tools/validate_fstab.py --stock <OS3 vendor>/etc/fstab.qcom
 python3 tools/verify_reference_boot_layout.py --online
 ```
 

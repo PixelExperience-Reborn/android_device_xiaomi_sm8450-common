@@ -37,9 +37,11 @@ TARGET_COPY_OUT_SYSTEM_EXT := system_ext
 TARGET_COPY_OUT_VENDOR := vendor
 TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
 
-# The OEM-derived mondrian fstab has a dedicated /metadata mount.
-# Actual encryption/wrapped-key configuration remains unselected.
+# The stock-derived fstab mounts /metadata (metadata encryption keys).
 BOARD_USES_METADATA_PARTITION := true
+
+# Recovery uses the same stock-derived fstab as first stage and vendor.
+TARGET_RECOVERY_FSTAB := $(COMMON_DEVICE_PATH)/rootdir/etc/fstab.qcom
 
 
 

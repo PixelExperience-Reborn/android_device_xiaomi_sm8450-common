@@ -52,12 +52,7 @@ build), standard Android output partition roots for
 separate metadata partition. These are early board properties, **not**
 proof of boot image, OTA, super layout, FBE or AVB compatibility.
 
-Storage/recovery source audit exposed a concrete risk: the inspected
-main fstab mounts logical partitions as EROFS, but the reference
-recovery fstab still declares ext4 and uses different /data encryption
-flags. `tools/compare_fstab_pair.py` and
-`tests/test_storage_contract.py` now block incompatible candidate
-fstab pairs; **no fstab has been enabled in this new tree**.
+The fstab is now derived from the stock OS3.0.8.0 fstab and installed for first stage, vendor and recovery; see `docs/NATIVE_FSTAB_AND_BOOT_LAYOUT.md`.
 
 The reviewed Qualcomm init reference has core QRTR/peripheral
 manager/audio/sensors services, and old networking/debug helpers.

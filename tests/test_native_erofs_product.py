@@ -4,6 +4,7 @@ Assert real active product and board properties, not documentation-only
 metadata. Do not imply source compilation, mount/FBE success or boot.
 """
 import re
+import sys
 import unittest
 from pathlib import Path
 
@@ -52,21 +53,14 @@ class MondrianNativeErofsIntegrationTest(unittest.TestCase):
     def test_userdata_is_f2fs_and_metadata_ext4(self):
         self.assertEqual(self.board.get("TARGET_USERIMAGES_USE_F2FS"), "true")
         self.assertEqual(self.board.get("TARGET_USERIMAGES_USE_EXT4"), "true")
-        first = (ROOT / "rootdir/etc/fstab.qcom").read_text()
-        recovery = (ROOT / "rootdir/etc/recovery.fstab").read_text()
-        for name, text in (("main", first), ("recovery", recovery)):
-            rows = {}
-            for line in text.splitlines():
-                line = line.split("#", 1)[0].strip()
-                if line:
-                    cols = line.split()
-                    if len(cols) != 5 or not cols[1].startswith("/"):
-                        continue
-                    rows[cols[1]] = cols[2]
-            self.assertEqual({k for k, v in rows.items() if v == "erofs"}, MOUNTS,
-                             f"{name}: wrong dynamic filesystem")
-            self.assertEqual(rows.get("/data"), "f2fs")
-            self.assertEqual(rows.get("/metadata"), "ext4")
+        # One stock-derived fstab serves first stage, vendor and recovery.
+        sys.path.insert(0, str(ROOT / "tools"))
+        from validate_fstab import FSTAB, parse_fstab
+        rows = parse_fstab(FSTAB.read_text())
+        erofs = {r["mount"] for r in rows if r["fs"] == "erofs"}
+        self.assertEqual(erofs, MOUNTS, "wrong dynamic filesystem")
+        self.assertEqual({r["fs"] for r in rows if r["mount"] == "/data"}, {"f2fs"})
+        self.assertEqual({r["fs"] for r in rows if r["mount"] == "/metadata"}, {"ext4"})
 
     def test_aosp_virtual_ab_and_dynamic_partition_product_is_active(self):
         p = self.product

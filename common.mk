@@ -12,6 +12,13 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/launch_with_vendor_ramdisk.mk)
 
+# fstab: stock-derived (see the header of rootdir/etc/fstab.qcom and
+# tools/validate_fstab.py). Like stock, the same file is the first-stage fstab
+# of vendor_boot and vendor/etc/fstab.qcom; recovery uses it too.
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
+    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
+
 # Xiaomi mondrian uses dynamic partitions and A/B. The board-level EROFS
 # selections live in BoardConfigCommon.mk, not in a disabled boot-only fragment.
 PRODUCT_USE_DYNAMIC_PARTITIONS := true

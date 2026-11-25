@@ -90,9 +90,6 @@ AB_OTA_PARTITIONS += \
     vendor_boot \
     vendor_dlkm
 
-# Match independently authored fstab candidates only once validated on
-# a physical mondrian with vendor firmware and complete KeyMint/FBE stack.
-TARGET_RECOVERY_FSTAB := $(COMMON_DEVICE_PATH)/rootdir/etc/recovery.fstab
 # Deliberately do not hard-code public test keys or disable verification.
 # Production key paths, vbmeta descriptors, signing algorithms and rollback
 # indexes must be configured in a separate audited security-owned file.
