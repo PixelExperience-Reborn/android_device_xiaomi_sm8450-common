@@ -40,6 +40,10 @@ SOURCE_BUILT = {
     "libloc_core.so", "liblocation_api.so", "libcld80211.so", "librmnetctl.so", "libqti_vndfwk_detect.so",
     "vendor.qti.hardware.display.allocator@4.0.so", "vendor.qti.hardware.display.mapper@4.0.so",
     "vendor.qti.hardware.display.mapperextensions@1.1.so", "vendor.qti.hardware.camera.postproc@1.0.so",
+    # AOSP libraries Xiaomi copied into vendor; AOSP 17 builds their vendor variants.
+    "libcodec2_vndk.so", "libcodec2_hidl@1.0.so", "libcodec2_hidl_plugin.so", "libstagefright_bufferpool@2.0.1.so",
+    "libavservices_minijail.so", "android.system.net.netd@1.0.so", "android.system.net.netd@1.1.so",
+    "libhidltransport.so",
 }
 
 
@@ -88,6 +92,9 @@ class OtaSource(unittest.TestCase):
         self.assertRegex(ota["payload_metadata"]["sha256"], r"^[0-9a-f]{64}$")
         self.assertRegex(vendor["sha256"], r"^[0-9a-f]{64}$")
         self.assertEqual(vendor["board_api_level"], 31)
+        for name, part in SOURCE["partitions"].items():
+            self.assertRegex(part["sha256"], r"^[0-9a-f]{64}$", name)
+            self.assertEqual(part["filesystem"], "erofs", name)
         self.assertIn("OS3.0.8.0.VMNCNXM", ota["post_build"])
         self.assertIn("mondrian", vendor["build_fingerprint"])
 
@@ -113,15 +120,20 @@ class Tools(unittest.TestCase):
             (vendor / "etc/y.conf").write_bytes(b"y")
             digest = lambda b: hashlib.sha256(b).hexdigest()
             lst = tmp / "list.txt"
-            lst.write_text(f"# === S ===\n# why\nvendor/etc/y.conf|{digest(b'y')}\nvendor/lib64/libx.so|{digest(b'x')}\n")
+            odm = tmp / "odm"
+            (odm / "lib64").mkdir(parents=True)
+            (odm / "lib64/libz.so").write_bytes(b"z")
+            lst.write_text(f"# === S ===\n# why\nodm/lib64/libz.so|{digest(b'z')}\n"
+                           f"vendor/etc/y.conf|{digest(b'y')}\nvendor/lib64/libx.so|{digest(b'x')}\n")
             out = tmp / "out"
             cmd = [sys.executable, "-I", str(ROOT / "tools/extract_proprietary.py"),
-                   "--vendor-dir", str(vendor), "--list", f"{lst}={out}"]
+                   "--vendor-dir", str(vendor), "--odm-dir", str(odm), "--list", f"{lst}={out}"]
             subprocess.run(cmd + ["--verify-only"], check=True, capture_output=True)
             self.assertFalse(out.exists())
             subprocess.run(cmd, check=True, capture_output=True)
             self.assertEqual((out / "proprietary/vendor/lib64/libx.so").read_bytes(), b"x")
-            self.assertEqual(json.loads((out / "proprietary/provenance.json").read_text())["files"], 2)
+            self.assertEqual((out / "proprietary/odm/lib64/libz.so").read_bytes(), b"z")
+            self.assertEqual(json.loads((out / "proprietary/provenance.json").read_text())["files"], 3)
             (vendor / "lib64/libx.so").write_bytes(b"changed")
             result = subprocess.run(cmd, capture_output=True, text=True)
             self.assertEqual(result.returncode, 1)

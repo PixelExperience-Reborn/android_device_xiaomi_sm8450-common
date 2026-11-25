@@ -4,7 +4,7 @@
 # Source (pinned in device/xiaomi/sm8450-common/proprietary/ota-source.json):
 #   official Xiaomi OTA OS3.0.8.0.VMNCNXM, Redmi/mondrian/mondrian:15/AQ3A.250226.002
 #   vendor partition: Redmi/mondrian/mondrian:12/SKQ1.230401.001 (vendor API 31)
-# Format: <path on the device>|<SHA-256 of the file in that OTA>
+# Format: <partition>/<path>|<SHA-256 of the file in that OTA>  (vendor/ or odm/)
 #
 # Only closed components without source are listed. Everything we build from
 # source (display, audio PAL/AGM/HAL, IPACM, power, thermal HAL, Wi-Fi HAL, ...)
@@ -90,8 +90,6 @@ vendor/etc/qcril_database/upgrade/other/9_version_update_ecc_table.sql|719192365
 vendor/etc/seccomp_policy/qcrilnr@2.0.policy|7b61e56108910262cbd4190063945732eb8532ba0fcd21f77a14d0c67f705e6e
 vendor/etc/xiaomi_ecc_list.xml|1a3cf97bdb14d40d8070a44bcc70f6a19b99be9ad3a066df063484f3c246a086
 vendor/etc/xiaomi_ecc_list_preference.xml|e20828ff3963590272962c17aad0bef49bb4872c3c346cbfe99920408915ccec
-vendor/lib64/android.system.net.netd@1.0.so|2cc780e11f3dfcb9b7bd81e67ebc7df9f7c8ce77fdf458fcb0291d44bc26aa6e
-vendor/lib64/android.system.net.netd@1.1.so|d55fb684a92fff358854b9b40073f8920c72018a97669fcb10c2c470ed679d18
 vendor/lib64/lib-imscommon.so|5c8adfd9c5800bc79334e7cfb4722c9d8d8e0e3e7d167473b334c9c739f20f8c
 vendor/lib64/lib-imsdpl.so|e5849cb67a4a6491a386f5e5f9e093d6f7f5e3d00921d8089e768434b2aaf998
 vendor/lib64/lib-imsvtcore.so|5d374d8a796e2fcd94b5ee4b04f661e5091b1f484bec25934bf5a796c4076994
@@ -219,7 +217,6 @@ vendor/bin/dspservice|ec0d1f85644ffd682cd61b7e5963f8d0924440328450acfc538c402f18
 vendor/etc/init/vendor.qti.adsprpc-guestos-service.rc|540de9b329ea8bc4664b79cd80d3867a865e14d6fea8c430d1e75d98c796c829
 vendor/etc/init/vendor.qti.cdsprpc-service.rc|0717b37383f913451bb48bae4a48e679153914845bda5c060d03aa98866c8df6
 vendor/etc/init/vendor.qti.hardware.dsp@1.0-service.rc|dc2d534f3425c73e56bd9a215c8a7094b9a6973e87531f5de2e0c2bd2283b9e0
-vendor/lib64/libavservices_minijail.so|b6f567fb6175ad6b445bc60570238f586a94a1721ba50b43c9c01711d6e5215d
 vendor/lib64/vendor.qti.hardware.dsp@1.0.so|d905b09bdf32c0f1c35015fd2bf3c22f2adc6a93f8f2b2543d2a0214187171d1
 
 # === Media: Codec2 hardware codecs, codec lists and video firmware ===
@@ -250,9 +247,6 @@ vendor/firmware/vpu20_4v.b18|43b09596e1496809aaa964b34c146580f0566c86bc9d7218a12
 vendor/firmware/vpu20_4v.b19|dd35188226d35bec37ec99dcb619932b35514e4c6368fcc0aad66e2b1cce0e03
 vendor/firmware/vpu20_4v.mbn|9ea25c5796bfe1abcbf565ff320e323477802fcd35815e4502bcd848e92d0e90
 vendor/firmware/vpu20_4v.mdt|9d41da9ecb12ec5d581e12b8cfc09b6e9e623045ad2a190e20909949bd43ed37
-vendor/lib64/libcodec2_hidl@1.0.so|8bfb6cb01d2b4ef09fe80141156029ed50fb46c9730f0e6717b85f676eac9f11
-vendor/lib64/libcodec2_hidl_plugin.so|06fdf1a917f5137b50145d0c1dc989841ac32c61bee3e5f4251f22fed1dfabd2
-vendor/lib64/libcodec2_vndk.so|239a6a0db33b5b1489ef2da8f65a0afad7e2a5833122ccf035eed96ad0a08e7c
 vendor/lib64/libqcodec2_base.so|471e9d3b8e2c3938b36e45d79ebebe9b60c05c3f0ef39e87fb1fac168f7fd2dc
 vendor/lib64/libqcodec2_basecodec.so|7ba2fa7c2792028f95236c3b4eb4be1cbd18cbbacf5ada661c6bebc7869d7e2a
 vendor/lib64/libqcodec2_core.so|da9f68baeb444a2205341591ed7e8f33cf9455ed5f7f7c018358422d213b8d76
@@ -263,7 +257,6 @@ vendor/lib64/libqcodec2_mockqc2filter.so|5312f998647c09744432cfafc5045ee3b4674ae
 vendor/lib64/libqcodec2_platform.so|11a23366794710e3ef9e5506c8e34f75ff4c58493105acf2f1b46ac37c958c55
 vendor/lib64/libqcodec2_utils.so|0df6dd35c71777333ae0b12246482a61d2bb6f294b01009c1b5507d6925b61f9
 vendor/lib64/libqcodec2_v4l2codec.so|e5afb835a68b970cab4e0cb9197607b6fabbeeca5f5c83cbda9138add5549d0c
-vendor/lib64/libstagefright_bufferpool@2.0.1.so|36d0cc2e05ccda657b23ae107d7f9fcd3f73e353ebf90110e62adbee5defa5be
 vendor/lib64/libvideotxr.so|e38c5f0d9b777f40ec0c312715a0f53821e02eb58a0a084e836fd6f3b7b3dce8
 vendor/lib64/libvmmem.so|0d95b87347448850731260da6c0c3279ff58ea4a95cff100813d48edce4f6dac
 vendor/lib64/qti.video.utils.videobufferlayout.so|ceb6555eba37baa81792df1617357b9b5fed08b768c24abfa895a68f5fa00172
@@ -410,7 +403,6 @@ vendor/bin/sscrpcd|6819e132d9db7508d0b2d583fccf0b4e219c992200cd710e6fed0359be8b6
 vendor/etc/init/android.hardware.sensors@2.1-service-multihal.rc|352f1e650725209a318d80e049aecaf1ad98a6380563de395bb64d84e54083ae
 vendor/etc/init/vendor.sensors.sscrpcd.rc|229f1998520806f079318a0053ee125f24c23746ad0704e2dfd525f59b62d701
 vendor/lib64/libadsprpc.so|5aad0db4516644c55adcb3d1921f81a1978eab309be0d0b8d28fad43b2a5bc87
-vendor/lib64/libhidltransport.so|b3c19f1ac96b33392efd5ab7aa19e5ba65e038355ef73d6686ddd1a1b5c0849b
 vendor/lib64/libsensorslog.so|6344c706307cbd362b15ba7feaa21f3919e8b6e24c5610e35517e456c0dbf9d5
 vendor/lib64/libsns_direct_channel_stub.so|cd07f4a4c46879d1cd877b682c53ed16e752dca55ab53ec9b33b407eee3b07b6
 vendor/lib64/libsnsapi.so|ae3003be350263a8f0689a9cf718b11c4970fc133553f72d71d21e370124d74c

@@ -6,10 +6,11 @@ closed file with the SHA-256 it has in the OTA pinned by
 proprietary/ota-source.json. This tool copies exactly those files into the
 vendor repositories and refuses any file whose hash differs.
 
-Sources, in order of preference:
-  --vendor-dir DIR     an already extracted vendor partition
-  --vendor-image IMG   the vendor partition image (EROFS; needs fsck.erofs)
-  --ota ZIP|URL        the official OTA itself (default: the pinned URLs)
+Entries start with the partition they come from (vendor/ or odm/). Sources,
+in order of preference, per partition:
+  --vendor-dir DIR / --odm-dir DIR       an already extracted partition
+  --vendor-image IMG / --odm-image IMG   the partition image (EROFS; needs fsck.erofs)
+  --ota ZIP|URL                          the official OTA itself (default: the pinned URLs)
 
 Default layout inside an Android tree:
   device/xiaomi/sm8450-common/proprietary-files.txt -> vendor/xiaomi/sm8450-common/proprietary/
@@ -29,7 +30,8 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-LINE = re.compile(r"^(vendor/[A-Za-z0-9_@+.,/-]+)\|([0-9a-f]{64})$")
+LINE = re.compile(r"^((?:vendor|odm)/[A-Za-z0-9_@+.,/-]+)\|([0-9a-f]{64})$")
+PARTITIONS = ("vendor", "odm")
 
 
 @dataclass(frozen=True)
@@ -57,7 +59,7 @@ def read_list(path: Path) -> list[Entry]:
             continue
         match = LINE.match(line)
         if not match:
-            raise ListError(f"{path}:{number}: expected 'vendor/<path>|<sha256>': {raw!r}")
+            raise ListError(f"{path}:{number}: expected '<vendor|odm>/<path>|<sha256>': {raw!r}")
         if section is None:
             raise ListError(f"{path}:{number}: entry before the first section header")
         if match.group(1) in seen:
@@ -84,40 +86,44 @@ def default_lists() -> list[tuple[Path, Path]]:
     return pairs
 
 
-def vendor_from_image(image: Path, work: Path) -> Path:
+def tree_from_image(image: Path, work: Path, name: str) -> Path:
     if shutil.which("fsck.erofs") is None:
-        raise SystemExit("fsck.erofs (erofs-utils) is required to read the EROFS vendor image")
-    out = work / "vendor"
+        raise SystemExit("fsck.erofs (erofs-utils) is required to read the EROFS partition image")
+    out = work / name
     out.mkdir(parents=True)
     subprocess.run(["fsck.erofs", f"--extract={out}", str(image)], check=True,
                    stdout=subprocess.DEVNULL)
     return out
 
 
-def vendor_from_ota(location: str | None, source: dict, work: Path, jobs: int) -> Path:
+def trees_from_ota(location: str | None, source: dict, work: Path, jobs: int,
+                   names: list[str]) -> dict[str, Path]:
     sys.path.insert(0, str(ROOT / "tools"))
     from ota_payload import Ota, OtaError  # noqa: E402
 
-    image = work / "vendor.img"
     errors = []
     for url in ([location] if location else source["ota"]["urls"]):
         try:
             ota = Ota(url, source)
-            ota.extract("vendor", image, jobs,
-                        lambda done, total: print(f"\r  vendor: {done}/{total}", end="", flush=True))
-            print()
-            return vendor_from_image(image, work)
+            trees = {}
+            for name in names:
+                image = work / f"{name}.img"
+                ota.extract(name, image, jobs,
+                            lambda done, total, n=name: print(f"\r  {n}: {done}/{total}", end="", flush=True))
+                print()
+                trees[name] = tree_from_image(image, work, name)
+            return trees
         except (OtaError, OSError) as error:
             errors.append(f"{url}: {error}")
-    raise SystemExit("cannot obtain the pinned vendor partition:\n  " + "\n  ".join(errors))
+    raise SystemExit("cannot obtain the pinned partitions:\n  " + "\n  ".join(errors))
 
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    src = p.add_mutually_exclusive_group()
-    src.add_argument("--vendor-dir", type=Path)
-    src.add_argument("--vendor-image", type=Path)
-    src.add_argument("--ota", help="official OTA zip path or https URL")
+    for name in PARTITIONS:
+        p.add_argument(f"--{name}-dir", type=Path)
+        p.add_argument(f"--{name}-image", type=Path)
+    p.add_argument("--ota", help="official OTA zip path or https URL")
     p.add_argument("--list", action="append", default=[], metavar="LIST=OUTDIR",
                    help="proprietary-files.txt and its vendor repository (default: Android tree layout)")
     p.add_argument("--verify-only", action="store_true", help="check every file, write nothing")
@@ -131,17 +137,23 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory(dir=args.work) as tmp:
         work = Path(tmp)
-        if args.vendor_dir:
-            vendor = args.vendor_dir
-        elif args.vendor_image:
-            vendor = vendor_from_image(args.vendor_image, work)
-        else:
-            vendor = vendor_from_ota(args.ota, source, work, args.jobs)
+        needed = sorted({e.path.split("/", 1)[0] for _, _, entries in lists for e in entries})
+        trees, from_ota = {}, []
+        for name in needed:
+            if getattr(args, f"{name}_dir"):
+                trees[name] = getattr(args, f"{name}_dir")
+            elif getattr(args, f"{name}_image"):
+                trees[name] = tree_from_image(getattr(args, f"{name}_image"), work, name)
+            else:
+                from_ota.append(name)
+        if from_ota:
+            trees.update(trees_from_ota(args.ota, source, work, args.jobs, from_ota))
 
         problems = []
         for lst, out, entries in lists:
             for entry in entries:
-                src_file = vendor / entry.path.removeprefix("vendor/")
+                partition, rel = entry.path.split("/", 1)
+                src_file = trees[partition] / rel
                 if not src_file.is_file():
                     problems.append(f"missing: {entry.path}")
                     continue
@@ -164,7 +176,7 @@ def main() -> int:
                 (out / "proprietary/provenance.json").write_text(json.dumps({
                     "list": str(lst.name), "list_sha256": sha256(lst), "files": len(entries),
                     "ota": source["ota"]["file"], "ota_post_build": source["ota"]["post_build"],
-                    "vendor_partition_sha256": source["partitions"]["vendor"]["sha256"],
+                    "partition_sha256": {n: source["partitions"][n]["sha256"] for n in needed},
                 }, indent=2) + "\n")
         print("[PASS] every listed file matches the official OTA"
               + (" (verify only)" if args.verify_only else ""))

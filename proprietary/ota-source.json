@@ -25,6 +25,11 @@
       "build_fingerprint": "Redmi/mondrian/mondrian:12/SKQ1.230401.001/OS3.0.8.0.VMNCNXM:user/release-keys",
       "board_api_level": 31,
       "vendor_security_patch": "2026-02-01"
+    },
+    "odm": {
+      "size": 25010176,
+      "sha256": "0aec960356c28ff6cf1e601966beacaa39ce96c39f7468bff4eaa501b790d0db",
+      "filesystem": "erofs"
     }
   },
   "verified": {

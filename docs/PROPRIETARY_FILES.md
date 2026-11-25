@@ -10,8 +10,12 @@ and how they are reproduced.
   repositories build (display, audio PAL/AGM/HAL, IPACM, power, thermal HAL,
   vibrator, USB, health, NFC HAL, Wi-Fi HAL, lights, GNSS HAL wrapper) is
   never taken from the firmware; a test rejects such entries.
-* Files come from **one** official Xiaomi OTA for mondrian, never from another
-  device, another ROM or a third-party blob repository.
+* Files come from **one** official Xiaomi OTA for mondrian (its `vendor` and
+  `odm` partitions), never from another device, another ROM or a third-party
+  blob repository.
+* AOSP libraries that Xiaomi copied into its vendor partition (Codec2,
+  bufferpool, minijail, netd HIDL, hidltransport) are built from the AOSP 17
+  sources of our base instead; the stock copies are not used.
 * The files are **not redistributed**. `HARDWARE_CONTRACT.md` requires
   permission to redistribute, which we do not have. The repositories hold the
   lists, the pinned source and the tools; `tools/extract_proprietary.py`
@@ -27,8 +31,8 @@ and how they are reproduced.
 
 * the payload metadata SHA-256 (identical on `bigota.d.miui.com` and the
   official Xiaomi Aliyun mirror);
-* the vendor partition size and SHA-256, checked against the signed payload
-  manifest and per operation while extracting.
+* the `vendor` and `odm` partition sizes and SHA-256, checked against the
+  signed payload manifest and per operation while extracting.
 
 Its vendor partition is still the launch Android 12 vendor
 (`ro.board.api_level=31`, VINTF `target-level="6"`,
@@ -48,8 +52,8 @@ system side.
 
 | List | Files | Size |
 | --- | --- | --- |
-| `sm8450-common/proprietary-files.txt` (Qualcomm SoC stack) | 369 | 115 MB |
-| `mondrian/proprietary-files.txt` (device-specific) | 881 | 994 MB |
+| `sm8450-common/proprietary-files.txt` (Qualcomm SoC stack) | 361 | 113 MB |
+| `mondrian/proprietary-files.txt` (device-specific, incl. one `odm` file) | 879 | 994 MB |
 
 Deliberately excluded: the MIUI camera app engine (`libmialgoengine`,
 `com.xiaomi.plugin.*`, `campostproc`, `camera.xiaomi.so`), CNE daemon, DPM,
@@ -83,12 +87,56 @@ release, by their source strings:
 If GPU, video, DSP or Wi-Fi misbehave on the device, these are the exact
 Qualcomm CodeLinaro releases to update the drivers to.
 
+**Consumer IR** needs no blob: our kernel builds Xiaomi's `ir-spi` driver
+(`CONFIG_IR_SPI=m`, `/dev/ir_spi`, DT node `ir-spi` in `xiaomi-sm8475-common.dtsi`),
+which is all the closed `consumerir.qcom.so` uses, and `android.hardware.ir@1.0`
+no longer exists in AOSP 17. IR becomes an AIDL HAL in `hardware/xiaomi`.
+
 **Android 17.** The AOSP 17 framework accepts vendor FCM level 7 and newer.
 35 of the 40 standard HALs of this vendor satisfy level 7; the other five
 come from source: `wifi.supplicant 1.4`, `wifi.hostapd 1.3` (AOSP
 wpa_supplicant_8 AIDL), `health 2.1` (healthd-ext AIDL), `bluetooth.audio
-2.0` (AIDL) and `dumpstate 1.1` (AIDL). The blobs need 61 libraries of the
-Android 12 VNDK; the PE AOSP 17 manifest carries `prebuilts/vndk/v31`.
+2.0` (AIDL) and `dumpstate 1.1` (AIDL).
+
+**Libraries the blobs expect from the platform** (checked against the exact
+`android-17.0.0_r1` sources of our base):
+
+* 59 of the 60 `android.hardware.*@x.y` HIDL libraries still exist in
+  `hardware/interfaces` (only `ir@1.0` is gone, see above).
+* Every former VNDK library they use (`libutils`, `libcutils`, `libbinder`,
+  `libhidlbase`, `libion`, `libui`, ...) exists with a vendor variant. AOSP 17
+  clears `BOARD_VNDK_VERSION`, so these vendor variants are what the blobs will
+  load (`linkerconfig` searches `/vendor/lib64` before any VNDK APEX).
+* Seven AIDL libraries are named `-ndk_platform` in the blobs and `-ndk` in
+  AOSP 17 (KeyMint V1, SecureClock V1, SharedSecret V1, identity V3,
+  keymaster V3, GNSS V1, `vendor.qti.hardware.display.config` V2); all those
+  frozen versions exist, so a NEEDED rename at extraction time suffices.
+* Symbol screening of 440 64-bit blobs against Google's VNDK snapshots v31
+  (Android 12) and v34 (Android 14) found one removed import:
+  `GraphicBufferSource::configure` used by the stock copy of
+  `libcodec2_hidl@1.0`, which is now built from AOSP instead. The remaining
+  Android 14 to 17 gap is checked on the first build.
+
+## Source counterparts the blobs depend on
+
+The lists assume these modules come from source. In the current PE AOSP 17
+manifest none of these repositories is included, and in every one of them the
+`seventeen` branch is identical to `fourteen` (Android 14 code); Android 17
+work exists only in separate branches:
+
+| Repository | Modules the listed blobs link | Android 17 branch |
+| --- | --- | --- |
+| `hardware_qcom-caf_sm8450_display` | `libgralloc.qti`, `libgrallocutils`, `libqdMetaData`, `libdisplayconfig.qti` | none |
+| `vendor_qcom_opensource_display` | `libgralloc.qti`, `libqdMetaData`, `libdisplayconfig.qti` | `audit/a17-qcom-display-hwc3-aidl-20261107` |
+| `vendor_qcom_opensource_interfaces` | `vendor.qti.hardware.display.{allocator,mapper,mapperextensions}`, `camera.{aon,postproc}`, `btconfigstore`, `fm` | `port/a17-mondrian-qcom-interfaces-aidl-20261107` |
+| `hardware_qcom-caf_common` | `libqti_vndfwk_detect` | `integrate/a17-sm8450-qcom-common-20261105` |
+| `hardware_qcom_gps` | `libgps.utils`, `libloc_core`, `liblocation_api` | `audit/a17-mondrian-gnss-aidl-20261105` |
+| `hardware_qcom-caf_wlan` | `libcld80211` | `audit/a17-mondrian-wlan-ownership-20261105` |
+| `vendor_qcom_opensource_dataservices` | `librmnetctl` | `audit/a17-qcom-dataservices-rmnet-rtnetlink-boundary-20261108` |
+| `hardware_qcom-caf_sm8450_audio_{pal,agm,primary-hal}` | PAL/AGM/HAL that load the closed AudioReach libraries | none |
+
+Bringing these into the Android 17 manifest at verified revisions is a
+prerequisite for using the lists.
 
 ## Authored in the device trees (next stage)
 
