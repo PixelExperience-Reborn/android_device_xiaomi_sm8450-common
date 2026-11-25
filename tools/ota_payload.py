@@ -20,6 +20,7 @@ import argparse
 import bz2
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
+import http.client
 import io
 import json
 import lzma
@@ -27,6 +28,7 @@ import os
 from pathlib import Path
 import ssl
 import struct
+import time
 import urllib.request
 import zipfile
 
@@ -62,15 +64,17 @@ class _HttpRange(io.RawIOBase):
     def fetch(self, start: int, length: int) -> bytes:
         request = urllib.request.Request(self.url, headers={"Range": f"bytes={start}-{start + length - 1}"})
         last = None
-        for _ in range(5):
+        for attempt in range(6):
             try:
                 with urllib.request.urlopen(request, context=self._ctx, timeout=180) as resp:
                     data = resp.read()
                 if len(data) == length:
                     return data
                 last = OtaError(f"short read: {len(data)} of {length} bytes")
-            except OSError as error:  # network errors are retried
+            # Dropped connections surface as http.client.IncompleteRead, which is not an OSError.
+            except (OSError, http.client.HTTPException) as error:
                 last = error
+            time.sleep(min(2 ** attempt, 30))
         raise OtaError(f"cannot read {length} bytes at {start} from {self.url}: {last}")
 
     def readable(self) -> bool:
@@ -267,6 +271,24 @@ class Ota:
         return sha
 
 
+def rank_urls(urls: list[str], probe: int = 4 << 20) -> list[str]:
+    """Order equivalent mirrors by measured throughput; unreachable ones go last.
+
+    Every byte is verified against the pinned hashes, so the choice of mirror
+    never affects integrity, only speed.
+    """
+    speeds = {}
+    for url in urls:
+        try:
+            reader = _HttpRange(url)
+            begin = time.monotonic()
+            reader.fetch(reader.size // 2, probe)
+            speeds[url] = probe / max(time.monotonic() - begin, 1e-3)
+        except (OtaError, OSError, http.client.HTTPException):
+            speeds[url] = 0.0
+    return sorted(urls, key=lambda u: -speeds[u])
+
+
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -276,7 +298,7 @@ def main() -> None:
     p.add_argument("--jobs", type=int, default=6)
     args = p.parse_args()
     source = json.loads((root / "proprietary/ota-source.json").read_text())
-    ota = Ota(args.ota or source["ota"]["urls"][0], source)
+    ota = Ota(args.ota or rank_urls(source["ota"]["urls"])[0], source)
     sha = ota.extract(args.partition, args.out, args.jobs,
                       lambda done, total: print(f"\r{args.partition}: {done}/{total}", end="", flush=True))
     print(f"\n[PASS] {args.partition}: {args.out} sha256 {sha}")

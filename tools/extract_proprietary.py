@@ -99,10 +99,10 @@ def tree_from_image(image: Path, work: Path, name: str) -> Path:
 def trees_from_ota(location: str | None, source: dict, work: Path, jobs: int,
                    names: list[str]) -> dict[str, Path]:
     sys.path.insert(0, str(ROOT / "tools"))
-    from ota_payload import Ota, OtaError  # noqa: E402
+    from ota_payload import Ota, OtaError, rank_urls  # noqa: E402
 
     errors = []
-    for url in ([location] if location else source["ota"]["urls"]):
+    for url in ([location] if location else rank_urls(source["ota"]["urls"])):
         try:
             ota = Ota(url, source)
             trees = {}
