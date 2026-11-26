@@ -12,6 +12,7 @@
 from extract_utils.fixups_lib import (
     lib_fixups,
     lib_fixups_user_type,
+    libs_proto_3_9_1,
 )
 from extract_utils.main import (
     ExtractUtils,
@@ -30,7 +31,9 @@ def lib_fixup_vendor_suffix(lib: str, partition: str, *args, **kwargs):
 # blob keeps its file name (MODULE_SUFFIX=_vendor in the list) and its
 # users depend on the suffixed module.
 lib_fixups: lib_fixups_user_type = {
-    **lib_fixups,
+    # The stock libprotobuf-cpp-{lite,full}-3.9.1 ship in the lists, so the
+    # blobs link them as they are instead of a -vendorcompat module.
+    **{k: v for k, v in lib_fixups.items() if k != libs_proto_3_9_1},
     (
         'android.frameworks.sensorservice@1.0',
         'libkeymaster_messages',
