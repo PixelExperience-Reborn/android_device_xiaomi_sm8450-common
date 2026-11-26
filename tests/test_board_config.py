@@ -18,8 +18,9 @@ STOCK_IMAGE_SIZES = {
     "BOARD_BOOTIMAGE_PARTITION_SIZE": 201326592,
     "BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE": 100663296,
     "BOARD_RECOVERYIMAGE_PARTITION_SIZE": 104857600,
-    "BOARD_DTBOIMG_PARTITION_SIZE": 24117248,
 }
+STOCK_DTBO_IMAGE = 24117248          # what stock pads dtbo.img to
+DTBO_PARTITION = 25165824            # the 24 MiB partition other builds fill
 STOCK_DYNAMIC = {"odm", "product", "system", "system_ext", "vendor", "vendor_dlkm", "mi_ext"}
 STOCK_GROUP = "qti_dynamic_partitions"
 STOCK_BOOTCONFIG = {"androidboot.hardware=qcom", "androidboot.memcg=1",
@@ -79,6 +80,9 @@ class BoardConfigAgainstStockTest(unittest.TestCase):
     def test_raw_partitions_are_the_stock_sizes(self):
         for key, size in STOCK_IMAGE_SIZES.items():
             self.assertEqual(int(self.board[key], 0), size, key)
+        dtbo = int(self.board["BOARD_DTBOIMG_PARTITION_SIZE"], 0)
+        self.assertEqual(dtbo, DTBO_PARTITION)
+        self.assertGreaterEqual(dtbo, STOCK_DTBO_IMAGE)
 
     def test_super_is_the_stock_group_without_xiaomi_partitions(self):
         b = self.board

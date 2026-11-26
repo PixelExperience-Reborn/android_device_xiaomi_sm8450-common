@@ -58,13 +58,16 @@ BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 # The stock recovery image has no kernel: the bootloader takes it from boot.
 BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true
 
-# Raw partitions (sizes of the stock images, which carry an AVB footer at
-# the end of the partition).
+# Raw partitions. boot, vendor_boot and recovery are the stock image sizes.
+# dtbo: stock pads its image to 23 MiB, but the partition holds 24 MiB (as
+# the dtbo images of other mondrian builds flashed on this device show);
+# AVB verifies dtbo through its hash descriptor in vbmeta, whatever the
+# padding, so the image fills the 24 MiB partition.
 BOARD_FLASH_BLOCK_SIZE := 262144
 BOARD_BOOTIMAGE_PARTITION_SIZE := 0x0C000000
 BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 0x06000000
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x06400000
-BOARD_DTBOIMG_PARTITION_SIZE := 0x01700000
+BOARD_DTBOIMG_PARTITION_SIZE := 0x01800000
 
 # Dynamic partitions: one group, as stock, without Xiaomi's mi_ext.
 # The super size is the device's (the OTA does not carry it); the group
