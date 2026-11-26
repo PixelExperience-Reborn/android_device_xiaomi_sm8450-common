@@ -6,11 +6,13 @@
 #   vendor partition: Redmi/mondrian/mondrian:12/SKQ1.230401.001 (vendor API 31)
 # Format: <partition>/<path>|<SHA-256 of the file in that OTA>  (vendor/ or odm/)
 #
-# Only closed components without source are listed. Everything we build from
-# source (display, audio PAL/AGM/HAL, IPACM, power, thermal HAL, Wi-Fi HAL, ...)
-# is deliberately absent. VINTF and platform init scripts are authored in the
-# device trees. These files are not redistributed: tools/extract_proprietary.py
-# reproduces them from the official OTA and verifies every hash.
+# Closed components, and for the first stable build the Qualcomm libraries
+# they link (display client libraries, GNSS utilities, WLAN/data interfaces),
+# which match them as shipped. The vendor copies of AOSP libraries are not
+# listed: Android 17 builds them for vendor. VINTF and platform init scripts
+# are authored in the device trees. These files are not redistributed:
+# tools/extract_proprietary.py reproduces them from the official OTA and
+# verifies every hash.
 
 # === GPU: Adreno 730 userspace (OpenGL ES, Vulkan) and GPU firmware ===
 # No source exists. Kernel: msm_kgsl requests a730_sqe.fw, gmu_gen70000.bin, a730_zap.
@@ -408,3 +410,35 @@ vendor/lib64/sensors.touch.detect.so|68e0d2b3c1013900c28c0b0dfb246b8739bcbb89e3b
 # === Thermal engine daemon ===
 # No source exists. The thermal HAL comes from source.
 vendor/bin/thermal-engine-v2|8870e26044368c84df37f037b785e9dda1eff0f690b8eca52463dbe50b3abe0f
+
+# === Libraries the listed blobs link: display (gralloc, mapper, metadata, config), GNSS, WLAN, data, Bluetooth, FM, camera interfaces ===
+# From the same OTA. The vendor copies of AOSP HIDL interfaces are not listed: Android 17 builds them for vendor itself.
+vendor/lib/libgralloc.qti.so|bfe7de2f792a3e59e3de1a02dcbe8d1af5b4f898bf01d42b39e7f3e66c9d4863
+vendor/lib/vendor.qti.hardware.display.mapper@2.0.so|e530f3f18fcabef5486b9d4a89ffa813cd9ff7f15fabfd46000e759789ac0f37
+vendor/lib/vendor.qti.hardware.display.mapper@3.0.so|d2bd9608aad4fc5c882f386738ae72abfbe518196e4991283d58f25a0716ddc2
+vendor/lib/vendor.qti.hardware.display.mapper@4.0.so|18b7384e6c134f4bf2b0d88f1560ae5f73f00f8a0a5f0c58055802f354059cdb
+vendor/lib/vendor.qti.hardware.display.mapperextensions@1.0.so|e52d0501c009a6323d5031fa806e16af5742b2c214d0683eb30646c77d38a1b1
+vendor/lib/vendor.qti.hardware.display.mapperextensions@1.1.so|9898366884c66dbaf84c8d66157120dda2607f9ccdc4e4a84157157f8209921b
+vendor/lib64/libcld80211.so|dcff8eb720747bdf26966dc18aeb40e7960e55704a5ec383b7189f57d599c7ed
+vendor/lib64/libdisplayconfig.qti.so|9924976c808fc4e52066b105377575d8d799c79c3771c353079853eaf08df724
+vendor/lib64/libgps.utils.so|e8cd591a66e19b0fddc7c4c2c69559ffc844f8399fd75c6b5f55faadfa99ff7d
+vendor/lib64/libgralloc.qti.so|9dddf24f1e658051cbd7dc9a22f4d554ad854d433ecb1897b903dd40ad3ad87a
+vendor/lib64/libgrallocutils.so|cbb674b8d60bef43942e34db2cfcef5223139f4d6ae7280332de773e11a31c09
+vendor/lib64/libloc_core.so|7d26b3b02f6ae001fc4c1be809dbd60368821a6812f7c42d2efde07bdfcb600b
+vendor/lib64/liblocation_api.so|ee3605c8db54772b3eafc047d2b159be9857a93d89fd8fd4a29b59dd56cb7cdf
+vendor/lib64/libqdMetaData.so|d6bc108f8165a57aab49dbd9c12ce016464e951b1d6c9420aeb5eed29a1f132a
+vendor/lib64/libqti_vndfwk_detect.so|0dfabcaab2552c0523acde8b918c5dfe9c1da51c237f29c98a7a4f497995d007
+vendor/lib64/librmnetctl.so|c75d43f53c81da9bada101483796f1e7bd3aac07398d6ce7325f76363ce80159
+vendor/lib64/vendor.display.config@2.0.so|33a6e22572a1f39c015e0e1c681bfa2195d7402d8636da4b3d71eb746dd9bf1a
+vendor/lib64/vendor.qti.hardware.btconfigstore@1.0.so|987cab6aabe4bb72303eb87962f555457640651ea32fe383458f02390cdb4198
+vendor/lib64/vendor.qti.hardware.btconfigstore@2.0.so|f080601fe6145cce436080f1b07066133c44a979d6c1980ead08ee3293ad35f3
+vendor/lib64/vendor.qti.hardware.camera.aon@1.0.so|589da2f645bc93a6f0699d91827c977615840db3504d8c5092fe76a7d2234508
+vendor/lib64/vendor.qti.hardware.camera.postproc@1.0.so|d111184661e92c586c667df21c74d61f899baf4ef44ea66ae59c18aff077070d
+vendor/lib64/vendor.qti.hardware.display.allocator@4.0.so|be905469e1b2a8620ffdcdaf71549788dbcc1c811a3292e9de7338d5551830c8
+vendor/lib64/vendor.qti.hardware.display.config-V2-ndk_platform.so|f10895b1692831cff7f9121cff829ff2e44bb77190ac4f65cbf32ba40b7dec23
+vendor/lib64/vendor.qti.hardware.display.mapper@2.0.so|f134c8ab5e545072e5954971dace64456be23b602d60d338b226e9839810cfab
+vendor/lib64/vendor.qti.hardware.display.mapper@3.0.so|cbbe6b00fa90c15eebe8b459687c341194540716f183b78b869e8d14cd29ce5b
+vendor/lib64/vendor.qti.hardware.display.mapper@4.0.so|fdfa775cd1349dd646169bf3e5831c1eb12b174f104216ec265b49443aea97bc
+vendor/lib64/vendor.qti.hardware.display.mapperextensions@1.0.so|4b17acf171801f2f3a4fd40977b59c0ac58fb62bbd726542caef58f49a0705ca
+vendor/lib64/vendor.qti.hardware.display.mapperextensions@1.1.so|6b5cdd0046eb7b5835c67b65e3b42ce8daabb6f98a3026136e8cf52785bcd506
+vendor/lib64/vendor.qti.hardware.fm@1.0.so|d8c7cd5dfc7e8398856f108d22e25a5fb549171a7e5f8a762dd9e56308e82e08

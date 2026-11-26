@@ -34,12 +34,13 @@ FORBIDDEN = [
     r"^vendor/etc/vintf/", r"/init\.(qcom|target)\.rc$",
 ]
 # Built from our source repositories; a prebuilt copy would conflict with them.
+# Built from source and never taken from stock: the display composer core,
+# the AudioReach PAL/AGM and IPACM. For the first stable build the display
+# client libraries (gralloc, mapper, metadata, config), GNSS utilities and
+# the WLAN/data/Bluetooth/FM/camera interface libraries come from stock,
+# where they match the other blobs; moving them to source is a later step.
 SOURCE_BUILT = {
-    "libgralloc.qti.so", "libgrallocutils.so", "libqdMetaData.so", "libdisplayconfig.qti.so",
-    "libsdmcore.so", "libar-pal.so", "libagm.so", "libagmclient.so", "ipacm", "libgps.utils.so",
-    "libloc_core.so", "liblocation_api.so", "libcld80211.so", "librmnetctl.so", "libqti_vndfwk_detect.so",
-    "vendor.qti.hardware.display.allocator@4.0.so", "vendor.qti.hardware.display.mapper@4.0.so",
-    "vendor.qti.hardware.display.mapperextensions@1.1.so", "vendor.qti.hardware.camera.postproc@1.0.so",
+    "libsdmcore.so", "libar-pal.so", "libagm.so", "libagmclient.so", "ipacm",
     # AOSP libraries Xiaomi copied into vendor; AOSP 17 builds their vendor variants.
     "libcodec2_vndk.so", "libcodec2_hidl@1.0.so", "libcodec2_hidl_plugin.so", "libstagefright_bufferpool@2.0.1.so",
     "libavservices_minijail.so", "android.system.net.netd@1.0.so", "android.system.net.netd@1.1.so",
