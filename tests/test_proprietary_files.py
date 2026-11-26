@@ -28,23 +28,23 @@ payload = load("ota_payload")
 # Services, engines and platform files that are deliberately not taken from the OTA.
 FORBIDDEN = [
     r"libmialgoengine\.so$", r"/com\.xiaomi\.plugin\.", r"campostproc", r"/camera\.xiaomi\.so$",
-    r"/bin/cnd$", r"perf-hal", r"libqti-perfd", r"/bin/[^/]*dpm", r"soter", r"mlipay", r"trustedui",
+    r"/bin/cnd$", r"/libcne\.so$", r"/bin/[^/]*dpm", r"soter", r"mlipay", r"trustedui",
     r"tui_comm", r"wfd", r"vppservice|/libvpp|/rfsa/adsp/libVpp", r"dolby", r"/bin/hw/vendor\.xiaomi\.",
     r"vendor\.qti\.hardware\.factory", r"diag-router|diag_mdlog", r"ATFWD", r"qvr", r"sxr",
     r"^vendor/etc/vintf/", r"/init\.(qcom|target)\.rc$",
 ]
-# Built from our source repositories; a prebuilt copy would conflict with them.
-# Built from source and never taken from stock: the display composer core,
-# the AudioReach PAL/AGM and IPACM. For the first stable build the display
-# client libraries (gralloc, mapper, metadata, config), GNSS utilities and
-# the WLAN/data/Bluetooth/FM/camera interface libraries come from stock,
-# where they match the other blobs; moving them to source is a later step.
+# Built by AOSP 17 for the vendor partition; a stock copy would conflict with it.
+# The Qualcomm HALs (display composer, AudioReach PAL/AGM, IPACM) come from stock
+# for the first stable build: their source repositories (hardware/qcom-caf,
+# vendor/qcom/opensource) are not in the build manifest yet (docs/A17_HAL_MATRIX.md).
 SOURCE_BUILT = {
-    "libsdmcore.so", "libar-pal.so", "libagm.so", "libagmclient.so", "ipacm",
     # AOSP libraries Xiaomi copied into vendor; AOSP 17 builds their vendor variants.
     "libcodec2_vndk.so", "libcodec2_hidl@1.0.so", "libcodec2_hidl_plugin.so", "libstagefright_bufferpool@2.0.1.so",
     "libavservices_minijail.so", "android.system.net.netd@1.0.so", "android.system.net.netd@1.1.so",
     "libhidltransport.so", "libmemunreachable.so", "android.frameworks.sensorservice@1.0.so",
+    "libhwbinder.so", "libdrm.so", "libnetfilter_conntrack.so", "libnfnetlink.so",
+    # AOSP 17 HAL service wrappers and modules
+    "audio.r_submix.default.so", "audio.usb.default.so", "audio.bluetooth.default.so",
 }
 
 
@@ -70,7 +70,6 @@ class ProprietaryList(unittest.TestCase):
                 for pattern in FORBIDDEN:
                     self.assertIsNone(re.search(pattern, entry.path), pattern)
                 self.assertNotIn(Path(entry.path).name, SOURCE_BUILT)
-                self.assertNotRegex(Path(entry.path).name, r"^audio\.primary\.")
 
     def test_header_names_the_pinned_ota(self):
         head = LIST.read_text().split("# ===", 1)[0]

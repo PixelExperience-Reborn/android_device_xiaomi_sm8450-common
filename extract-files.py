@@ -34,7 +34,10 @@ lib_fixups: lib_fixups_user_type = {
     # The stock libprotobuf-cpp-{lite,full}-3.9.1 ship in the lists, so the
     # blobs link them as they are instead of a -vendorcompat module.
     **{k: v for k, v in lib_fixups.items() if k != libs_proto_3_9_1},
+    # Stock copies kept under a _vendor module name: the stock blobs need their
+    # ABI (KeyMint, the secure element clients), unlike the AOSP 17 builds.
     (
+        'libchrome',
         'libkeymaster_messages',
     ): lib_fixup_vendor_suffix,
 }
