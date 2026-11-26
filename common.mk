@@ -68,6 +68,12 @@ PRODUCT_COPY_FILES += \
     device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
     device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
 
+# Symbolic links of the stock vendor: the remote file system (rfs) of the
+# DSPs and the modem, and the WLAN configuration the qca_cld3 driver loads
+# (rootdir/Android.bp). The firmware mount points come from rootdir/Android.mk.
+PRODUCT_PACKAGES += \
+    sm8450_vendor_symlinks
+
 # Recovery: the init script and firmware fstab of the stock OS3.0.8.0
 # recovery (USB controller in peripheral mode for adb and fastbootd, modem
 # firmware partition and ADSP start for the battery status, backlight).

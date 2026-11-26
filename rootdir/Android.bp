@@ -1,0 +1,273 @@
+//
+// SPDX-FileCopyrightText: PixelExperience-Reborn
+// SPDX-License-Identifier: Apache-2.0
+//
+// Symbolic links of the stock OS3.0.8.0 vendor partition.
+//
+// rfs/msm: the remote file system layout tftp_server and rmt_storage serve
+// to the ADSP, CDSP, modem (MPSS), SLPI and WPSS of the SoC (mondrian has the
+// modem in the SoC; the mdm and apq variants of stock are for other boards).
+// firmware/wlan/qca_cld/qca6490: the configuration and MAC address the
+// qca_cld3 WLAN driver requests through the firmware loader.
+
+install_symlink {
+    name: "vendor_rfs_msm_adsp_hlos",
+    soc_specific: true,
+    installed_location: "rfs/msm/adsp/hlos",
+    symlink_target: "/mnt/vendor/persist/hlos_rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_adsp_ramdumps",
+    soc_specific: true,
+    installed_location: "rfs/msm/adsp/ramdumps",
+    symlink_target: "/data/vendor/tombstones/rfs/lpass",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_adsp_readonly_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/adsp/readonly/firmware",
+    symlink_target: "/vendor/firmware_mnt",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_adsp_readonly_vendor_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/adsp/readonly/vendor/firmware",
+    symlink_target: "/vendor/firmware",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_adsp_readwrite",
+    soc_specific: true,
+    installed_location: "rfs/msm/adsp/readwrite",
+    symlink_target: "/mnt/vendor/persist/rfs/msm/adsp",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_adsp_shared",
+    soc_specific: true,
+    installed_location: "rfs/msm/adsp/shared",
+    symlink_target: "/mnt/vendor/persist/rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_cdsp_hlos",
+    soc_specific: true,
+    installed_location: "rfs/msm/cdsp/hlos",
+    symlink_target: "/mnt/vendor/persist/hlos_rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_cdsp_ramdumps",
+    soc_specific: true,
+    installed_location: "rfs/msm/cdsp/ramdumps",
+    symlink_target: "/data/vendor/tombstones/rfs/cdsp",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_cdsp_readonly_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/cdsp/readonly/firmware",
+    symlink_target: "/vendor/firmware_mnt",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_cdsp_readonly_vendor_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/cdsp/readonly/vendor/firmware",
+    symlink_target: "/vendor/firmware",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_cdsp_readwrite",
+    soc_specific: true,
+    installed_location: "rfs/msm/cdsp/readwrite",
+    symlink_target: "/mnt/vendor/persist/rfs/msm/cdsp",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_cdsp_shared",
+    soc_specific: true,
+    installed_location: "rfs/msm/cdsp/shared",
+    symlink_target: "/mnt/vendor/persist/rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_mpss_hlos",
+    soc_specific: true,
+    installed_location: "rfs/msm/mpss/hlos",
+    symlink_target: "/mnt/vendor/persist/hlos_rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_mpss_ramdumps",
+    soc_specific: true,
+    installed_location: "rfs/msm/mpss/ramdumps",
+    symlink_target: "/data/vendor/tombstones/rfs/modem",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_mpss_readonly_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/mpss/readonly/firmware",
+    symlink_target: "/vendor/firmware_mnt",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_mpss_readonly_vendor_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/mpss/readonly/vendor/firmware",
+    symlink_target: "/vendor/firmware",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_mpss_readwrite",
+    soc_specific: true,
+    installed_location: "rfs/msm/mpss/readwrite",
+    symlink_target: "/mnt/vendor/persist/rfs/msm/mpss",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_mpss_shared",
+    soc_specific: true,
+    installed_location: "rfs/msm/mpss/shared",
+    symlink_target: "/mnt/vendor/persist/rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_slpi_hlos",
+    soc_specific: true,
+    installed_location: "rfs/msm/slpi/hlos",
+    symlink_target: "/mnt/vendor/persist/hlos_rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_slpi_ramdumps",
+    soc_specific: true,
+    installed_location: "rfs/msm/slpi/ramdumps",
+    symlink_target: "/data/vendor/tombstones/rfs/slpi",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_slpi_readonly_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/slpi/readonly/firmware",
+    symlink_target: "/vendor/firmware_mnt",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_slpi_readonly_vendor_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/slpi/readonly/vendor/firmware",
+    symlink_target: "/vendor/firmware",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_slpi_readwrite",
+    soc_specific: true,
+    installed_location: "rfs/msm/slpi/readwrite",
+    symlink_target: "/mnt/vendor/persist/rfs/msm/slpi",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_slpi_shared",
+    soc_specific: true,
+    installed_location: "rfs/msm/slpi/shared",
+    symlink_target: "/mnt/vendor/persist/rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_wpss_hlos",
+    soc_specific: true,
+    installed_location: "rfs/msm/wpss/hlos",
+    symlink_target: "/mnt/vendor/persist/hlos_rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_wpss_ramdumps",
+    soc_specific: true,
+    installed_location: "rfs/msm/wpss/ramdumps",
+    symlink_target: "/data/vendor/tombstones/rfs/wpss",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_wpss_readonly_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/wpss/readonly/firmware",
+    symlink_target: "/vendor/firmware_mnt",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_wpss_readonly_vendor_firmware",
+    soc_specific: true,
+    installed_location: "rfs/msm/wpss/readonly/vendor/firmware",
+    symlink_target: "/vendor/firmware",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_wpss_readwrite",
+    soc_specific: true,
+    installed_location: "rfs/msm/wpss/readwrite",
+    symlink_target: "/mnt/vendor/persist/rfs/msm/wpss",
+}
+
+install_symlink {
+    name: "vendor_rfs_msm_wpss_shared",
+    soc_specific: true,
+    installed_location: "rfs/msm/wpss/shared",
+    symlink_target: "/mnt/vendor/persist/rfs/shared",
+}
+
+install_symlink {
+    name: "vendor_firmware_wlan_qca_cld_qca6490_WCNSS_qcom_cfg_ini",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/qca6490/WCNSS_qcom_cfg.ini",
+    symlink_target: "/vendor/etc/wifi/qca6490/WCNSS_qcom_cfg.ini",
+}
+
+install_symlink {
+    name: "vendor_firmware_wlan_qca_cld_qca6490_wlan_mac_bin",
+    soc_specific: true,
+    installed_location: "firmware/wlan/qca_cld/qca6490/wlan_mac.bin",
+    symlink_target: "/mnt/vendor/persist/wlan/wlan_mac.bin",
+}
+
+phony {
+    name: "sm8450_vendor_symlinks",
+    required: [
+        "vendor_rfs_msm_adsp_hlos",
+        "vendor_rfs_msm_adsp_ramdumps",
+        "vendor_rfs_msm_adsp_readonly_firmware",
+        "vendor_rfs_msm_adsp_readonly_vendor_firmware",
+        "vendor_rfs_msm_adsp_readwrite",
+        "vendor_rfs_msm_adsp_shared",
+        "vendor_rfs_msm_cdsp_hlos",
+        "vendor_rfs_msm_cdsp_ramdumps",
+        "vendor_rfs_msm_cdsp_readonly_firmware",
+        "vendor_rfs_msm_cdsp_readonly_vendor_firmware",
+        "vendor_rfs_msm_cdsp_readwrite",
+        "vendor_rfs_msm_cdsp_shared",
+        "vendor_rfs_msm_mpss_hlos",
+        "vendor_rfs_msm_mpss_ramdumps",
+        "vendor_rfs_msm_mpss_readonly_firmware",
+        "vendor_rfs_msm_mpss_readonly_vendor_firmware",
+        "vendor_rfs_msm_mpss_readwrite",
+        "vendor_rfs_msm_mpss_shared",
+        "vendor_rfs_msm_slpi_hlos",
+        "vendor_rfs_msm_slpi_ramdumps",
+        "vendor_rfs_msm_slpi_readonly_firmware",
+        "vendor_rfs_msm_slpi_readonly_vendor_firmware",
+        "vendor_rfs_msm_slpi_readwrite",
+        "vendor_rfs_msm_slpi_shared",
+        "vendor_rfs_msm_wpss_hlos",
+        "vendor_rfs_msm_wpss_ramdumps",
+        "vendor_rfs_msm_wpss_readonly_firmware",
+        "vendor_rfs_msm_wpss_readonly_vendor_firmware",
+        "vendor_rfs_msm_wpss_readwrite",
+        "vendor_rfs_msm_wpss_shared",
+        "vendor_firmware_wlan_qca_cld_qca6490_WCNSS_qcom_cfg_ini",
+        "vendor_firmware_wlan_qca_cld_qca6490_wlan_mac_bin",
+    ],
+}
