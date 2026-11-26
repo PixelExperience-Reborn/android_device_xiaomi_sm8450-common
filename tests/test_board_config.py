@@ -30,6 +30,16 @@ STOCK_OFFSETS = {"BOARD_KERNEL_BASE": 0, "BOARD_KERNEL_OFFSET": 0x8000,
                  "BOARD_DTB_OFFSET": 0x01F00000}
 STOCK_VBMETA_SYSTEM = {"product", "system", "system_ext"}
 XIAOMI_ONLY = {"mi_ext"}
+# ro.bionic.* and ro.vendor.build.security_patch of the stock vendor build.prop.
+STOCK_BIONIC = {"TARGET_CPU_VARIANT_RUNTIME": "kryo300",
+                "TARGET_2ND_CPU_VARIANT_RUNTIME": "cortex-a75"}
+STOCK_VENDOR_SPL = "2026-02-01"
+# Variants Soong of Android 17 accepts (build/soong/android/arch_list.go).
+SOONG_ARM64_ARCH = {"armv8-a", "armv8-a-branchprot", "armv8-2a", "armv8-2a-dotprod",
+                    "armv8-5a", "armv8-7a", "armv9-a", "armv9-2a", "armv9-3a", "armv9-4a"}
+SOONG_ARM64_CPU = {"generic", "cortex-a53", "cortex-a55", "cortex-a72", "cortex-a73",
+                   "cortex-a75", "cortex-a76", "kryo", "kryo385", "exynos-m1", "exynos-m2",
+                   "oryon"}
 LOGICAL = ("SYSTEM", "SYSTEM_EXT", "PRODUCT", "VENDOR", "ODM", "VENDOR_DLKM")
 
 
@@ -60,6 +70,15 @@ class BoardConfigAgainstStockTest(unittest.TestCase):
         self.assertEqual(b["TARGET_ARCH"], "arm64")
         self.assertEqual(b["TARGET_CPU_ABI"], "arm64-v8a")
         self.assertEqual(b["TARGET_BOARD_PLATFORM"], "taro")
+        self.assertIn(b["TARGET_ARCH_VARIANT"], SOONG_ARM64_ARCH)
+        self.assertIn(b["TARGET_CPU_VARIANT"], SOONG_ARM64_CPU)
+        # No SVE: Qualcomm does not enable it on SM8475.
+        self.assertFalse(b["TARGET_ARCH_VARIANT"].startswith("armv9"))
+        for key, value in STOCK_BIONIC.items():
+            self.assertEqual(b[key], value, key)
+
+    def test_vendor_security_patch_is_stock(self):
+        self.assertEqual(self.board["VENDOR_SECURITY_PATCH"], STOCK_VENDOR_SPL)
 
     def test_boot_images_follow_stock_vendor_boot(self):
         b = self.board

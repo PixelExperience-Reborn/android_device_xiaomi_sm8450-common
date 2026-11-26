@@ -10,17 +10,25 @@
 
 COMMON_PATH := device/xiaomi/sm8450-common
 
-# Architecture
+# Architecture. SM8475 has Cortex-X2, A710 and A510 cores (Armv9.0-A,
+# which includes every mandatory feature of Armv8.5-A). armv8-5a uses them
+# (LSE atomics, dot product, PAC/BTI branch protection) without SVE2, which
+# armv9-a would let the compiler emit although Qualcomm does not enable SVE
+# on this SoC. Soong has no Cortex-A510/A710 tuning; cortex-a76 is its
+# closest one. The bionic runtime variants are those of the stock vendor
+# (ro.bionic.cpu_variant=kryo300, ro.bionic.2nd_cpu_variant=cortex-a75).
 TARGET_ARCH := arm64
-TARGET_ARCH_VARIANT := armv8-a
+TARGET_ARCH_VARIANT := armv8-5a
 TARGET_CPU_ABI := arm64-v8a
-TARGET_CPU_VARIANT := generic
+TARGET_CPU_VARIANT := cortex-a76
+TARGET_CPU_VARIANT_RUNTIME := kryo300
 
 TARGET_2ND_ARCH := arm
-TARGET_2ND_ARCH_VARIANT := armv8-a
+TARGET_2ND_ARCH_VARIANT := armv8-2a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
-TARGET_2ND_CPU_VARIANT := generic
+TARGET_2ND_CPU_VARIANT := cortex-a75
+TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a75
 
 # Platform
 TARGET_BOARD_PLATFORM := taro
@@ -139,6 +147,10 @@ BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
 BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
 BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
+
+# Security patch level of the stock OS3.0.8.0 vendor, whose proprietary
+# files the vendor partition carries (ro.vendor.build.security_patch).
+VENDOR_SECURITY_PATCH := 2026-02-01
 
 # Proprietary files
 include vendor/xiaomi/sm8450-common/BoardConfigVendor.mk
