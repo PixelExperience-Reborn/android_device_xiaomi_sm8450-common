@@ -32,8 +32,9 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from blob_fixups import rename_ndk_platform  # noqa: E402
-# <file>[;SYMLINK=<link>[,<link>...]]|<sha256>; the links are installed by the build rules.
-LINE = re.compile(r"^((?:vendor|odm)/[A-Za-z0-9_@+.,/-]+)(?:;SYMLINK=(?:vendor|odm)/[A-Za-z0-9_@+.,/-]+)?\|([0-9a-f]{64})$")
+# <file>[;<extract-utils argument>...]|<sha256>, e.g. ;SYMLINK=<link> or
+# ;MODULE_SUFFIX=_vendor; the arguments shape the build rules only.
+LINE = re.compile(r"^((?:vendor|odm)/[A-Za-z0-9_@+.,/-]+)(?:;[A-Z_]+(?:=[A-Za-z0-9_@+.,/-]+)?)*\|([0-9a-f]{64})$")
 PARTITIONS = ("vendor", "odm")
 
 
