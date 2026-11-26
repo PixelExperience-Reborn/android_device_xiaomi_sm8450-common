@@ -30,6 +30,8 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from blob_fixups import rename_ndk_platform  # noqa: E402
 LINE = re.compile(r"^((?:vendor|odm)/[A-Za-z0-9_@+.,/-]+)\|([0-9a-f]{64})$")
 PARTITIONS = ("vendor", "odm")
 
@@ -150,6 +152,7 @@ def main() -> int:
             trees.update(trees_from_ota(args.ota, source, work, args.jobs, from_ota))
 
         problems = []
+        fixups = {str(lst.name): {} for lst, _, _ in lists}
         for lst, out, entries in lists:
             for entry in entries:
                 partition, rel = entry.path.split("/", 1)
@@ -165,6 +168,10 @@ def main() -> int:
                     target = out / "proprietary" / entry.path
                     target.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copyfile(src_file, target)
+                    renamed = rename_ndk_platform(target)
+                    if renamed:
+                        fixups[str(lst.name)][entry.path] = {"needed_renamed": renamed,
+                                                            "sha256": sha256(target)}
             print(f"{lst}: {len(entries)} files checked")
         if problems:
             print("[FAIL] proprietary files do not match the pinned OTA:")
@@ -177,6 +184,7 @@ def main() -> int:
                     "list": str(lst.name), "list_sha256": sha256(lst), "files": len(entries),
                     "ota": source["ota"]["file"], "ota_post_build": source["ota"]["post_build"],
                     "partition_sha256": {n: source["partitions"][n]["sha256"] for n in needed},
+                    "fixups": fixups[str(lst.name)],
                 }, indent=2) + "\n")
         print("[PASS] every listed file matches the official OTA"
               + (" (verify only)" if args.verify_only else ""))

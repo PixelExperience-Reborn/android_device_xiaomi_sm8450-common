@@ -6,6 +6,10 @@ LOCAL_PATH := $(call my-dir)
 # proprietary ABI and Android 17 Soong definition before inclusion.
 
 
+# Proprietary files of the stock OS3.0.8.0 firmware (reproduced from the
+# official OTA by tools/extract_proprietary.py; rules by setup-makefiles.py).
+$(call inherit-product, vendor/xiaomi/sm8450-common/sm8450-common-vendor.mk)
+
 # AOSP-owned storage, generic ramdisk and virtual A/B with vendor_boot.
 # These are platform make fragments, not LineageOS product inheritance.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
