@@ -26,6 +26,18 @@ PRODUCT_COPY_FILES += \
     device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
     device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
 
+# Recovery: the init script and firmware fstab of the stock OS3.0.8.0
+# recovery (USB controller in peripheral mode for adb and fastbootd, modem
+# firmware partition and ADSP start for the battery status, backlight).
+PRODUCT_COPY_FILES += \
+    device/xiaomi/sm8450-common/rootdir/etc/init.recovery.qcom.rc:$(TARGET_COPY_OUT_RECOVERY)/root/init.recovery.qcom.rc \
+    device/xiaomi/sm8450-common/rootdir/etc/charger_fstab.qti:$(TARGET_COPY_OUT_RECOVERY)/root/vendor/etc/charger_fstab.qti
+
+# fastbootd in recovery: the AOSP fastboot HAL for recovery (stock uses the
+# AOSP mock HAL, android.hardware.fastboot@1.1-impl-mock).
+PRODUCT_PACKAGES += \
+    android.hardware.fastboot-service.example_recovery
+
 # Xiaomi mondrian uses dynamic partitions and A/B. The board-level EROFS
 # selections live in BoardConfigCommon.mk, not in a disabled boot-only fragment.
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
