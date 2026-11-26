@@ -157,5 +157,13 @@ VENDOR_SECURITY_PATCH := 2026-02-01
 TARGET_VENDOR_PROP += $(COMMON_PATH)/vendor.prop
 TARGET_ODM_PROP += $(COMMON_PATH)/odm.prop
 
+# VINTF: the device manifest at FCM target level 7 (HALs of the stock
+# services this build ships; HALs built from source add their own
+# fragments), the framework matrix extension for the Qualcomm vendor HALs
+# and the device matrix. See docs/A17_HAL_MATRIX.md.
+DEVICE_MANIFEST_FILE += $(COMMON_PATH)/vintf/manifest.xml
+DEVICE_MATRIX_FILE := $(COMMON_PATH)/vintf/compatibility_matrix.xml
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += $(COMMON_PATH)/vintf/framework_compatibility_matrix.xml
+
 # Proprietary files
 include vendor/xiaomi/sm8450-common/BoardConfigVendor.mk

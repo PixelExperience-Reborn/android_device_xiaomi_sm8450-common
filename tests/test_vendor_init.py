@@ -10,7 +10,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DEVICE = ROOT.parent / "mondrian"
+DEVICE = next((p for p in (ROOT.parent / "mondrian", ROOT.parent / "android_device_xiaomi_mondrian")
+               if p.is_dir()), ROOT.parent / "mondrian")
 RC = ("init.qcom.rc", "init.target.rc")
 DISALLOWED = re.compile(r"dhcpcd|wigig|qti-testscripts|migt|metis|thermal_message|mi_log"
                         r"|miui|/dev/uhid|fmsmd|radio_iris|qcom\.usb\.rc|init\.qcom\.sh")

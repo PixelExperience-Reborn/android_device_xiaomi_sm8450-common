@@ -6,10 +6,14 @@ and how they are reproduced.
 
 ## Policy
 
-* Only components **without source** are listed. Anything our source
-  repositories build (display, audio PAL/AGM/HAL, IPACM, power, thermal HAL,
-  vibrator, USB, health, NFC HAL, Wi-Fi HAL, lights, GNSS HAL wrapper) is
-  never taken from the firmware; a test rejects such entries.
+* Only components **without source in the PE Android 17 build manifest**
+  are listed. For the first stable build that includes the Qualcomm HALs
+  (display, AudioReach PAL/AGM, IPACM, thermal, USB, Wi-Fi, lights, GNSS):
+  their source repositories (`hardware/qcom-caf`, `vendor/qcom/opensource`)
+  are not in the manifest. The HALs Android 17 does not accept at FCM level 7
+  (health, power, Bluetooth audio, supplicant/hostapd, IR, vibrator `default`,
+  fingerprint UDFPS, NFC) come from source (docs/A17_HAL_MATRIX.md).
+  `tests/test_proprietary_files.py` rejects excluded and AOSP-built files.
 * Files come from **one** official Xiaomi OTA for mondrian (its `vendor` and
   `odm` partitions), never from another device, another ROM or a third-party
   blob repository.
@@ -43,7 +47,11 @@ system side.
 
 1. Roots: the closed service binaries and dlopen'ed plugins of each
    subsystem (camera provider, CamX/CHI nodes and sensor modules, QCRIL,
-   Codec2, sensor multi-HAL, KeyMint, ...).
+   Codec2, sensor multi-HAL, KeyMint, ...), including the passthrough
+   implementations of `vendor/lib64/hw` that HIDL services register with
+   `registerPassthroughServiceImplementation` (Gatekeeper, Bluetooth HCI and
+   config store, GNSS 2.1, boot control, capability config store, service
+   tracker, eSE power manager): `DT_NEEDED` does not show them.
 2. The complete `DT_NEEDED` closure inside the vendor partition.
 3. Minus every file produced by our source repositories (389 outputs of 24
    repositories) and by AOSP (`android.hardware.*`, `android.hidl.*`).
@@ -52,8 +60,8 @@ system side.
 
 | List | Files | Size |
 | --- | --- | --- |
-| `sm8450-common/proprietary-files.txt` (Qualcomm SoC stack) | 361 | 113 MB |
-| `mondrian/proprietary-files.txt` (device-specific, incl. one `odm` file) | 879 | 994 MB |
+| `sm8450-common/proprietary-files.txt` (Qualcomm SoC stack) | 573 | 150 MB |
+| `mondrian/proprietary-files.txt` (device-specific, incl. one `odm` file) | 879 | 1042 MB |
 
 Deliberately excluded: the MIUI camera app engine (`libmialgoengine`,
 `com.xiaomi.plugin.*`, `campostproc`, `camera.xiaomi.so`), CNE daemon, DPM,
@@ -119,40 +127,27 @@ wpa_supplicant_8 AIDL), `health 2.1` (healthd-ext AIDL), `bluetooth.audio
 
 ## Source counterparts the blobs depend on
 
-The lists assume these modules come from source. In the current PE AOSP 17
-manifest none of these repositories is included, and in every one of them the
-`seventeen` branch is identical to `fourteen` (Android 14 code); Android 17
-work exists only in separate branches:
+The libraries the blobs link from Qualcomm source repositories elsewhere
+(`libgralloc.qti`, `libqdMetaData`, `libdisplayconfig.qti`,
+`libqti_vndfwk_detect`, `libgps.utils`/`libloc_core`/`liblocation_api`,
+`libcld80211`, `librmnetctl`, the `vendor.qti.*` interface libraries) are the
+stock ones in these lists: none of those repositories is in the PE Android 17
+build manifest. Replacing a stock library with its source build means moving
+the whole stack it belongs to (for example display: composer, allocator,
+mapper and `libgralloc.qti` together), never one library.
 
-| Repository | Modules the listed blobs link | Android 17 branch |
-| --- | --- | --- |
-| `hardware_qcom-caf_sm8450_display` | `libgralloc.qti`, `libgrallocutils`, `libqdMetaData`, `libdisplayconfig.qti` | none |
-| `vendor_qcom_opensource_display` | `libgralloc.qti`, `libqdMetaData`, `libdisplayconfig.qti` | `audit/a17-qcom-display-hwc3-aidl-20261107` |
-| `vendor_qcom_opensource_interfaces` | `vendor.qti.hardware.display.{allocator,mapper,mapperextensions}`, `camera.{aon,postproc}`, `btconfigstore`, `fm` | `port/a17-mondrian-qcom-interfaces-aidl-20261107` |
-| `hardware_qcom-caf_common` | `libqti_vndfwk_detect` | `integrate/a17-sm8450-qcom-common-20261105` |
-| `hardware_qcom_gps` | `libgps.utils`, `libloc_core`, `liblocation_api` | `audit/a17-mondrian-gnss-aidl-20261105` |
-| `hardware_qcom-caf_wlan` | `libcld80211` | `audit/a17-mondrian-wlan-ownership-20261105` |
-| `vendor_qcom_opensource_dataservices` | `librmnetctl` | `audit/a17-qcom-dataservices-rmnet-rtnetlink-boundary-20261108` |
-| `hardware_qcom-caf_sm8450_audio_{pal,agm,primary-hal}` | PAL/AGM/HAL that load the closed AudioReach libraries | none |
+## Authored in the device trees
 
-Bringing these into the Android 17 manifest at verified revisions is a
-prerequisite for using the lists.
-
-## Authored in the device trees (next stage)
-
-* VINTF manifest with `target-level` 7 declaring the HALs of the listed
-  services (camera provider 2.4-2.7 `legacy/1`, radio 1.6 and radio config
-  1.3, sensors 2.1, Codec2 1.0, KeyMint, Gatekeeper, identity, GNSS AIDL,
-  DRM Widevine 1.4, Bluetooth 1.0, IR 1.0, fingerprint 2.1, QTI QSEECom/QTEE,
-  DSP service).
-* Init: `vendor.pd_mapper` (stock `init.target.rc`), `time_daemon` and
-  `vendor.qrtr-ns` (stock `init.qcom.rc`), and the camera provider service.
-  The stock camera provider script also declares the MIUI
-  `campostproc`/`quickcamera`/`bgservice` interfaces, so it is rewritten
-  without them.
-* Soong/Make build rules for the prebuilts and the VNDK v31 strategy, to be
-  validated with a real AOSP 17 tree.
-* SELinux policy for the closed services.
+* VINTF (`vintf/`): the device manifest at FCM target level 7, the framework
+  matrix extension for the `vendor.qti.*` HALs and the device matrix
+  (docs/A17_HAL_MATRIX.md, `tests/test_vintf.py`).
+* Platform init (`rootdir/etc/init.qcom.rc`, `init.target.rc`) and the odm
+  ueventd rules of mondrian (docs/INIT_SERVICE_OWNERSHIP.md).
+* The stock camera provider script is listed unmodified. Its `interface`
+  lines for MIUI services nobody registers are harmless: init only uses
+  `interface` to start a service on demand, and Android 17 init does not
+  check them against VINTF.
+* SELinux policy for the closed services (stage D).
 
 ## Usage
 

@@ -51,6 +51,13 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/android.software.verified_boot.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.verified_boot.xml \
     frameworks/native/data/etc/android.software.vulkan.deqp.level-2021-03-01.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.vulkan.deqp.level.xml
 
+# ART userfaultfd GC: the kernel is GKI android12-5.10 with
+# CONFIG_USERFAULTFD=y and MREMAP_DONTUNMAP, the case the Android 17 build
+# names for PRODUCT_ENABLE_UFFD_GC := true. The build does not read the kernel
+# version itself: PRODUCT_OTA_ENFORCE_VINTF_KERNEL_REQUIREMENTS stays unset,
+# since the kernel (5.10.81) is kept as it is.
+PRODUCT_ENABLE_UFFD_GC := true
+
 # KeyMint version 1, as the stock KeyMint HAL implements (feature version 100).
 PRODUCT_PACKAGES += \
     android.hardware.hardware_keystore_V1.xml
