@@ -57,6 +57,8 @@ vendor/bin/port-bridge|cff546993f1c5678fec13d5e65d79063526af16c8a9f346a24547ecb9
 vendor/bin/qms|bc4534aa35619d9e151390f3d89437d9796716fc21fb33eb0b19fe8a03b05c19
 vendor/etc/init/ims_rtp_daemon.rc|499ad743ee0b263af7c3f354604dcb98e0d637a05557409c89e0eae61dfa8f53
 vendor/etc/init/imsdaemon.rc|4b9980537f142e1e780dff4f69c148a5e7e4ec21dd354e9bb090f5b7e0b7b2d0
+vendor/etc/init/netmgrd.rc|568143f3edf386dda7a13503cea2df6cc03904cfa798e14dfab5487aa8e6403b
+vendor/etc/init/port-bridge.rc|724dfc23fc98e926cf951273fa7f5b771c0367890696b9cfa844aa32d0b79881
 vendor/etc/init/qcrilNrd.rc|9efde0001096c3c90414c7fe27a7964ae567691cec970034a449f4066b73e681
 vendor/etc/init/qms.rc|3ec05215964178192e86f01ab22b3ef45ddf873795e836da0bf94d2ef0f0bbdd
 vendor/etc/qcril_database/qcrilNr.db|5fe031792660baf16f1a4a5d90313a12a5ee35b1b349b32d4d64a043b85dae8e
@@ -628,6 +630,23 @@ vendor/etc/IPACM_Filter_cfg.xml|fc8a9f0fc99659c7d1a4d3e2fd2d5c68f319bbc2f10e7c0e
 vendor/etc/IPACM_cfg.xml|5a48790a3ea51aabac3fcf17e12f7c94456e22465526b9a045e96454481705b8
 vendor/etc/data/dsi_config.xml|867975e5453b3a5821f99ec83b1597537dd1f454439c74c680cf5c56fbab877d
 vendor/etc/data/netmgr_config.xml|fb919ac335e9f1bc81d2495d237a362a0d3a327c16ba12ac0500d1e4330b9bf2
+vendor/etc/init/dataadpl.rc|8fb07a4eb3f8222e9266deada743d05f40633a6f8a9b06d0577e3af632210443
+vendor/etc/init/dataqti.rc|9f9ed58938ab6e31965fefd52ef4820c29a778a3205302ca8542cdeee652dd6e
+vendor/etc/init/ipacm.rc|38aaba79d3598e7cde5d8a8c5296f4374c36ef281874d5672952321eb3007856
 vendor/lib64/libipanat.so|3358a6aeda8a0a4d9eb2989b1c06b8f8e0b620489f0f1946389949a05b96fd4b
 vendor/lib64/liboffloadhal.so|a386e0bf4b6c2960d25d82f6da71881dd3fa17294bcb5abe18d4d8a8370284fb
 vendor/lib64/libqcmaputils.so|6a3ed2084913cb74107d436d21f4a03f141e91ef7dd9e1db867eac30703cdc85
+
+# === Kernel at boot: vendor_dlkm modules, DSP boot, scheduler and memory tuning ===
+# vendor_modprobe.sh loads the vendor_dlkm modules (display, touch, WLAN, camera, audio)
+# in the order of their modules.load; init.qti.kernel.rc starts it in early-init and boots
+# the ADSP, CDSP and CVP in early-boot; the post-boot tuning of SM8475 is the cape
+# script (chip family 0x82). Unmodified Qualcomm files, imported by init.qcom.rc.
+vendor/bin/init.kernel.post_boot-cape.sh|8f1d1262315de675ea5fc2e8d4ba86139d60ac5099b11f0ee05724e37979458e
+vendor/bin/init.kernel.post_boot.sh|011147cb3f5f5fe00a65ea62bfd45ac3ea9524440d63c0aa6d77e49e5e3d2309
+vendor/bin/init.qti.kernel.sh|c7879e73fb84a955e02218ac7c512c2f6061bf0cac65752e684be0956e8810eb
+vendor/bin/init.qti.write.sh|ba6820e92beb129b848fea7dcf2988fd42d0e21f423df1ea67bceb9c95b1966d
+vendor/bin/msm_irqbalance|8542ff0f53cf66360fef5bbe6ffa82e06f898c8ef42397ee73faaf20afdda3b4
+vendor/bin/vendor_modprobe.sh|389d551584b569fab32321bbb6156ed000c1bab3c94b02f57bc23233039532b8
+vendor/etc/init/hw/init.qti.kernel.rc|4bc0c6a9af5d101e1057b769e41cd0fee314a83d95d092e7035d71a7ad20f871
+vendor/etc/msm_irqbalance.conf|8db680c7d1c60eaf73bcfa37720e58921af1a1c5cbde34bc9776dd30e92424ff
