@@ -68,6 +68,14 @@ PRODUCT_COPY_FILES += \
     device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
     device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
 
+# Platform init of the stock OS3.0.8.0 vendor for taro, kept to what this
+# build ships (rootdir/etc): init.qcom.rc (ro.hardware=qcom) imports
+# init.target.rc, which imports init.qti.kernel.rc.
+PRODUCT_COPY_FILES += \
+    device/xiaomi/sm8450-common/rootdir/etc/init.qcom.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.qcom.rc \
+    device/xiaomi/sm8450-common/rootdir/etc/init.target.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.target.rc \
+    device/xiaomi/sm8450-common/rootdir/etc/charger_fstab.qti:$(TARGET_COPY_OUT_VENDOR)/etc/charger_fw_fstab.qti
+
 # Symbolic links of the stock vendor: the remote file system (rfs) of the
 # DSPs and the modem, and the WLAN configuration the qca_cld3 driver loads
 # (rootdir/Android.bp). The firmware mount points come from rootdir/Android.mk.

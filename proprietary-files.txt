@@ -650,3 +650,23 @@ vendor/bin/msm_irqbalance|8542ff0f53cf66360fef5bbe6ffa82e06f898c8ef42397ee73faaf
 vendor/bin/vendor_modprobe.sh|389d551584b569fab32321bbb6156ed000c1bab3c94b02f57bc23233039532b8
 vendor/etc/init/hw/init.qti.kernel.rc|4bc0c6a9af5d101e1057b769e41cd0fee314a83d95d092e7035d71a7ad20f871
 vendor/etc/msm_irqbalance.conf|8db680c7d1c60eaf73bcfa37720e58921af1a1c5cbde34bc9776dd30e92424ff
+
+# === Platform init: scripts and daemons started by init.qcom.rc and init.target.rc ===
+# init.class_main.sh starts the radio (vendor.qcrild) and data services; init.qti.media.sh
+# selects the codec lists of SM8475 (_cape); pm-service is the peripheral manager QCRIL,
+# cnss-daemon and the location stack vote through; nv_mac writes the WLAN/Bluetooth MAC
+# addresses from the modem NV to persist; ssr_setup applies the subsystem restart level;
+# sensors.qti and init.vendor.sensors.rc serve the sensor registry on persist.
+vendor/bin/init.class_main.sh|abd0b5e600fd076a2a95d8fb734d1ea6b676bb49c09e1b3b1cdb80b5abffa77d
+vendor/bin/init.qcom.class_core.sh|7cb05f1ec36278e95db8b52edd5d732674bbcaf5c89ff126af532b304f7f4469
+vendor/bin/init.qcom.early_boot.sh|1e01cbfeaa42b357317b0f0b00a24fdba12d76ba2ee94f96f52250f241344c0f
+vendor/bin/init.qcom.sensors.sh|51db37ac6088beb5cbc48c4d5e358f95c4dce79952750bdbe1b7b530ebf423b7
+vendor/bin/init.qti.media.sh|aad18f48f430c067bd30a0667e5b214dbcd1eda17d48334bfdd253b4458d833f
+vendor/bin/nv_mac|a081cd710acef7b3c23817c800e1067aaa62f5fb3843889497c39daae1a25da4
+vendor/bin/pm-proxy|a8046616e46e91c94d7da46cb1e4cbfb1c16fe3a8c577b87c4892124087dbb48
+vendor/bin/pm-service|aa6adafbf905ac840cb25303302a4aa3786e4980338d104d9bec114eb07f112e
+vendor/bin/sensors.qti|6a0ab3ca6b9b9649a6f0a0645d47c78d4c46f4c154769066883745b5e71c0325
+vendor/bin/ssr_setup|13ee29798ca3a95c620bcb168f1eb3b820fcd8bd62b51a77f2839e2b38447159
+vendor/etc/init/init.qti.media.rc|4f606217516b4b47cb49fd06d4de9f50a6e80e5d8e53394103adc3f67a9f5d71
+vendor/etc/init/init.vendor.sensors.rc|8511f8ee0aac5d940650f0aa97ba331c15705e1a172a3f19ef5ec02c245f0e0c
+vendor/etc/init/vendor.sensors.qti.rc|850b4a03709a0f1e773e434f8175bd3d92c7b74de48c4160cdb9843e9a75071e

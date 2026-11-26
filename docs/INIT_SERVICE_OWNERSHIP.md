@@ -1,56 +1,54 @@
-# Native AOSP 17 / mondrian — init service ownership
+# init vendor-раздела mondrian (Android 17)
 
-This document is **source evidence**, not a recommendation to delete
-running phone processes or to disable services from existing ROM builds.
-The independent PE-Reborn common product does not yet package the
-historical init files or claim that vendor HALs are working.
+Источник правды — стоковая прошивка **OS3.0.8.0.VMNCNXM**: `vendor/etc/init/hw`,
+`vendor/etc/init` и скрипты `vendor/bin`. LineageOS только ориентир, код оттуда не
+берётся. Проверка: `tests/test_vendor_init.py`.
 
-## Reviewed service sources
+## Как загружается init
 
-The working LF52406 common reference has **55** `service` declarations
-in `init.qcom.rc`, **7** in `init.target.rc`, **3** in
-`init.xiaomi_sm8450.rc`, and **4** in `init.qti.kernel.rc`.
-These files are shared with other Qualcomm boards, and service names
-can overlap or be overridden. The counts are not equivalent to
-the number of active processes on a running mondrian.
+`ro.hardware=qcom` → init читает `/vendor/etc/init/hw/init.qcom.rc`:
 
-`init-service-qualification.json` records key candidates and source
-Git blob SHA. Import is blocked until exact vendor binary, binary
-partition, interface VINTF/SELinux, boot trigger and service owner are
-verified. A successful source checkout does NOT demonstrate runtime.
+```
+init.qcom.rc            (дерево, BSD The Linux Foundation, вычищен под taro)
+└─ init.target.rc       (дерево, BSD, вычищен под taro)
+   └─ init.qti.kernel.rc (сток без изменений, proprietary-files.txt)
+```
 
-### P0: core, but verify before enabling
+Плюс все `vendor/etc/init/*.rc` стоковых служб из `proprietary-files.txt`.
 
-- `vendor.qrtr-ns`, `vendor.pd_mapper`, `vendor.per_mgr`: modem and
-  Qualcomm subsystem/peripheral dependencies; **do not delete** as
-  "bloat". Verify against the correct Android17 vendor/QMI image.
-- `vendor.audio-hal`, `vendor.sensors-hal-multihal`: actual
-  vendor-supplied HALs. Original files use `override`, so blindly
-  importing could collide with Android17 AIDL/HIDL HAL instance
-  ownership and service definitions.
-- `vendor.modprobe`: staged module loading depends on complete
-  kernel/modules/DTBO/KMI and filesystem ownership. Do not start with
-  empty module or mismatched kernel trees.
+## Что оставлено и зачем
 
-### Not enabled without need
+| Что | Где | Зачем |
+|---|---|---|
+| `mount_all fstab.qcom --early/--late`, `/dev/block/bootdevice` | init.target.rc | монтирование vendor-разделов, persist, /data |
+| `vendor.modprobe` (`vendor_modprobe.sh`) | init.qti.kernel.rc | загрузка 275 модулей vendor_dlkm (дисплей, тач, WLAN, камера, аудио) |
+| запуск ADSP, CDSP, CVP | init.qti.kernel.rc | аудио, датчики, вычисления на DSP |
+| `vendor.qrtr-ns`, `vendor.pd_mapper` | init.qcom.rc, init.target.rc | связь с DSP и модемом |
+| `vendor.per_mgr`/`per_proxy` (`pm-service`) | init.target.rc | через него голосуют QCRIL, cnss-daemon, GNSS |
+| `qcom-c_main-sh` (`init.class_main.sh`) | init.qcom.rc | запускает `vendor.qcrild` и службы данных |
+| `cnss-daemon`, `cnss/fs_ready`, `cnss/recovery` | init.qcom.rc, init.target.rc | Wi-Fi |
+| `vendor.sensors` (sscrpcd), `sensors.qti`, права реестра датчиков | init.target.rc, стоковые rc | датчики |
+| `vendor.nv_mac` | init.target.rc | MAC Wi-Fi и Bluetooth из NV модема |
+| `vendor.ssr_setup` | init.qcom.rc | уровень перезапуска подсистем |
+| `qti-media` (`init.qti.media.sh`) | стоковый rc | списки кодеков `_cape` |
+| режим зарядки: прошивки и ADSP | init.target.rc | состояние батареи при выключенном телефоне |
+| каталоги `/data/vendor/*`, права узлов | init.qcom.rc, init.target.rc | данные стоковых служб |
 
-- `vendor.msm_irqbalance` and `vendor_f2fs_tune`: first measure
-  scheduler/IRQ behaviour and validate F2FS/KeyMint, respectively.
-  Tuning is not inherently an optimization for this device.
-- Historical `dhcpcd_*`, WiGig utilities, factory/debug/test scripts:
-  must be justified against current Android17 Mainline networking and
-  actual device SKU before any import.
-- Legacy FM radio modules and application are explicitly excluded.
+## Что убрано и почему
 
-## Acceptance for each imported service
+- Службы без бинарника в прошивке или для другого железа: wigig, SDIO, FM,
+  UART-Bluetooth, датчики других плат, внешний модем (mdm).
+- `dhcpcd` (в Android 17 нет), `qti-testscripts`, отладка и сбор дампов
+  (diag, tcpdump, cnss_diag, ramdump).
+- MIUI: migt/metis, `thermal_message`, `mi_display`, `mi_log`, громкость по
+  потокам, серийный номер, разделы logfs/rescue.
+- `chmod 0666 /dev/uhid` стока: виртуальные устройства ввода доступны всем.
+- `init.qcom.sh` (только старые SoC), `init.qti.ufs.rc` (только отладочный скрипт,
+  которого нет в прошивке).
 
-Identify a single owning component, executable path, service class and
-trigger, user/group/capabilities, SELinux domain and executable labels,
-partition and firmware dependencies, AIDL/HIDL registration, property
-namespace, init action ordering, and runtime logs. Ensure no duplicate
-service names, invalid `override` or stale users/groups. Verify
-shutdown/resume and recovery separately.
+## Где будет остальное
 
-Only verified required services should be started. Deleting presumed
-extras from the original ROM without testing could break modem,
-Wi-Fi, audio, biometrics, encryption or recovery.
+- `init.qcom.usb.rc` (ADB, MTP): вместе с USB-стеком Qualcomm. Стоковый
+  `init.qcom.usb.sh` на не-user сборках включает по умолчанию порт diag модема.
+- Службы Wi-Fi supplicant/hostapd, health (и режим зарядки) — вместе с их AIDL HAL.
+- `batterysecret` — вместе с драйвером зарядки Xiaomi в ядре.
