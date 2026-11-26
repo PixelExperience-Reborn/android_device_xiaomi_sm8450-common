@@ -135,7 +135,7 @@ def validate_installed():
                  "$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom"):
         require(f"$(LOCAL_PATH)/rootdir/etc/fstab.qcom:{dest}" in common,
                 f"fstab.qcom is not installed to {dest}")
-    require("TARGET_RECOVERY_FSTAB := $(COMMON_DEVICE_PATH)/rootdir/etc/fstab.qcom" in board,
+    require("TARGET_RECOVERY_FSTAB := $(COMMON_PATH)/rootdir/etc/fstab.qcom" in board,
             "recovery must use the same fstab.qcom")
     require(not (ROOT / "rootdir/etc/recovery.fstab").exists(),
             "a separate recovery.fstab would drift from fstab.qcom")

@@ -16,7 +16,7 @@ REQUIRED = ("boot.img", "dtbo.img", "vendor_boot.img",
             "recovery.img", "vendor_dlkm.img", "vbmeta.img", "vbmeta_system.img")
 MAX_SIZE = {
     "boot.img": 0x0C000000,
-    "dtbo.img": 0x01800000,
+    "dtbo.img": 0x01700000,
     "vendor_boot.img": 0x06000000,
     "recovery.img": 0x06400000,
 }

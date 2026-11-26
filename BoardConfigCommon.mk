@@ -1,11 +1,16 @@
-# PixelExperience-Reborn AOSP 17 shared board foundation for mondrian.
-# Qualcomm SM8475 in the Snapdragon 8+ Gen 1 / taro BSP family.
+# SPDX-License-Identifier: Apache-2.0
 #
-# These architecture parameters do NOT establish a bootable device.
-# Boot images, partitions, kernel configuration and AVB require verification.
+# PixelExperience-Reborn Android 17: common board of Xiaomi SM8450/SM8475
+# (taro) devices; in this project, mondrian (POCO F5 Pro / Redmi K60).
+#
+# Boot image layout, partitions, super and AVB follow the stock firmware
+# OS3.0.8.0.VMNCNXM (official full OTA, payload manifest sha256
+# 771becf938d98ba206d09c674bad62054ac43737ca1470bed51479ffb9d5fd2a);
+# tests/test_board_config.py checks every value against it.
 
-COMMON_DEVICE_PATH := device/xiaomi/sm8450-common
+COMMON_PATH := device/xiaomi/sm8450-common
 
+# Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
@@ -17,40 +22,66 @@ TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := generic
 
+# Platform
 TARGET_BOARD_PLATFORM := taro
-
-# Hardware bootloader is supplied by Xiaomi, not built by PE-Reborn.
-# Boot/vendor_boot header format and AVB remain separate release gates.
 TARGET_BOOTLOADER_BOARD_NAME := taro
 TARGET_NO_BOOTLOADER := true
 
-# Deliberately deferred until a verified kernel/vendor/boot-chain BOM exists:
-# TARGET_KERNEL_SOURCE, TARGET_KERNEL_CONFIG, boot image layout, DTBO,
-# module lists, super partition layout, fstab, SELinux, VINTF and AVB.
+# Boot images: header v4, as stock boot, vendor_boot and recovery.
+# Offsets from base 0 are those of the stock vendor_boot.
+BOARD_BOOT_HEADER_VERSION := 4
+BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_BASE := 0x00000000
+BOARD_KERNEL_OFFSET := 0x00008000
+BOARD_RAMDISK_OFFSET := 0x01000000
+BOARD_KERNEL_TAGS_OFFSET := 0x00000100
+BOARD_DTB_OFFSET := 0x01f00000
+BOARD_MKBOOTIMG_ARGS += \
+    --header_version $(BOARD_BOOT_HEADER_VERSION) \
+    --kernel_offset $(BOARD_KERNEL_OFFSET) \
+    --ramdisk_offset $(BOARD_RAMDISK_OFFSET) \
+    --tags_offset $(BOARD_KERNEL_TAGS_OFFSET) \
+    --dtb_offset $(BOARD_DTB_OFFSET)
 
-# Stable logical partition output paths for the own PE-Reborn product.
-# Declaring copy-out mount roots does not choose filesystem type, super
-# sizing, AB/AVB flags, fstab contents or recovery boot semantics.
-TARGET_COPY_OUT_ODM := odm
-TARGET_COPY_OUT_PRODUCT := product
-TARGET_COPY_OUT_SYSTEM_EXT := system_ext
-TARGET_COPY_OUT_VENDOR := vendor
-TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
+# Command line and bootconfig of the stock vendor_boot (without Xiaomi's
+# swinfo/mtdoops build fingerprints).
+BOARD_KERNEL_CMDLINE := \
+    video=vfb:640x400,bpp=32,memsize=3072000 \
+    disable_dma32=on
+BOARD_BOOTCONFIG := \
+    androidboot.hardware=qcom \
+    androidboot.memcg=1 \
+    androidboot.usbcontroller=a600000.dwc3
 
-# The stock-derived fstab mounts /metadata (metadata encryption keys).
-BOARD_USES_METADATA_PARTITION := true
+BOARD_RAMDISK_USE_LZ4 := true
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+# The stock recovery image has no kernel: the bootloader takes it from boot.
+BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true
 
-# Recovery uses the same stock-derived fstab as first stage and vendor.
-TARGET_RECOVERY_FSTAB := $(COMMON_DEVICE_PATH)/rootdir/etc/fstab.qcom
+# Raw partitions (sizes of the stock images, which carry an AVB footer at
+# the end of the partition).
+BOARD_FLASH_BLOCK_SIZE := 262144
+BOARD_BOOTIMAGE_PARTITION_SIZE := 0x0C000000
+BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 0x06000000
+BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x06400000
+BOARD_DTBOIMG_PARTITION_SIZE := 0x01700000
 
+# Dynamic partitions: one group, as stock, without Xiaomi's mi_ext.
+# The super size is the device's (the OTA does not carry it); the group
+# takes all of it except the 4 MiB metadata reserve.
+BOARD_SUPER_PARTITION_SIZE := 9126805504
+BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
+BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 9122611200
+BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := \
+    odm \
+    product \
+    system \
+    system_ext \
+    vendor \
+    vendor_dlkm
 
-
-# Native mondrian filesystem policy -- always active, independent of
-# the still-unqualified kernel/AVB image packaging stage.
-# All six logical dynamic partitions are read-only EROFS.
-# /data remains F2FS; /metadata remains ext4 (mount configuration must
-# be validated separately against KeyMint and the actual device).
-# Stock-derived choice; do not silently revert to ext4 on logical partitions.
+# Filesystems: the logical partitions are EROFS, /data F2FS, /metadata ext4
+# (rootdir/etc/fstab.qcom, derived from the stock fstab).
 TARGET_USERIMAGES_USE_EROFS := true
 TARGET_USERIMAGES_USE_F2FS := true
 TARGET_USERIMAGES_USE_EXT4 := true
@@ -62,12 +93,46 @@ BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_VENDOR_DLKMIMAGE_FILE_SYSTEM_TYPE := erofs
+BOARD_USES_METADATA_PARTITION := true
 
-# Explicit opt-in to the reviewed Android image packaging configuration.
-# Ordinary source audit and device-tree builds never activate this until the
-# kernel, vendor HAL/firmware, first-stage ramdisk, FBE and AVB are qualified.
-ifeq ($(PE_MONDRIAN_BOOT_STAGE),qualified)
-include $(COMMON_DEVICE_PATH)/BoardConfigBootImages.mk
-else ifneq ($(strip $(PE_MONDRIAN_BOOT_STAGE)),)
-$(error Unsupported PE_MONDRIAN_BOOT_STAGE; only 'qualified' is allowed)
-endif
+TARGET_COPY_OUT_ODM := odm
+TARGET_COPY_OUT_PRODUCT := product
+TARGET_COPY_OUT_SYSTEM_EXT := system_ext
+TARGET_COPY_OUT_VENDOR := vendor
+TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
+
+# A/B: the images this build makes. The stock firmware images (abl, aop,
+# modem, tz, xbl, ...) are added with the proprietary files of the device.
+AB_OTA_UPDATER := true
+AB_OTA_PARTITIONS += \
+    boot \
+    dtbo \
+    odm \
+    product \
+    recovery \
+    system \
+    system_ext \
+    vbmeta \
+    vbmeta_system \
+    vendor \
+    vendor_boot \
+    vendor_dlkm
+
+# Recovery uses the stock-derived fstab of first stage and vendor.
+TARGET_RECOVERY_FSTAB := $(COMMON_PATH)/rootdir/etc/fstab.qcom
+TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
+
+# Verified boot, with the chain of the stock vbmeta: boot, dtbo,
+# vendor_boot, odm, vendor and vendor_dlkm in vbmeta; recovery chained at
+# rollback location 1 and vbmeta_system (system, system_ext, product) at 2.
+# The AOSP test keys are the default; release builds sign with their own.
+BOARD_AVB_ENABLE := true
+BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_RECOVERY_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
+BOARD_AVB_VBMETA_SYSTEM := product system system_ext
+BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2

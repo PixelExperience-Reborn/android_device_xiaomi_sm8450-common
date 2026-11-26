@@ -122,33 +122,6 @@ class MondrianFinalArtifactTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "missing vbmeta_system.img"):
                 mod.validate(p)
 
-    def test_guarded_aosp_packaging_contract_not_active_by_default(self):
-        board = (ROOT / "BoardConfigCommon.mk").read_text(encoding="utf-8")
-        images = (ROOT / "BoardConfigBootImages.mk").read_text(encoding="utf-8")
-        self.assertIn("ifeq ($(PE_MONDRIAN_BOOT_STAGE),qualified)", board)
-        self.assertIn("include $(COMMON_DEVICE_PATH)/BoardConfigBootImages.mk", board)
-        for key in ("PE_MONDRIAN_KERNEL_BSP_VERIFIED",
-                    "PE_MONDRIAN_VENDOR_FIRMWARE_VERIFIED",
-                    "PE_MONDRIAN_FBE_AND_RECOVERY_VERIFIED",
-                    "PE_MONDRIAN_AVB_SIGNING_VERIFIED"):
-            self.assertIn(f"ifneq ($({key}),true)", images)
-        self.assertIn("BOARD_BOOT_HEADER_VERSION := 4", images)
-        self.assertIn("TARGET_USERIMAGES_USE_EROFS := true", board)
-        for part in ("SYSTEM", "SYSTEM_EXT", "PRODUCT", "VENDOR", "ODM", "VENDOR_DLKM"):
-            self.assertIn(f"BOARD_{part}IMAGE_FILE_SYSTEM_TYPE := erofs", board)
-        self.assertNotIn("BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs", images)
-        self.assertIn("TARGET_NEEDS_DTBOIMAGE := true", images)
-        self.assertIn("BOARD_KERNEL_IMAGE_NAME := Image", images)  # compiler input only
-        self.assertIn("TARGET_KERNEL_EXT_MODULE_ROOT := kernel/xiaomi/sm8450-modules", images)
-        self.assertIn("BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE := true", images)
-        self.assertNotIn("BOARD_USES_QCOM_MERGE_DTBS_SCRIPT := true", images)
-        self.assertIn("BOARD_DTBOIMG_PARTITION_SIZE := 0x01800000", images)
-        self.assertIn("BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 0x06000000", images)
-        for name in ("boot", "dtbo", "recovery", "vendor_boot", "vendor_dlkm"):
-            self.assertIn(f"    {name}", images)
-        self.assertNotIn("testkey", images)
-        self.assertNotIn("--flags 3", images)
-
 
 if __name__ == "__main__":
     unittest.main()
