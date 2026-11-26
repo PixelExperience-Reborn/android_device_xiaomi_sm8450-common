@@ -67,6 +67,10 @@ class VendorInitTest(unittest.TestCase):
             code = "\n".join(l for l in text.splitlines() if not l.lstrip().startswith("#"))
             self.assertIsNone(DISALLOWED.search(code), name)
 
+    def test_platform_ueventd_is_the_stock_one(self):
+        # Device node permissions of the platform (kgsl, adsprpc, qseecom...).
+        self.assertIn("vendor/etc/ueventd.rc", self.listed)
+
     def test_vendor_dlkm_loading_and_dsp_boot(self):
         for path in ("vendor/etc/init/hw/init.qti.kernel.rc", "vendor/bin/vendor_modprobe.sh",
                      "vendor/bin/init.class_main.sh", "vendor/bin/pm-service"):

@@ -657,6 +657,7 @@ vendor/etc/msm_irqbalance.conf|8db680c7d1c60eaf73bcfa37720e58921af1a1c5cbde34bc9
 # cnss-daemon and the location stack vote through; nv_mac writes the WLAN/Bluetooth MAC
 # addresses from the modem NV to persist; ssr_setup applies the subsystem restart level;
 # sensors.qti and init.vendor.sensors.rc serve the sensor registry on persist.
+# vendor/etc/ueventd.rc: device node permissions of the platform (kgsl, adsprpc, qseecom, nq-nci...).
 vendor/bin/init.class_main.sh|abd0b5e600fd076a2a95d8fb734d1ea6b676bb49c09e1b3b1cdb80b5abffa77d
 vendor/bin/init.qcom.class_core.sh|7cb05f1ec36278e95db8b52edd5d732674bbcaf5c89ff126af532b304f7f4469
 vendor/bin/init.qcom.early_boot.sh|1e01cbfeaa42b357317b0f0b00a24fdba12d76ba2ee94f96f52250f241344c0f
@@ -670,3 +671,4 @@ vendor/bin/ssr_setup|13ee29798ca3a95c620bcb168f1eb3b820fcd8bd62b51a77f2839e2b384
 vendor/etc/init/init.qti.media.rc|4f606217516b4b47cb49fd06d4de9f50a6e80e5d8e53394103adc3f67a9f5d71
 vendor/etc/init/init.vendor.sensors.rc|8511f8ee0aac5d940650f0aa97ba331c15705e1a172a3f19ef5ec02c245f0e0c
 vendor/etc/init/vendor.sensors.qti.rc|850b4a03709a0f1e773e434f8175bd3d92c7b74de48c4160cdb9843e9a75071e
+vendor/etc/ueventd.rc|62476865da5b81f9c252fdc14441811c71e95d69b8acfbcaca5d13d866ea2c83

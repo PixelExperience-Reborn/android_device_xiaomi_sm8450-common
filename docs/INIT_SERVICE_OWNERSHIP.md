@@ -46,6 +46,17 @@ init.qcom.rc            (дерево, BSD The Linux Foundation, вычищен 
 - `init.qcom.sh` (только старые SoC), `init.qti.ufs.rc` (только отладочный скрипт,
   которого нет в прошивке).
 
+## ueventd
+
+- `/vendor/etc/ueventd.rc` — стоковый файл QTI без изменений (права kgsl, adsprpc,
+  qseecom, `/dev/nq-nci`, `firmware_directories /vendor/firmware_mnt/image/`).
+- `/odm/etc/ueventd.rc` — дерево mondrian (`rootdir/etc/ueventd.odm.rc`): только
+  устройство дисплея ядра `/dev/mi_display` (локальный HBM для отпечатка под
+  экраном), права `0660 system graphics` вместо стоковых `0666`. Строки vmmgr
+  (trusted VM) и `ntag5-nci` (NFC другой модели) убраны.
+- Узлы sysfs `/sys/class/mi_display/disp-DSI-0/*` и права `/dev/goodix_fp`
+  (в стоке `0666`) настраиваются вместе с HAL отпечатка (этап C).
+
 ## Где будет остальное
 
 - `init.qcom.usb.rc` (ADB, MTP): вместе с USB-стеком Qualcomm. Стоковый
