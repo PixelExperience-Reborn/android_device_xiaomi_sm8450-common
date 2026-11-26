@@ -35,7 +35,6 @@ lib_fixups: lib_fixups_user_type = {
     # blobs link them as they are instead of a -vendorcompat module.
     **{k: v for k, v in lib_fixups.items() if k != libs_proto_3_9_1},
     (
-        'android.frameworks.sensorservice@1.0',
         'libkeymaster_messages',
     ): lib_fixup_vendor_suffix,
 }

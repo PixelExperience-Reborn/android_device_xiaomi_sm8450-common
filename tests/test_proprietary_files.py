@@ -44,7 +44,7 @@ SOURCE_BUILT = {
     # AOSP libraries Xiaomi copied into vendor; AOSP 17 builds their vendor variants.
     "libcodec2_vndk.so", "libcodec2_hidl@1.0.so", "libcodec2_hidl_plugin.so", "libstagefright_bufferpool@2.0.1.so",
     "libavservices_minijail.so", "android.system.net.netd@1.0.so", "android.system.net.netd@1.1.so",
-    "libhidltransport.so",
+    "libhidltransport.so", "libmemunreachable.so", "android.frameworks.sensorservice@1.0.so",
 }
 
 
