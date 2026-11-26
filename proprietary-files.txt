@@ -286,6 +286,7 @@ vendor/firmware/evass.mdt|9f2ed8c83dd553cd0a5664252b1eb47b5ba272cd4e7d1e2a2aa639
 
 # === Security: KeyMint, Gatekeeper, identity, QSEECom/QTEE connector ===
 # No source exists. Needed for FBE/metadata encryption and lockscreen credentials.
+# The Gatekeeper service registers the passthrough implementation of vendor/lib64/hw.
 vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti|2f0538bf02cf62a0cb66e8351205edbef28b0e77d6d6da2175310becc71df2a6
 vendor/bin/hw/android.hardware.identity-service-qti|f55882adbd0bcb4502018fd4d0e0a639544bcbdf525045ab8691e0bc639fdca7
 vendor/bin/hw/android.hardware.security.keymint-service-qti|6f759625e8f1463dcc4b282e04503df5c49c0c0835bb7dee7f3f2f46c41ba0e9
@@ -298,6 +299,7 @@ vendor/etc/init/android.hardware.security.keymint-service-qti.rc|b9e599d625b4fe6
 vendor/etc/init/qseecomd.rc|09a1eaa5077f1ab8833676d2fc352cd9730b763da9823caba8c882a3a1d05baa
 vendor/etc/init/vendor.qti.hardware.qseecom@1.0-service.rc|fe3a6b4c1fbd70e60f8688be4f580f08ab3bb7949189aabea0750db5d001db79
 vendor/etc/init/vendor.qti.hardware.qteeconnector@1.0-service.rc|2c3fb3bd00f789abaa60015b39548d3567c9d5f141e8bcc03e2ac3dbe1e08d42
+vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so|4e0d3b867a1d9a8db054c7e57fe67dd189f463f0bdd72ead5b68990e669944fd
 vendor/lib64/libdrmfs.so|76a691968e34203282e77714339861668fa4ac0211842a9c72d077eb4f9057df
 vendor/lib64/libkeymaster_messages.so;MODULE_SUFFIX=_vendor|ac70143bb2c539126f622c8ec932a4785e956b6d6d492f28f9a8cfae49c729c3
 vendor/lib64/libkeymasterdeviceutils.so|1aecc86929ec95e67f16190a6f4a0e71684f9e7ec0b8f57029d177bfdfbc89e5
@@ -317,7 +319,8 @@ vendor/lib64/libprotobuf-cpp-lite-3.9.1.so|ddb606427700267c3ff21bf38b65ef77454b8
 vendor/lib64/libwvhidl.so|bef1ecf760cf54ccbd56cd7b62aba808483a2e04045cb21ff0b6cedab10bea74
 
 # === GNSS: location HAL service, engine daemons and configuration ===
-# Closed engine. libgps.utils/libloc_core/liblocation_api come from hardware_qcom_gps.
+# Closed engine; libgps.utils, libloc_core and liblocation_api are the stock ones (libraries section).
+# GNSS HIDL 2.1 (FCM level 7): passthrough implementation the service registers.
 vendor/bin/edgnss-daemon|471bda92f5ac3df95bdeb7535119636dca269027d9728c4f674af7131fe421ab
 vendor/bin/hw/android.hardware.gnss-aidl-service-qti|01698f09afb3ef85c6f31f85abc4800909226463d18f4f5cc6cc86b174b2bab9
 vendor/bin/loc_launcher|cf52744f3306855c3b1a5ad8980cca5aa295fd853f7522d7b21a57fb39246d53
@@ -337,6 +340,7 @@ vendor/etc/seccomp_policy/gnss@2.0-xtwifi-client.policy|e15bf23e1820b6d52edba491
 vendor/etc/seccomp_policy/gnss@2.0-xtwifi-inet-agent.policy|ae56afd857e072ea1224c1b841d4e7dc506a6ab298db2f953ec1f086037088b3
 vendor/etc/xtwifi.conf|8d55dcb5f5632f7622792b8cdb1389c9d553e8b6a41efbb6159c30f237fad437
 vendor/lib64/hw/android.hardware.gnss-aidl-impl-qti.so|1d558eed9dd7186056e000ad71dfe8cf9a7a6c6e923201d3e79f451446f438a9
+vendor/lib64/hw/android.hardware.gnss@2.1-impl-qti.so|d358978a99d012dd8201c2690f8487ff27b207d6092611514bea58032beb2925
 vendor/lib64/libcdfw_remote_api.so|653278f8cf4f73caf7bc025443d02378f07a4a9c854b1d61ba34a676de6dccda
 vendor/lib64/libizat_core.so|f56c7af2f04805e2312b7b9580a42f7640677568a569e0550456739141ba07a8
 vendor/lib64/liblbs_core.so|b6af1567505a44ea092d524597b317f8b9eae712edfd5c93e24cd65e59811f4c
@@ -369,9 +373,14 @@ vendor/etc/wifi/wpa_supplicant_overlay.conf|79c157080145c305fad51b7fff4e69796d45
 
 # === Bluetooth HAL ===
 # No source in our tree for the SM8475 Bluetooth HAL.
+# Passthrough implementations the service registers: HCI 1.0 and BT config store 2.0
+# (FM, ANT and Bluetooth SAR are not used by the AOSP Bluetooth stack).
 vendor/bin/hw/android.hardware.bluetooth@1.0-service-qti|4ccbcf5ca48787877f375572b68907d61c4c960e11a6aa8d0554a30f99783c46
 vendor/etc/init/android.hardware.bluetooth@1.0-service-qti.rc|56b56c6ae6aac56c730d2f307b2a709057a54c16e07e8bee90697566dea12c9e
 vendor/lib64/com.dsi.ant@1.0.so|3b6f3d8d9eb7356d24b453fe031829f473081c0e5e3ad418790dd065c0d7718b
+vendor/lib64/hw/android.hardware.bluetooth@1.0-impl-qti.so|225b1a74dc73352678ac37159258c15ced251744df1085672960ce027fbcf365
+vendor/lib64/hw/vendor.qti.hardware.btconfigstore@2.0-impl.so|de51741a88b92e6c34eec678c3ac5ad47bfd820cf975cfc28fdd49f7b0582077
+vendor/lib64/libbtnv.so|4911864f35c9ac36aa1f1cd3723c0f4e1ce175ed38fa4e35cd6f55ae0a3564c6
 vendor/lib64/libqti_vndfwk_detect_vendor.so|38af4c8107b5b2e08864154e11c6329c0c8167c2aa36d9ad5a86384e98c93fe1
 vendor/lib64/libsoc_helper.so|394df9e6064873b03df835d5d0b58d0ca7cd0fd46f97f4e54a4ff194c69228bc
 vendor/lib64/vendor.qti.hardware.bluetooth_sar@1.0.so|edd0f7c89f09a4e0efd06e4dbd539b3b88bc23e31920d8a68ad81aa6ec8796ad
@@ -514,6 +523,7 @@ vendor/lib64/librecovery_updater.so|0cd1a6414263aa8711b6a7cca2e27fe674cd59886278
 # === Qualcomm perf HAL ===
 # Performance boosts the power HAL (AIDL power 2-3, built from source) applies; the stock
 # power HAL implements AIDL power 1, below FCM level 7.
+# Passthrough implementations the capability config store and service tracker register.
 vendor/bin/hw/vendor.qti.hardware.capabilityconfigstore@1.0-service|57047b46d621a71d36893d77e18706d5f34d349312efb166f6e972f4f5c385e4
 vendor/bin/hw/vendor.qti.hardware.perf-hal-service|46d5c58686fdd4a9ab384d6e9ef00c54c860a618c459cc0b25e042f8fbf3b802
 vendor/bin/hw/vendor.qti.hardware.servicetracker@1.2-service|a3452fd3d783245a0e869e7a210134fafc2d75eec8b0ecd814055ed1f0ccd9ed
@@ -533,6 +543,8 @@ vendor/etc/perf/testcommonresourceconfigs.xml|2ac4f3b0725928516ec63edf246025e7f5
 vendor/etc/perf/testtargetresourceconfigs.xml|852550048c06aac51f94611893c38d5b87f6d12e565889774d2eba5ee335e123
 vendor/etc/perf/thermal-boost.conf|3eed2d09d81d3de79a03e94a8fe1e49115ceb3b703098a06334e14f9df265740
 vendor/etc/powerhint.xml|8b8f52f47c89005cf1a2874ddb515b38fce8d99e1d8b19e88001e1c0b71336e8
+vendor/lib64/hw/vendor.qti.hardware.capabilityconfigstore@1.0-impl.so|85a1fcaa7ffe426a67f0b0e38226a3e83e3c8f1c4b2dd9ab6b66f70eb9ee9f55
+vendor/lib64/hw/vendor.qti.hardware.servicetracker@1.2-impl.so|3cbd8699e90f0c468cbb872355ef9449eae1adddf62a11a85aa95aed23eae1ba
 vendor/lib64/libperfconfig.so|47d300551def738c6c58e4ac7496d86fb59763bb120d04131a64c877d78f2610
 vendor/lib64/libperfgluelayer.so|18ff87e51776cebc809895e1ef2343f5cb1ab4a68e43078925147904158e1a1c
 vendor/lib64/libqti-perfd-client.so|03ddca088b243d6e0b9fb204e59efcdfee8467710ee848ce074716f13cdab587
