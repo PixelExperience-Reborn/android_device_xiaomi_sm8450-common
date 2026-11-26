@@ -1,5 +1,4 @@
 # PixelExperience-Reborn AOSP 17 shared device product foundation.
-LOCAL_PATH := $(call my-dir)
 
 # Intentionally no HAL packages or vendor inheritance here yet.
 # Each module must have a verified source, partition owner, VINTF contract,
@@ -20,8 +19,8 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/launch_with_ven
 # tools/validate_fstab.py). Like stock, the same file is the first-stage fstab
 # of vendor_boot and vendor/etc/fstab.qcom; recovery uses it too.
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
-    $(LOCAL_PATH)/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
+    device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom \
+    device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom
 
 # Xiaomi mondrian uses dynamic partitions and A/B. The board-level EROFS
 # selections live in BoardConfigCommon.mk, not in a disabled boot-only fragment.

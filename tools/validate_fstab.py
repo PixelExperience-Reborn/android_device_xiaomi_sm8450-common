@@ -133,7 +133,7 @@ def validate_installed():
     board = (ROOT / "BoardConfigCommon.mk").read_text(encoding="utf-8")
     for dest in ("$(TARGET_COPY_OUT_VENDOR)/etc/fstab.qcom",
                  "$(TARGET_COPY_OUT_VENDOR_RAMDISK)/first_stage_ramdisk/fstab.qcom"):
-        require(f"$(LOCAL_PATH)/rootdir/etc/fstab.qcom:{dest}" in common,
+        require(f"device/xiaomi/sm8450-common/rootdir/etc/fstab.qcom:{dest}" in common,
                 f"fstab.qcom is not installed to {dest}")
     require("TARGET_RECOVERY_FSTAB := $(COMMON_PATH)/rootdir/etc/fstab.qcom" in board,
             "recovery must use the same fstab.qcom")
