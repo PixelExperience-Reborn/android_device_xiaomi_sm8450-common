@@ -5,6 +5,10 @@
 # proprietary ABI and Android 17 Soong definition before inclusion.
 
 
+# Soong namespace of this tree (imported by the vendor build rules).
+PRODUCT_SOONG_NAMESPACES += \
+    device/xiaomi/sm8450-common
+
 # Proprietary files of the stock OS3.0.8.0 firmware (reproduced from the
 # official OTA by tools/extract_proprietary.py; rules by setup-makefiles.py).
 $(call inherit-product, vendor/xiaomi/sm8450-common/sm8450-common-vendor.mk)
