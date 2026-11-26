@@ -152,5 +152,10 @@ BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 # files the vendor partition carries (ro.vendor.build.security_patch).
 VENDOR_SECURITY_PATCH := 2026-02-01
 
+# Properties of the stock OS3.0.8.0 vendor and odm the shipped components
+# read (vendor.prop, odm.prop); devices append their own vendor.prop.
+TARGET_VENDOR_PROP += $(COMMON_PATH)/vendor.prop
+TARGET_ODM_PROP += $(COMMON_PATH)/odm.prop
+
 # Proprietary files
 include vendor/xiaomi/sm8450-common/BoardConfigVendor.mk

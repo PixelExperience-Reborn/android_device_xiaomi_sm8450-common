@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# PixelExperience-Reborn Android 17: odm properties of the SM8450/SM8475
+# platform, from the stock OS3.0.8.0.VMNCNXM odm/etc/build.prop.
+
+# Qualcomm value-adds on odm
+ro.vendor.qti.va_odm.support=1
