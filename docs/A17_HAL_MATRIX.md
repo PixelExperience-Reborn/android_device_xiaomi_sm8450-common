@@ -55,7 +55,7 @@ VINTF (`vintf_fragments` модулей).
 
 | HAL | В стоке | Матрица A17 ур. 7 | Решение |
 |---|---|---|---|
-| boot | HIDL 1.2 | HIDL 1.2 | сток (служба + passthrough `boot@1.0-impl-1.2-qti`) |
+| boot | HIDL 1.2 | HIDL 1.2 | служба AOSP 17 из исходников (стоковая — та же служба AOSP) с её rc и фрагментом VINTF; реализация — стоковая passthrough `boot@1.0-impl-1.2-qti` (переключение слотов Qualcomm) |
 | health | HIDL 2.1 | **только AIDL 1** | из исходников: AIDL health + режим зарядки |
 | power | AIDL v1 | AIDL 2–3 | из исходников: `vendor/qcom/opensource/power`; стоковый perf HAL остаётся |
 | thermal | HIDL 1.0/2.0 (`thermal@2.0-service.qti-v2`) | HIDL 2.0 | сток; 1.0 объявлен рядом с 2.0, как в стоке (для клиентов @1.0) |
@@ -80,7 +80,7 @@ VINTF (`vintf_fragments` модулей).
 | identity | AIDL v3 | AIDL 1–4 | сток |
 | drm | HIDL 1.4 widevine | HIDL 1.3–1.4 | сток widevine; clearkey — AOSP |
 | gnss | AIDL **v1** + HIDL 2.1 в одной службе | AIDL **2** / HIDL 2.0–2.1 | сток, объявлен **только HIDL 1.1/2.1** (+ passthrough `gnss@2.1-impl-qti`). AIDL v1 уровень 7 не принимает; служба при отказе регистрации AIDL пишет ошибку и продолжает с HIDL 2.1 |
-| sensors | HIDL 2.1 multihal | HIDL 2.0–2.1 | сток (`sensors.ssc`, `sensors.touch.detect`) |
+| sensors | HIDL 2.1 multihal | HIDL 2.0–2.1 | служба multihal AOSP 17 из исходников с её фрагментом VINTF и rc поверх неё (`override`: стоковый сокет `audio_us_socket_1` ультразвукового датчика приближения); подмодули стоковые (`sensors.ssc`, `sensors.touch.detect`, `hals.conf`) |
 | camera.provider | HIDL 2.7 `legacy/1` (+ `external/0`) | HIDL 2.4–2.7 | сток, только `legacy/1` (внешнюю камеру никто не обслуживает); плюс `camera.postproc` и `camera.aon` |
 | media.c2 | HIDL 1.0 `default` (+ `dolby`, `software`) | HIDL 1.0–1.2 | сток, только `default` (`software` — APEX swcodec, Dolby не ставим) |
 | light | AIDL v1 | AIDL 1–2 | сток |

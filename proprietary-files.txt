@@ -485,9 +485,7 @@ vendor/lib64/libqmi_encdec.so|abd51de405bd513af1c707c5f54cb6f734828ea077e8d7f6c0
 # === Sensors: multi-HAL with Qualcomm SSC and touch-detect sub-HALs ===
 # No source exists. Talks to the sensor hub on the ADSP over QMI/FastRPC.
 # Loaded by name (dlopen) by the listed blobs, with their dependencies (stock OS3.0.8.0).
-vendor/bin/hw/android.hardware.sensors@2.1-service.multihal;MODULE_SUFFIX=_vendor|07928dd6d0c20343b3ebc095f97ad196e86321607a4c2b5147d30f899aa603e7
 vendor/bin/sscrpcd|6819e132d9db7508d0b2d583fccf0b4e219c992200cd710e6fed0359be8b6948
-vendor/etc/init/android.hardware.sensors@2.1-service-multihal.rc|352f1e650725209a318d80e049aecaf1ad98a6380563de395bb64d84e54083ae
 vendor/etc/init/vendor.sensors.sscrpcd.rc|229f1998520806f079318a0053ee125f24c23746ad0704e2dfd525f59b62d701
 vendor/lib64/libadsp_default_listener.so|eed1aac44b325288fbea4a8fcd08217ab31c4f6fb573dc796d1403974fbb64b6
 vendor/lib64/libadsprpc.so|5aad0db4516644c55adcb3d1921f81a1978eab309be0d0b8d28fad43b2a5bc87
@@ -636,8 +634,6 @@ vendor/lib64/vendor.xiaomi.hardware.displayfeature@1.0.so|6e6d5c9941b18218748a99
 
 # === Boot control HAL 1.2 ===
 # A/B slot control of the Qualcomm bootloader (GPT attributes).
-vendor/bin/hw/android.hardware.boot@1.2-service;MODULE_SUFFIX=_vendor|90bdee8529a8d00348ae465d07ba58f2e957cdf57d990f891a29cf5f447c090a
-vendor/etc/init/android.hardware.boot@1.2-service.rc|5ea90531b8c88cb2599b846897959866cbf80d277ed5aa9f4964e979ea661fab
 vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so|31a592dcce84cd871daa4b09208ca9f22c0d82eefe603a604e106b1c32676e80
 vendor/lib64/libboot_control_qti.so|3e68d667bfb4b160ae268c1167dba4f745a475ac8913098f66f92bb2566846ee
 vendor/lib64/librecovery_updater.so|0cd1a6414263aa8711b6a7cca2e27fe674cd59886278bc62790259982981df94

@@ -85,8 +85,6 @@ KEYMINT = ["vendor/bin/hw/android.hardware.security.keymint-service-qti"]
 SERVERS = {
     "android.hardware.bluetooth": BT + ["vendor/lib64/hw/android.hardware.bluetooth@1.0-impl-qti.so"],
     "vendor.qti.hardware.btconfigstore": BT + ["vendor/lib64/hw/vendor.qti.hardware.btconfigstore@2.0-impl.so"],
-    "android.hardware.boot": ["vendor/bin/hw/android.hardware.boot@1.2-service",
-                              "vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so"],
     "android.hardware.drm": ["vendor/bin/hw/android.hardware.drm@1.4-service.widevine"],
     "android.hardware.gatekeeper": ["vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti",
                                     "vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so"],
@@ -122,8 +120,6 @@ SERVERS = {
     "android.hardware.security.keymint": KEYMINT,
     "android.hardware.security.secureclock": KEYMINT,
     "android.hardware.security.sharedsecret": KEYMINT,
-    "android.hardware.sensors": ["vendor/bin/hw/android.hardware.sensors@2.1-service.multihal",
-                                 "vendor/lib64/sensors.ssc.so"],
     "android.hardware.tetheroffload.config": ["vendor/bin/ipacm"],
     "android.hardware.tetheroffload.control": ["vendor/bin/ipacm"],
     "android.hardware.thermal": ["vendor/bin/hw/android.hardware.thermal@2.0-service.qti-v2"],
@@ -167,6 +163,9 @@ NOT_DECLARED = [
     ("hidl", r"android\.hardware\.health"), ("hidl", r"android\.hardware\.bluetooth\.audio"),
     ("hidl", r"android\.hardware\.wifi\.(supplicant|hostapd)"), ("hidl", r"android\.hardware\.ir"),
     ("hidl", r"android\.hardware\.nfc"), ("aidl", r"android\.hardware\.gnss"),
+    # AOSP 17 boot control and sensors multihal services, declared by their
+    # own VINTF fragments.
+    ("hidl", r"android\.hardware\.(boot|sensors)"),
     ("aidl", r"android\.hardware\.power"), ("aidl", r"android\.hardware\.vibrator"),
     ("hidl", r"android\.hardware\.(dumpstate|media\.omx|atrace|keymaster)"),
     ("hidl", r"android\.hardware\.biometrics\.fingerprint"),
@@ -311,6 +310,17 @@ class VintfTest(unittest.TestCase):
         for module in ("android.hardware.health-service.example",
                        "android.hardware.health-service.example_recovery"):
             self.assertRegex(common, rf"(?m)^\s+{re.escape(module)}( \\)?$")
+
+    def test_boot_and_sensors_services_from_source_load_the_stock_parts(self):
+        common = (ROOT / "common.mk").read_text()
+        for module in ("android.hardware.boot@1.2-service", "android.hardware.sensors@2.1-service.multihal"):
+            self.assertRegex(common, rf"(?m)^\s+{re.escape(module)}( \\)?$")
+        for path in ("vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so", "vendor/lib64/sensors.ssc.so",
+                     "vendor/etc/sensors/hals.conf"):
+            self.assertIn(path, self.listed)
+        rc = (ROOT / "rootdir/etc/init/android.hardware.sensors@2.1-service-multihal_sm8450.rc").read_text()
+        self.assertIn("    override\n", rc)
+        self.assertIn("socket audio_us_socket_1 seqpacket", rc)
 
     def test_left_out_stays_out(self):
         for fmt, name, _, _, _ in self.instances:

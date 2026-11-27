@@ -26,11 +26,6 @@
         <fqname>@1.0::IBluetoothHci/default</fqname>
     </hal>
     <hal format="hidl">
-        <name>android.hardware.boot</name>
-        <transport>hwbinder</transport>
-        <fqname>@1.2::IBootControl/default</fqname>
-    </hal>
-    <hal format="hidl">
         <name>android.hardware.drm</name>
         <transport>hwbinder</transport>
         <fqname>@1.4::ICryptoFactory/widevine</fqname>
@@ -116,11 +111,6 @@
         <name>android.hardware.security.sharedsecret</name>
         <version>1</version>
         <fqname>ISharedSecret/default</fqname>
-    </hal>
-    <hal format="hidl">
-        <name>android.hardware.sensors</name>
-        <transport>hwbinder</transport>
-        <fqname>@2.1::ISensors/default</fqname>
     </hal>
     <hal format="hidl">
         <name>android.hardware.soundtrigger</name>

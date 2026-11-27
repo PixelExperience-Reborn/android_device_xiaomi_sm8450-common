@@ -50,18 +50,14 @@ SOURCE_BUILT = {
     # GenerateRkpKeyResponse, KeymasterResponse, Serializable) have the same
     # members and virtuals in Android 12 (the stock vendor) and 17.
     "libkeymaster_messages.so", "libchrome.so",
+    # The stock boot and sensors multihal services are the AOSP default
+    # services (passthrough boot control, HalProxy with hals.conf); Android 17
+    # builds them with their rc and VINTF fragment, the Qualcomm parts stay
+    # stock (boot@1.0-impl-1.2-qti, sensors.ssc and the other sub-HALs).
+    "android.hardware.boot@1.2-service", "android.hardware.boot@1.2-service.rc",
+    "android.hardware.sensors@2.1-service.multihal", "android.hardware.sensors@2.1-service-multihal.rc",
     # AOSP 17 HAL service wrappers and modules
     "audio.r_submix.default.so", "audio.usb.default.so", "audio.bluetooth.default.so",
-}
-
-
-# Stock HAL services whose module name Android 17 also defines in
-# hardware/interfaces, with its own init_rc and VINTF fragment: the stock
-# module takes another name (MODULE_SUFFIX) so that only the stock binary
-# and its stock rc install and the AOSP service is not pulled in.
-AOSP_NAMED_SERVICES = {
-    "vendor/bin/hw/android.hardware.boot@1.2-service",
-    "vendor/bin/hw/android.hardware.sensors@2.1-service.multihal",
 }
 
 
@@ -80,12 +76,6 @@ class ProprietaryList(unittest.TestCase):
         for header in re.findall(r"^# === (.+) ===$", text, re.M):
             following = text.split(f"# === {header} ===", 1)[1].lstrip("\n").splitlines()[0]
             self.assertTrue(following.startswith("# "), f"section {header} lacks a reason line")
-
-    def test_services_named_like_aosp_have_their_own_module_name(self):
-        text = LIST.read_text()
-        for path in AOSP_NAMED_SERVICES:
-            with self.subTest(path=path):
-                self.assertRegex(text, rf"(?m)^{re.escape(path)};MODULE_SUFFIX=_vendor\|")
 
     def test_nothing_excluded_or_built_from_source_is_listed(self):
         for entry in self.entries:
