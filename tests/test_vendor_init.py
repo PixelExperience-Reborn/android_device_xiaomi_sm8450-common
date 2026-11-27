@@ -23,9 +23,9 @@ def sibling(*names):
 
 
 DEVICE = sibling("mondrian", "android_device_xiaomi_mondrian") or ROOT.parent / "mondrian"
-RC = ("init.qcom.rc", "init.target.rc")
+RC = ("init.qcom.rc", "init.target.rc", "init.qcom.usb.rc")
 DISALLOWED = re.compile(r"dhcpcd|wigig|qti-testscripts|migt|metis|thermal_message|mi_log"
-                        r"|miui|/dev/uhid|fmsmd|radio_iris|qcom\.usb\.rc|init\.qcom\.sh")
+                        r"|miui|/dev/uhid|fmsmd|radio_iris|init\.qcom\.usb\.sh|init\.qcom\.sh")
 VITAL = {"vendor.qrtr-ns", "vendor.pd_mapper", "vendor.per_mgr", "vendor.per_proxy",
          "qcom-c_main-sh", "cnss-daemon", "vendor.nv_mac", "vendor.ssr_setup"}
 
@@ -82,6 +82,18 @@ class VendorInitTest(unittest.TestCase):
     def test_platform_ueventd_is_the_stock_one(self):
         # Device node permissions of the platform (kgsl, adsprpc, qseecom...).
         self.assertIn("vendor/etc/ueventd.rc", self.listed)
+
+    def test_usb_gadget_without_diagnostic_functions(self):
+        usb = self.text["init.qcom.usb.rc"]
+        code = "\n".join(l for l in usb.splitlines() if not l.lstrip().startswith("#"))
+        self.assertIsNone(re.search(r"diag|qdss|dpl|rmnet|gsi\.|cser\.|serial_cdev|usb\.sh", code))
+        self.assertNotIn("persist.vendor.usb.config", code)
+        for function in ("ffs.adb", "ffs.mtp", "ffs.ptp", "accessory.gs2", "audio_source.gs3", "midi.gs5"):
+            self.assertIn(f"mkdir /config/usb_gadget/g1/functions/{function}", code)
+        for config in ("adb", "mtp", "mtp,adb", "ptp", "ptp,adb", "rndis", "rndis,adb", "midi", "accessory"):
+            self.assertIn(f"on property:sys.usb.config={config} && property:sys.usb.configfs=1", code)
+        self.assertIn("import /vendor/etc/init/hw/init.qcom.usb.rc", self.text["init.qcom.rc"])
+        self.assertIn("vendor.usb.use_ffs_mtp=1", (ROOT / "vendor.prop").read_text())
 
     def test_vendor_dlkm_loading_and_dsp_boot(self):
         for path in ("vendor/etc/init/hw/init.qti.kernel.rc", "vendor/bin/vendor_modprobe.sh",

@@ -77,11 +77,20 @@ PRODUCT_COPY_FILES += \
 
 # Platform init of the stock OS3.0.8.0 vendor for taro, kept to what this
 # build ships (rootdir/etc): init.qcom.rc (ro.hardware=qcom) imports
-# init.target.rc, which imports init.qti.kernel.rc.
+# init.qcom.usb.rc (USB gadget, no diagnostic functions) and init.target.rc,
+# which imports init.qti.kernel.rc.
 PRODUCT_COPY_FILES += \
     device/xiaomi/sm8450-common/rootdir/etc/init.qcom.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.qcom.rc \
     device/xiaomi/sm8450-common/rootdir/etc/init.target.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.target.rc \
+    device/xiaomi/sm8450-common/rootdir/etc/init.qcom.usb.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.qcom.usb.rc \
     device/xiaomi/sm8450-common/rootdir/etc/charger_fstab.qti:$(TARGET_COPY_OUT_VENDOR)/etc/charger_fw_fstab.qti
+
+# Health: the AOSP 17 health HAL (AIDL, with its own VINTF fragment), reading
+# the power supplies of the Qualcomm battery charger driver; it also runs the
+# off-mode charger (class charger) and the recovery health service.
+PRODUCT_PACKAGES += \
+    android.hardware.health-service.example \
+    android.hardware.health-service.example_recovery
 
 # Audio: the AOSP 17 audio service (HIDL audio 7.0, effects 7.0, sound
 # trigger 2.3) loading the stock audio.primary.taro, sound_trigger.primary.taro

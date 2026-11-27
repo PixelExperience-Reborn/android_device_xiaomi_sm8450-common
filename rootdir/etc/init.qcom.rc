@@ -29,9 +29,11 @@
 # FM, legacy UART Bluetooth, other boards' sensors), dhcpcd (not in
 # Android 17), MIUI (resolution switch, mi_log, thermal cooling devices),
 # debug and ramdump collectors, and what init.qti.kernel.rc already does.
-# The Wi-Fi supplicant/hostapd and health services come with their AIDL HALs,
-# the USB gadget configuration (init.qcom.usb.rc) with the Qualcomm USB stack.
+# The Wi-Fi supplicant/hostapd and health services come with their AIDL HALs.
+# The USB gadget configuration (init.qcom.usb.rc) is the stock one for the
+# compositions the framework uses, without the diagnostic functions.
 
+import /vendor/etc/init/hw/init.qcom.usb.rc
 import /vendor/etc/init/hw/init.target.rc
 
 on early-init
