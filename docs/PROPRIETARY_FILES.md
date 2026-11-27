@@ -52,6 +52,12 @@ system side.
    `registerPassthroughServiceImplementation` (Gatekeeper, Bluetooth HCI and
    config store, GNSS 2.1, boot control, capability config store, service
    tracker, eSE power manager): `DT_NEEDED` does not show them.
+   The same holds for every library a blob loads by name: the listeners of
+   qseecomd (RPMB, SSD, ...) and of the FastRPC daemons, the QCRIL modules
+   (voice, SMS, data, ...), `libgnss`, `liboemcrypto`, `libqti-perfd`, the
+   Adreno compiler libraries and the CHI camera plugins. The lists hold the
+   closure of the names in the listed ELF files that exist in the stock vendor
+   (nothing missing is left), minus the excluded subsystems below.
 2. The complete `DT_NEEDED` closure inside the vendor partition.
 3. Minus every file produced by our source repositories (389 outputs of 24
    repositories) and by AOSP (`android.hardware.*`, `android.hidl.*`).
@@ -60,8 +66,8 @@ system side.
 
 | List | Files | Size |
 | --- | --- | --- |
-| `sm8450-common/proprietary-files.txt` (Qualcomm SoC stack) | 573 | 150 MB |
-| `mondrian/proprietary-files.txt` (device-specific, incl. one `odm` file) | 879 | 1042 MB |
+| `sm8450-common/proprietary-files.txt` (Qualcomm SoC stack) | 705 | 242 MB |
+| `mondrian/proprietary-files.txt` (device-specific, incl. one `odm` file) | 899 | 1195 MB |
 
 Deliberately excluded: the MIUI camera app engine (`libmialgoengine`,
 `com.xiaomi.plugin.*`, `campostproc`, `camera.xiaomi.so`), CNE daemon, DPM,
