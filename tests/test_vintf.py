@@ -305,6 +305,13 @@ class VintfTest(unittest.TestCase):
             for module in BUILT[name]:
                 self.assertRegex(common, rf"(?m)^\s+{re.escape(module)}( \\)?$", (name, module))
 
+    def test_health_is_the_aosp_aidl_hal(self):
+        # Stock health is HIDL 2.1, which level 7 does not accept.
+        common = (ROOT / "common.mk").read_text()
+        for module in ("android.hardware.health-service.example",
+                       "android.hardware.health-service.example_recovery"):
+            self.assertRegex(common, rf"(?m)^\s+{re.escape(module)}( \\)?$")
+
     def test_left_out_stays_out(self):
         for fmt, name, _, _, _ in self.instances:
             for nfmt, pattern in NOT_DECLARED:
