@@ -15,6 +15,12 @@ in order of preference, per partition:
 Default layout inside an Android tree:
   device/xiaomi/sm8450-common/proprietary-files.txt -> vendor/xiaomi/sm8450-common/proprietary/
   device/xiaomi/mondrian/proprietary-files.txt      -> vendor/xiaomi/mondrian/proprietary/
+  device/xiaomi/mondrian/firmware-files.txt         -> vendor/xiaomi/mondrian/radio/
+
+Firmware lists name raw partition images of the OTA payload (<partition>|<sha256>,
+also pinned in ota-source.json). They come from --images-dir (already extracted
+images) or the OTA; with --verify-only the OTA payload manifest is checked
+without downloading the images.
 """
 from __future__ import annotations
 
@@ -36,6 +42,7 @@ from blob_fixups import rename_ndk_platform  # noqa: E402
 # ;MODULE_SUFFIX=_vendor; the arguments shape the build rules only.
 LINE = re.compile(r"^((?:vendor|odm)/[A-Za-z0-9_@+.,/-]+)(?:;[A-Z_]+(?:=[A-Za-z0-9_@+.,/-]+)?)*\|([0-9a-f]{64})$")
 PARTITIONS = ("vendor", "odm")
+FIRMWARE_LINE = re.compile(r"^([a-z0-9_-]+)\|([0-9a-f]{64})$")
 
 
 @dataclass(frozen=True)
@@ -90,6 +97,69 @@ def default_lists() -> list[tuple[Path, Path]]:
     return pairs
 
 
+def default_firmware() -> list[tuple[Path, Path]]:
+    android = ROOT.parents[2]
+    lst = ROOT.parent / "mondrian/firmware-files.txt"
+    return [(lst, android / "vendor/xiaomi/mondrian/radio")] if lst.exists() else []
+
+
+def read_firmware(path: Path, source: dict) -> list[tuple[str, str]]:
+    """(partition, sha256) of a firmware list; each must be pinned in ota-source.json."""
+    out, seen = [], set()
+    for number, line in enumerate(path.read_text().splitlines(), 1):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        m = FIRMWARE_LINE.match(line)
+        if not m or m[1] in seen:
+            raise ListError(f"{path}:{number}: malformed or duplicate firmware line: {line}")
+        pinned = source["partitions"].get(m[1])
+        if not pinned or pinned.get("type") != "firmware" or pinned["sha256"] != m[2]:
+            raise ListError(f"{path}:{number}: {m[1]} is not the firmware pinned in ota-source.json")
+        seen.add(m[1])
+        out.append((m[1], m[2]))
+    return out
+
+
+def firmware(location: str | None, source: dict, lists, images: Path | None, verify_only: bool,
+             jobs: int) -> list[str]:
+    """Copy or extract each listed firmware image; return the problems."""
+    problems, from_ota = [], []
+    for lst, out, entries in lists:
+        for name, digest in entries:
+            local = images / f"{name}.img" if images else None
+            done = out / f"{name}.img"
+            if not verify_only and done.is_file() and sha256(done) == digest:
+                continue  # already extracted and verified
+            if local and local.is_file():
+                if sha256(local) != digest:
+                    problems.append(f"hash mismatch: {local}")
+                elif not verify_only:
+                    out.mkdir(parents=True, exist_ok=True)
+                    shutil.copyfile(local, out / f"{name}.img")
+            else:
+                from_ota.append((out, name, digest))
+        print(f"{lst}: {len(entries)} firmware images checked")
+    if from_ota:
+        sys.path.insert(0, str(ROOT / "tools"))
+        from ota_payload import Ota, OtaError, rank_urls  # noqa: E402
+        errors = []
+        for url in ([location] if location else rank_urls(source["ota"]["urls"])):
+            try:
+                ota = Ota(url, source)
+                for out, name, digest in from_ota:
+                    part = ota.partitions.get(name)
+                    if part is None or part["hash"] != digest:
+                        problems.append(f"{name}: not the pinned image in the OTA payload")
+                    elif not verify_only:
+                        ota.extract(name, out / f"{name}.img", jobs)
+                return problems
+            except (OtaError, OSError) as error:
+                errors.append(f"{url}: {error}")
+        problems.append("cannot obtain the firmware: " + "; ".join(errors))
+    return problems
+
+
 def tree_from_image(image: Path, work: Path, name: str) -> Path:
     if shutil.which("fsck.erofs") is None:
         raise SystemExit("fsck.erofs (erofs-utils) is required to read the EROFS partition image")
@@ -130,6 +200,9 @@ def main() -> int:
     p.add_argument("--ota", help="official OTA zip path or https URL")
     p.add_argument("--list", action="append", default=[], metavar="LIST=OUTDIR",
                    help="proprietary-files.txt and its vendor repository (default: Android tree layout)")
+    p.add_argument("--firmware", action="append", default=[], metavar="LIST=OUTDIR",
+                   help="firmware-files.txt and its radio directory (default: Android tree layout)")
+    p.add_argument("--images-dir", type=Path, help="already extracted OTA partition images (<name>.img)")
     p.add_argument("--verify-only", action="store_true", help="check every file, write nothing")
     p.add_argument("--work", type=Path, help="scratch directory for the OTA partition")
     p.add_argument("--jobs", type=int, default=6)
@@ -138,6 +211,8 @@ def main() -> int:
     source = json.loads((ROOT / "proprietary/ota-source.json").read_text())
     pairs = [(Path(a.split("=", 1)[0]), Path(a.split("=", 1)[1])) for a in args.list] or default_lists()
     lists = [(lst, out, read_list(lst)) for lst, out in pairs]
+    fw_pairs = [(Path(a.split("=", 1)[0]), Path(a.split("=", 1)[1])) for a in args.firmware] or default_firmware()
+    fw_lists = [(lst, out, read_firmware(lst, source)) for lst, out in fw_pairs]
 
     with tempfile.TemporaryDirectory(dir=args.work) as tmp:
         work = Path(tmp)
@@ -175,6 +250,7 @@ def main() -> int:
                         fixups[str(lst.name)][entry.path] = {"needed_renamed": renamed,
                                                             "sha256": sha256(target)}
             print(f"{lst}: {len(entries)} files checked")
+        problems += firmware(args.ota, source, fw_lists, args.images_dir, args.verify_only, args.jobs)
         if problems:
             print("[FAIL] proprietary files do not match the pinned OTA:")
             for line in problems:

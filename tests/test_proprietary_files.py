@@ -94,12 +94,40 @@ class OtaSource(unittest.TestCase):
         self.assertEqual(vendor["board_api_level"], 31)
         for name, part in SOURCE["partitions"].items():
             self.assertRegex(part["sha256"], r"^[0-9a-f]{64}$", name)
-            self.assertEqual(part["filesystem"], "erofs", name)
+            if part.get("type") == "firmware":
+                # Raw firmware images of the payload (mondrian's firmware-files.txt).
+                self.assertGreater(part["size"], 0, name)
+                self.assertNotIn(name, ("boot", "vendor_boot", "dtbo", "recovery", "vbmeta"), name)
+            else:
+                self.assertEqual(part["filesystem"], "erofs", name)
         self.assertIn("OS3.0.8.0.VMNCNXM", ota["post_build"])
         self.assertIn("mondrian", vendor["build_fingerprint"])
 
 
 class Tools(unittest.TestCase):
+    def test_firmware_is_copied_only_when_pinned_and_unchanged(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            image = tmp / "images/abl.img"
+            image.parent.mkdir()
+            image.write_bytes(b"abl firmware")
+            digest = hashlib.sha256(b"abl firmware").hexdigest()
+            source = {"partitions": {"abl": {"size": 12, "sha256": digest, "type": "firmware"}}}
+            lst = tmp / "firmware-files.txt"
+            lst.write_text(f"# firmware\nabl|{digest}\n")
+            entries = extract.read_firmware(lst, source)
+            self.assertEqual(entries, [("abl", digest)])
+            out = tmp / "radio"
+            self.assertEqual(extract.firmware(None, source, [(lst, out, entries)], tmp / "images", False, 1), [])
+            self.assertEqual((out / "abl.img").read_bytes(), b"abl firmware")
+            image.write_bytes(b"tampered")
+            (out / "abl.img").unlink()
+            self.assertTrue(extract.firmware(None, source, [(lst, out, entries)], tmp / "images", False, 1))
+            self.assertFalse((out / "abl.img").exists())
+            lst.write_text("boot|" + digest + "\n")
+            with self.assertRaises(extract.ListError):
+                extract.read_firmware(lst, source)
+
     def test_read_list_rejects_malformed_and_duplicate_lines(self):
         with tempfile.TemporaryDirectory() as tmp:
             bad = Path(tmp) / "list.txt"

@@ -30,6 +30,111 @@
       "size": 25010176,
       "sha256": "0aec960356c28ff6cf1e601966beacaa39ce96c39f7468bff4eaa501b790d0db",
       "filesystem": "erofs"
+    },
+    "abl": {
+      "size": 204800,
+      "sha256": "592214bb5c1afc896c77d7468bbb64e9ed70d4dc045ce1d639b25e4c250af7e7",
+      "type": "firmware"
+    },
+    "aop": {
+      "size": 237568,
+      "sha256": "752e06c88bd7e260d94e63e42be56620ac305032e6f26b98102b78eb1cbada8a",
+      "type": "firmware"
+    },
+    "aop_config": {
+      "size": 16384,
+      "sha256": "21f668ba91fbf5254812bc0726c34f301936e800f7f10ac5cf68cb35cb5c66e7",
+      "type": "firmware"
+    },
+    "bluetooth": {
+      "size": 2240512,
+      "sha256": "f66e8416e48cab4e3ee8ba3da00ea804e74b0c8199936c37655c78f902cfb337",
+      "type": "firmware"
+    },
+    "cpucp": {
+      "size": 159744,
+      "sha256": "97911c0e37ff06a5d211f14a5c523fa3bd61aceb18bb419fe24126a830ea92e2",
+      "type": "firmware"
+    },
+    "devcfg": {
+      "size": 57344,
+      "sha256": "9a0b76ca8e5cff4f193c8e256cd94e65e327ba85db87b91b0fbbe765a823f33e",
+      "type": "firmware"
+    },
+    "dsp": {
+      "size": 67108864,
+      "sha256": "e8854f99423bb6c638c6f605de0359de2f6261325b4b2126dd0323165f3e445b",
+      "type": "firmware"
+    },
+    "featenabler": {
+      "size": 98304,
+      "sha256": "950f99927664b16c02b0ba3136d36f6ae8529f9282f615a5eff51b16487f92c7",
+      "type": "firmware"
+    },
+    "hyp": {
+      "size": 1257472,
+      "sha256": "b4a1c0c6257bb8da2621e93651cf3f7e99335ca99fba07aea9001b31200f0ab2",
+      "type": "firmware"
+    },
+    "imagefv": {
+      "size": 6299648,
+      "sha256": "3b5ea659ac04e9a01f40c2825934332a25a16fde597653108184e4a8ea91b033",
+      "type": "firmware"
+    },
+    "keymaster": {
+      "size": 368640,
+      "sha256": "e03283ceba23c7eed29877d888296f2792d1576a2e795a7b5716ded145f1a349",
+      "type": "firmware"
+    },
+    "modem": {
+      "size": 293425152,
+      "sha256": "67a01ae1b8ebe527a2958ea1c35c91ed5b6c42913b8a95e55a309fa227bab065",
+      "type": "firmware"
+    },
+    "qupfw": {
+      "size": 53248,
+      "sha256": "2060293610e9b75b2c8149661894612fc1f89fe27ba436877f89da69f55a5bc1",
+      "type": "firmware"
+    },
+    "shrm": {
+      "size": 65536,
+      "sha256": "83ade4c3cbcb511585bf6c9b48d5cdd458be281c418aa2c348c929e65b62cf58",
+      "type": "firmware"
+    },
+    "tz": {
+      "size": 3911680,
+      "sha256": "66787e8a0945f30da54da2a848318668bf08b3af9927453a1faf3316b5d66dee",
+      "type": "firmware"
+    },
+    "uefi": {
+      "size": 2760704,
+      "sha256": "def3cad297ad7268547948d37dd5174c26487cff001de5421071c74d6971f213",
+      "type": "firmware"
+    },
+    "uefisecapp": {
+      "size": 172032,
+      "sha256": "db9be654b8e21750d16c2481dcfe4038bd8ca7a70b122939b7edbe1a11ed89ec",
+      "type": "firmware"
+    },
+    "vm-bootsys": {
+      "size": 269996032,
+      "sha256": "d1a9864bb85d2448398376ba0221216f70bbe65a167c8213d0ad1aa74ae887ff",
+      "type": "firmware"
+    },
+    "xbl": {
+      "size": 1093632,
+      "sha256": "390e34edbac11a97d9aee3177162f59006e3dc50a4ce194f5e603b256c73c1bc",
+      "type": "firmware"
+    },
+    "xbl_config": {
+      "size": 114688,
+      "sha256": "37eae01bb0c3c9abb38dd571d4a61dd4bcb8d25092f524d7a2140df0f9ba536c",
+      "type": "firmware"
+    },
+    "xbl_ramdump": {
+      "size": 872448,
+      "sha256": "0bdfbcf53982d571c151140a53eb89214248e4286691253d468c1bbfe77fd665",
+      "type": "firmware"
     }
   },
   "verified": {
