@@ -135,6 +135,26 @@
       "size": 872448,
       "sha256": "0bdfbcf53982d571c151140a53eb89214248e4286691253d468c1bbfe77fd665",
       "type": "firmware"
+    },
+    "boot": {
+      "size": 201326592,
+      "sha256": "d87847bce22d14475689881e07b3c059f9fedb0ede2ca8156816f57571c01376",
+      "type": "kernel"
+    },
+    "vendor_boot": {
+      "size": 100663296,
+      "sha256": "4aaaa2e674602698e277bfaaa2cc61542abefb82c2892f95e51177660c4a943e",
+      "type": "kernel"
+    },
+    "dtbo": {
+      "size": 24117248,
+      "sha256": "8580bc0bbe689784798eec2e055368928b63f1aeb631bb3eaf1c164d878f1d8b",
+      "type": "kernel"
+    },
+    "vendor_dlkm": {
+      "size": 29577216,
+      "sha256": "f3ca74870c1edce759dbd30642bff17327b2014f7d7fc572d3a82312ec718637",
+      "type": "kernel"
     }
   },
   "verified": {

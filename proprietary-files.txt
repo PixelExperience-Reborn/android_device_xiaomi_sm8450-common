@@ -25,6 +25,11 @@ vendor/firmware/a730_zap.elf|b4fc62da3de90d50228815b016b2eafef7bf6bc6854bf24f8d7
 vendor/firmware/a730_zap.mbn|c12a65e049051d0b3f442d7a6b4cdca7862e15255571cfa3b8f438d3ba24610f
 vendor/firmware/a730_zap.mdt|d4e6fc57c6b33939b89421f60d98edbe1d4bc420a5606b579113005e392c83bf
 vendor/firmware/gmu_gen70000.bin|b2d3f0e2a98fd6259ab9ffef16df63265542e6cc9a970d53d476e823d432042a
+# Adreno compute: binary cache of the OpenCL kernels (kbc) the driver loads.
+vendor/gpu/kbc/sequence_manifest.bin|deccf88e13f85554e5e6138204f1559ace8b1de294c1bbef94ceed4985c93530
+vendor/gpu/kbc/unified_kbcs_32.bin|c505650fa16a7afa87c08b72ef173e078e7d16ebaca20ec84512e91c23339c04
+vendor/gpu/kbc/unified_kbcs_64.bin|c62bdc530e35e8b461f5313ac063f0962ab39d4e7ab7c136177d44f855b0d1a8
+vendor/gpu/kbc/unified_ksqs.bin|2becc0c1e08a9b625eedc6eb9c1ad39468c3e63b19e03c5efa928160bc80c2e5
 vendor/lib/egl/eglSubDriverAndroid.so|5e5963cd4a553df072664049ae7e8202fe50252d9a94afd79656c5a85a49ab21
 vendor/lib/egl/libEGL_adreno.so;SYMLINK=vendor/lib/libEGL_adreno.so|b0e955f04ddf17917079d4ee336965d7bdc41cc7fc343d5c87df5769025cf742
 vendor/lib/egl/libGLESv1_CM_adreno.so|8977a89d0fb4bc9c30d45f8dedc81fdcc80f5b44203a01c9c7bfca98b8891e0f
@@ -231,6 +236,8 @@ vendor/lib64/vendor.qti.latency@2.0.so|9a16dc292d4f57c159f85fd2612be1158a707e278
 
 # === Modem and DSP infrastructure: PD mapper, QRTR, EFS (rmt_storage/tftp), time ===
 # No source exists in our tree. Needed by modem, ADSP and CDSP subsystem restart.
+# TimeService keeps the user's time and time zone across reboots with time_daemon.
+vendor/app/TimeService/TimeService.apk;PRESIGNED|d1e21dd9a4744c1399a9b27e8871cf14323cb198def03d8bc2adf78fe898a357
 vendor/bin/pd-mapper|aec15aa3f183b4443656d4f83eab41fe9ec7a5155d71a0cb7594f3fcd8786d93
 vendor/bin/qrtr-ns|d39126f339566d2e87844da184ad81ae03725026023da0c704ef9ce357c2be75
 vendor/bin/rmt_storage|fdd605421438a8bccacfaa86ae7e3bc488ad0d47e58dfa2a447c621b3a8243fc

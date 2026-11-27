@@ -16,11 +16,16 @@ Default layout inside an Android tree:
   device/xiaomi/sm8450-common/proprietary-files.txt -> vendor/xiaomi/sm8450-common/proprietary/
   device/xiaomi/mondrian/proprietary-files.txt      -> vendor/xiaomi/mondrian/proprietary/
   device/xiaomi/mondrian/firmware-files.txt         -> vendor/xiaomi/mondrian/radio/
+  device/xiaomi/mondrian/kernel-files.txt           -> vendor/xiaomi/mondrian/kernel/
 
 Firmware lists name raw partition images of the OTA payload (<partition>|<sha256>,
 also pinned in ota-source.json). They come from --images-dir (already extracted
 images) or the OTA; with --verify-only the OTA payload manifest is checked
 without downloading the images.
+
+The kernel list (mondrian/kernel-files.txt) names the stock boot, vendor_boot,
+dtbo and vendor_dlkm images the same way; tools/stock_kernel.py turns them into
+the kernel layout of vendor/xiaomi/mondrian/kernel (KERNEL_PATH of BoardConfig).
 """
 from __future__ import annotations
 
@@ -103,8 +108,14 @@ def default_firmware() -> list[tuple[Path, Path]]:
     return [(lst, android / "vendor/xiaomi/mondrian/radio")] if lst.exists() else []
 
 
-def read_firmware(path: Path, source: dict) -> list[tuple[str, str]]:
-    """(partition, sha256) of a firmware list; each must be pinned in ota-source.json."""
+def default_kernel() -> list[tuple[Path, Path]]:
+    android = ROOT.parents[2]
+    lst = ROOT.parent / "mondrian/kernel-files.txt"
+    return [(lst, android / "vendor/xiaomi/mondrian/kernel")] if lst.exists() else []
+
+
+def read_firmware(path: Path, source: dict, kind: str = "firmware") -> list[tuple[str, str]]:
+    """(partition, sha256) of a firmware or kernel list; each must be pinned in ota-source.json."""
     out, seen = [], set()
     for number, line in enumerate(path.read_text().splitlines(), 1):
         line = line.strip()
@@ -114,8 +125,8 @@ def read_firmware(path: Path, source: dict) -> list[tuple[str, str]]:
         if not m or m[1] in seen:
             raise ListError(f"{path}:{number}: malformed or duplicate firmware line: {line}")
         pinned = source["partitions"].get(m[1])
-        if not pinned or pinned.get("type") != "firmware" or pinned["sha256"] != m[2]:
-            raise ListError(f"{path}:{number}: {m[1]} is not the firmware pinned in ota-source.json")
+        if not pinned or pinned.get("type") != kind or pinned["sha256"] != m[2]:
+            raise ListError(f"{path}:{number}: {m[1]} is not the {kind} image pinned in ota-source.json")
         seen.add(m[1])
         out.append((m[1], m[2]))
     return out
@@ -202,6 +213,8 @@ def main() -> int:
                    help="proprietary-files.txt and its vendor repository (default: Android tree layout)")
     p.add_argument("--firmware", action="append", default=[], metavar="LIST=OUTDIR",
                    help="firmware-files.txt and its radio directory (default: Android tree layout)")
+    p.add_argument("--kernel", action="append", default=[], metavar="LIST=OUTDIR",
+                   help="kernel-files.txt and its kernel directory (default: Android tree layout)")
     p.add_argument("--images-dir", type=Path, help="already extracted OTA partition images (<name>.img)")
     p.add_argument("--verify-only", action="store_true", help="check every file, write nothing")
     p.add_argument("--work", type=Path, help="scratch directory for the OTA partition")
@@ -213,6 +226,10 @@ def main() -> int:
     lists = [(lst, out, read_list(lst)) for lst, out in pairs]
     fw_pairs = [(Path(a.split("=", 1)[0]), Path(a.split("=", 1)[1])) for a in args.firmware] or default_firmware()
     fw_lists = [(lst, out, read_firmware(lst, source)) for lst, out in fw_pairs]
+    k_pairs = [(Path(a.split("=", 1)[0]), Path(a.split("=", 1)[1])) for a in args.kernel] or default_kernel()
+    # The pinned images go next to the kernel directory, which stock_kernel.py rewrites.
+    k_lists = [(lst, out.parent / f"{out.name}-images", read_firmware(lst, source, "kernel"), out)
+               for lst, out in k_pairs]
 
     with tempfile.TemporaryDirectory(dir=args.work) as tmp:
         work = Path(tmp)
@@ -256,6 +273,16 @@ def main() -> int:
                         fixups[str(lst.name)][entry.path] = record
             print(f"{lst}: {len(entries)} files checked")
         problems += firmware(args.ota, source, fw_lists, args.images_dir, args.verify_only, args.jobs)
+        problems += firmware(args.ota, source, [k[:3] for k in k_lists], args.images_dir, args.verify_only,
+                             args.jobs)
+        if not problems and not args.verify_only:
+            from stock_kernel import extract as extract_kernel  # noqa: E402
+            for lst, images, entries, out in k_lists:
+                info = extract_kernel(images, out)
+                info["images"] = {name: digest for name, digest in entries}
+                (out / "provenance.json").write_text(json.dumps(info, indent=2) + "\n")
+                print(f"{lst}: kernel {info['kernel_release']}, {info['vendor_ramdisk_modules']} vendor_boot "
+                      f"and {info['vendor_dlkm_modules']} vendor_dlkm modules")
         if problems:
             print("[FAIL] proprietary files do not match the pinned OTA:")
             for line in problems:

@@ -114,6 +114,10 @@ class OtaSource(unittest.TestCase):
                 # Raw firmware images of the payload (mondrian's firmware-files.txt).
                 self.assertGreater(part["size"], 0, name)
                 self.assertNotIn(name, ("boot", "vendor_boot", "dtbo", "recovery", "vbmeta"), name)
+            elif part.get("type") == "kernel":
+                # The stock kernel images (mondrian's kernel-files.txt, tools/stock_kernel.py).
+                self.assertIn(name, ("boot", "vendor_boot", "dtbo", "vendor_dlkm"), name)
+                self.assertGreater(part["size"], 0, name)
             else:
                 self.assertEqual(part["filesystem"], "erofs", name)
         self.assertIn("OS3.0.8.0.VMNCNXM", ota["post_build"])
