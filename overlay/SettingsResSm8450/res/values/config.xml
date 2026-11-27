@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<resources>
+    <!-- Manual network search time of the modem (stock SettingsResCommon_Sys). -->
+    <integer name="config_network_scan_helper_max_search_time_sec">254</integer>
+</resources>

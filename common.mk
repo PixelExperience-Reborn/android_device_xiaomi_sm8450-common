@@ -62,6 +62,15 @@ PRODUCT_ENABLE_UFFD_GC := true
 PRODUCT_PACKAGES += \
     android.hardware.hardware_keystore_V1.xml
 
+# Runtime resource overlays of the SoC (overlay/, vendor): the values of the
+# stock OS3.0.8.0 QTI common overlays that Android 17 still defines
+# (docs/OVERLAYS.md). The device tree adds its display and model overlays.
+PRODUCT_PACKAGES += \
+    FrameworksResSm8450 \
+    SettingsResSm8450 \
+    SystemUIResSm8450 \
+    WifiResSm8450
+
 # AOSP-owned storage, generic ramdisk and virtual A/B with vendor_boot.
 # These are platform make fragments, not LineageOS product inheritance.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
