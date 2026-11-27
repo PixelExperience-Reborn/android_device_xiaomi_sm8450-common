@@ -10,8 +10,19 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DEVICE = next((p for p in (ROOT.parent / "mondrian", ROOT.parent / "android_device_xiaomi_mondrian")
-               if p.is_dir()), ROOT.parent / "mondrian")
+
+
+def sibling(*names):
+    """A sibling tree: next to this one (device/xiaomi/* in the source tree,
+    android_device_xiaomi_* side by side) or in .ci/ (checked out by CI)."""
+    for base in (ROOT.parent, ROOT / ".ci"):
+        for name in names:
+            if (base / name).is_dir():
+                return base / name
+    return None
+
+
+DEVICE = sibling("mondrian", "android_device_xiaomi_mondrian") or ROOT.parent / "mondrian"
 RC = ("init.qcom.rc", "init.target.rc")
 DISALLOWED = re.compile(r"dhcpcd|wigig|qti-testscripts|migt|metis|thermal_message|mi_log"
                         r"|miui|/dev/uhid|fmsmd|radio_iris|qcom\.usb\.rc|init\.qcom\.sh")

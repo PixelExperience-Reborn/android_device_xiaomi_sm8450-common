@@ -10,5 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # The cross-tree checks (VINTF servers, audio and init files) need the
+      # mondrian tree; the tests skip them with a reason when it is missing.
+      - name: Check out the mondrian tree of the same branch
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          repository: PixelExperience-Reborn/android_device_xiaomi_mondrian
+          ref: ${{ github.head_ref || github.ref_name }}
+          path: .ci/mondrian
+          persist-credentials: false
       - name: Check independent hardware source boundaries
         run: python3 -m unittest discover -s tests -v

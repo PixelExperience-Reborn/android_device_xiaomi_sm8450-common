@@ -14,10 +14,19 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-# device/xiaomi/mondrian in the source tree, android_device_xiaomi_mondrian
-# when the repositories are checked out side by side.
-DEVICE = next((p for p in (ROOT.parent / "mondrian", ROOT.parent / "android_device_xiaomi_mondrian")
-               if p.is_dir()), ROOT.parent / "mondrian")
+
+
+def sibling(*names):
+    """A sibling tree: next to this one (device/xiaomi/* in the source tree,
+    android_device_xiaomi_* side by side) or in .ci/ (checked out by CI)."""
+    for base in (ROOT.parent, ROOT / ".ci"):
+        for name in names:
+            if (base / name).is_dir():
+                return base / name
+    return None
+
+
+DEVICE = sibling("mondrian", "android_device_xiaomi_mondrian")
 
 # compatibility_matrix.7.xml of Android 17 (hardware/interfaces,
 # android-17.0.0_r1) for the AOSP packages declared here:
@@ -168,7 +177,9 @@ NOT_DECLARED = [
 
 def listed():
     paths = set()
-    for lst in (ROOT / "proprietary-files.txt", DEVICE / "proprietary-files.txt"):
+    for lst in (ROOT / "proprietary-files.txt", DEVICE and DEVICE / "proprietary-files.txt"):
+        if lst is None:
+            continue
         for line in lst.read_text().splitlines():
             line = line.strip()
             if line and not line.startswith("#"):
@@ -280,6 +291,8 @@ class VintfTest(unittest.TestCase):
                               {(f, n, vv) for f, n, vv, _, _ in self.instances})
 
     def test_every_declared_hal_has_its_server_listed(self):
+        if DEVICE is None:
+            self.skipTest("needs the mondrian tree next to this one or in .ci/")
         for name in sorted({n for _, n, _, _, _ in self.instances}):
             with self.subTest(name=name):
                 self.assertIn(name, SERVERS)
