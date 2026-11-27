@@ -273,6 +273,7 @@ vendor/etc/init/vendor.qti.audio-adsprpc-service.rc|b2c6180a4ba5764b4ad3c4e1cb58
 vendor/etc/init/vendor.qti.cdsprpc-service.rc|0717b37383f913451bb48bae4a48e679153914845bda5c060d03aa98866c8df6
 vendor/etc/init/vendor.qti.hardware.dsp@1.0-service.rc|dc2d534f3425c73e56bd9a215c8a7094b9a6973e87531f5de2e0c2bd2283b9e0
 vendor/lib64/libcdsp_default_listener.so|53f46d140a75fea50160259cf9d9a25d2e7a6b8d79c038e353e2d328802e9b26
+vendor/lib64/libcdsprpc.so|16e1c5b4d523cb2a53c5859f2a75f4efdb310b9028ac7b1f39de72db9a0bc738
 vendor/lib64/vendor.qti.hardware.dsp@1.0.so|d905b09bdf32c0f1c35015fd2bf3c22f2adc6a93f8f2b2543d2a0214187171d1
 
 # === Media: Codec2 hardware codecs, codec lists and video firmware ===
@@ -616,6 +617,7 @@ vendor/lib64/libsdmextension.so|5b402c1474703e5c7bee8fe337a39741be1b619e2e14182e
 vendor/lib64/libsdmutils.so|101ea95a23a577d4ba51413542f21bef49400ffc6e8a6b3bd196c7da91ff7ff1
 vendor/lib64/libsnapdragoncolor-manager.so|48d29917d27ffa3f00b13a4867c8f81afc48f946ae0541cb47c526578e3dc865
 vendor/lib64/libtestutils.so|da65b9af038cd997b7d0533184bc7c53b8457323cbe928c40ca91d43d727de3d
+vendor/lib64/libtinyxml2_1.so|df07e277eb1f1f330aef3f4220278f71393b002c472d86332618ec4914218b0f
 vendor/lib64/vendor.display.color@1.0.so|3910c23b30c80b6e8b05c4ff939166a9d140503576078f6da2554b8811872269
 vendor/lib64/vendor.display.color@1.1.so|c5fac6c96366652c57a3a4e91e4a4971822c2a924efd3a1378096d7ae122539d
 vendor/lib64/vendor.display.color@1.2.so|4811775ee662a20771f30324f6e8e081a549551104d21bb09ff82f1021f539d9
@@ -677,6 +679,7 @@ vendor/lib64/libqti-perfd-client.so|03ddca088b243d6e0b9fb204e59efcdfee8467710ee8
 vendor/lib64/libqti-perfd.so|9b7ba716e879ec73044865a1b6c7698c317bcf83fb9c8a6288ba370127369181
 vendor/lib64/libqti-util.so|cdc92e0b4a786d34d21593e321cfea1526ba95b7d4ebc24d5cb1baa84a85293c
 vendor/lib64/libskewknob.so|02603826cdda9b58b80e7aeab8e3fa1bf8411d998cb12f54aef0dd168b4ca1f5
+vendor/lib64/libthermalclient.so|8b5ba0cd4a6db18877fedd538e77305f8250347533dc31bc04cf66f58430bffd
 vendor/lib64/vendor.qti.hardware.capabilityconfigstore@1.0.so|6a535325d2551bd0f555a074b51e8c7e5ed840d437659af3d1b633e2702652c6
 vendor/lib64/vendor.qti.hardware.perf@2.0.so|73613f3e967c1a535276cb2b679e46fe794b3e75193ecd6642a4f28f13c6fa44
 vendor/lib64/vendor.qti.hardware.perf@2.1.so|9846dbe17057e9c5eb37e01921f6fe08e62f0d7b65f387c5f87a0dbd8cfd7b57
@@ -725,6 +728,7 @@ vendor/lib64/libbluetooth_audio_session.so|e7b573dd2c8fe486a57eaad311877b1c28571
 vendor/lib64/libbluetooth_audio_session_qti.so|7d3d6dd33732b1b177291aeb94b243e5e12d95d9711579e2131934b61a2a65ef
 vendor/lib64/libbluetooth_audio_session_qti_2_1.so|0dee3e1b2d81270a536146d94158af7686fb89327aeb6bd457c9bd0804d04f35
 vendor/lib64/liblistensoundmodel2vendor.so|7c9a58f46a305762dd95ce37c0914850f1c84dd50b7bea217820bbc4ba6d7302
+vendor/lib64/libmisight.so|48b0423938d717a892cb443544a58ed104ec1a48dd58f864575730456c6a60f7
 vendor/lib64/libmmhardware.so|3a7600cf6b4df592c51939943f8dbab4f2b4c02a1c32f1f76c4e0bef615a671e
 vendor/lib64/libqtigefar.so|557f21409030d408fcd81238548a2ce1bf3c3a9b6f630a564e5234613a8e22a9
 vendor/lib64/libresampler.so|0a8081c96f75755fd3fdc075229fd0e607d2b48ca02762226f19781e986415c8
@@ -780,6 +784,7 @@ vendor/lib64/ls_nq_client.so|ebaa643f520691589d1755da7222492de54c31d9165c4470a58
 vendor/lib64/se_nq_extn_client.so|422aa6ac7bdadaac2c2b53932e7bcef8872be835303f456bf0e03d9f6c5176c1
 vendor/lib64/vendor.qti.esepowermanager@1.0.so|ff7c11ed29dbeff099f1304935b5e9a0b29b0480d656593765c330f1ef52dff1
 vendor/lib64/vendor.qti.esepowermanager@1.1.so|b1dcd16a17c6a59bf59fdd69e7b2064c317e139619e5b837ac7549f75c1d21a5
+vendor/lib64/vendor.xiaomi.hardware.mtdservice@1.0.so|f4708c97b2bb08fb00f6c95de0b3ba7ca44306c52fe43785b68bd410ccbb8788
 
 # === Data: IPA (ipacm, tethering offload), ADPL, QTI, data and netmgr configuration ===
 # CNE and DPM are not listed: they need Qualcomm system frameworks the AOSP base does not have.
