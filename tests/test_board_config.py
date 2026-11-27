@@ -90,7 +90,10 @@ class BoardConfigAgainstStockTest(unittest.TestCase):
                     "BOARD_KERNEL_TAGS_OFFSET", "BOARD_DTB_OFFSET"):
             flag = "--" + key[len("BOARD_"):].lower().replace("kernel_tags", "tags")
             self.assertIn(f"{flag} $({key})", b["BOARD_MKBOOTIMG_ARGS"])
-        self.assertEqual(set(b["BOARD_BOOTCONFIG"].split()), STOCK_BOOTCONFIG)
+        # Plus the permissive bring-up of userdebug/eng only (tests/test_sepolicy.py checks the
+        # condition, which this parser does not evaluate).
+        self.assertEqual(set(b["BOARD_BOOTCONFIG"].split()) - {"androidboot.selinux=permissive"},
+                         STOCK_BOOTCONFIG)
         self.assertEqual(b["BOARD_KERNEL_CMDLINE"].split(),
                          ["video=vfb:640x400,bpp=32,memsize=3072000", "disable_dma32=on"])
         self.assertEqual(b["BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE"], "true")
