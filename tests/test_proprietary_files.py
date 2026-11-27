@@ -43,6 +43,13 @@ SOURCE_BUILT = {
     "libavservices_minijail.so", "android.system.net.netd@1.0.so", "android.system.net.netd@1.1.so",
     "libhidltransport.so", "libmemunreachable.so", "android.frameworks.sensorservice@1.0.so",
     "libhwbinder.so", "libdrm.so", "libnetfilter_conntrack.so", "libnfnetlink.so",
+    # The stock KeyMint (libqtikeymint, libkeymasterprovision) and the NFC/eSE
+    # clients (jcos/ls/se_nq) link these; a stock copy installed at the same
+    # vendor path as the AOSP 17 vendor variant is a duplicate install. The
+    # classes KeyMint uses (AuthorizationSet, GenerateCsrRequest/Response,
+    # GenerateRkpKeyResponse, KeymasterResponse, Serializable) have the same
+    # members and virtuals in Android 12 (the stock vendor) and 17.
+    "libkeymaster_messages.so", "libchrome.so",
     # AOSP 17 HAL service wrappers and modules
     "audio.r_submix.default.so", "audio.usb.default.so", "audio.bluetooth.default.so",
 }

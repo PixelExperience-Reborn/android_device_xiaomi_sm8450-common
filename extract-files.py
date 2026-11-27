@@ -23,23 +23,15 @@ namespace_imports = [
     'device/xiaomi/sm8450-common',
 ]
 
-def lib_fixup_vendor_suffix(lib: str, partition: str, *args, **kwargs):
-    return f'{lib}_{partition}' if partition == 'vendor' else None
-
-
-# Vendor copies of libraries that Android 17 builds for system only: the
-# blob keeps its file name (MODULE_SUFFIX=_vendor in the list) and its
-# users depend on the suffixed module.
+# The blobs link libchrome and libkeymaster_messages as the AOSP 17 vendor
+# variants (vendor_available), like the other AOSP libraries: a stock copy at
+# the same vendor path is a duplicate install. What the stock KeyMint uses of
+# libkeymaster_messages has the same layout in Android 12 and 17
+# (tests/test_proprietary_files.py, SOURCE_BUILT).
 lib_fixups: lib_fixups_user_type = {
     # The stock libprotobuf-cpp-{lite,full}-3.9.1 ship in the lists, so the
     # blobs link them as they are instead of a -vendorcompat module.
     **{k: v for k, v in lib_fixups.items() if k != libs_proto_3_9_1},
-    # Stock copies kept under a _vendor module name: the stock blobs need their
-    # ABI (KeyMint, the secure element clients), unlike the AOSP 17 builds.
-    (
-        'libchrome',
-        'libkeymaster_messages',
-    ): lib_fixup_vendor_suffix,
 }
 
 module = ExtractUtilsModule(
