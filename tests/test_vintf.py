@@ -311,12 +311,25 @@ class VintfTest(unittest.TestCase):
                        "android.hardware.health-service.example_recovery"):
             self.assertRegex(common, rf"(?m)^\s+{re.escape(module)}( \\)?$")
 
-    def test_boot_and_sensors_services_from_source_load_the_stock_parts(self):
+    def test_boot_control_is_the_qualcomm_aidl_hal_from_source(self):
+        # Vendor and recovery (ADB sideload, fastbootd set_active) each run
+        # the AIDL service of hardware/qcom-caf/bootctrl with its VINTF fragment.
         common = (ROOT / "common.mk").read_text()
-        for module in ("android.hardware.boot@1.2-service", "android.hardware.sensors@2.1-service.multihal"):
+        for module in ("android.hardware.boot-service.qti", "android.hardware.boot-service.qti.recovery"):
             self.assertRegex(common, rf"(?m)^\s+{re.escape(module)}( \\)?$")
-        for path in ("vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so", "vendor/lib64/sensors.ssc.so",
-                     "vendor/etc/sensors/hals.conf"):
+        self.assertRegex(common, r"(?m)^PRODUCT_SOONG_NAMESPACES \+= \\\n\s+hardware/qcom-caf/bootctrl$")
+        for path in ("vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so",
+                     "vendor/lib64/libboot_control_qti.so", "vendor/lib64/librecovery_updater.so"):
+            self.assertNotIn(path, self.listed)
+        contexts = (ROOT / "sepolicy/source/file_contexts").read_text()
+        self.assertIn("android\\.hardware\\.boot-service\\.qti    u:object_r:hal_bootctl_default_exec:s0", contexts)
+        self.assertIn("BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/source",
+                      (ROOT / "BoardConfigCommon.mk").read_text())
+
+    def test_sensors_multihal_from_source_loads_the_stock_sub_hals(self):
+        common = (ROOT / "common.mk").read_text()
+        self.assertRegex(common, r"(?m)^\s+android\.hardware\.sensors@2\.1-service\.multihal( \\)?$")
+        for path in ("vendor/lib64/sensors.ssc.so", "vendor/etc/sensors/hals.conf"):
             self.assertIn(path, self.listed)
         rc = (ROOT / "rootdir/etc/init/android.hardware.sensors@2.1-service-multihal_sm8450.rc").read_text()
         self.assertIn("    override\n", rc)

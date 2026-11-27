@@ -10,13 +10,6 @@ soong_namespace {
 // another signature or linkage. tools/blob_fixups.py adds these libraries
 // to the DT_NEEDED of the blobs (FIXUPS).
 cc_library_shared {
-    name: "libbase_shim",
-    vendor: true,
-    srcs: ["compat/libbase_shim.cpp"],
-    shared_libs: ["libbase"],
-}
-
-cc_library_shared {
     name: "libprocessgroup_shim",
     vendor: true,
     srcs: ["compat/libprocessgroup_shim.cpp"],

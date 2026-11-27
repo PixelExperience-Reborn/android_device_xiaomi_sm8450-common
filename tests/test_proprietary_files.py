@@ -50,11 +50,14 @@ SOURCE_BUILT = {
     # GenerateRkpKeyResponse, KeymasterResponse, Serializable) have the same
     # members and virtuals in Android 12 (the stock vendor) and 17.
     "libkeymaster_messages.so", "libchrome.so",
-    # The stock boot and sensors multihal services are the AOSP default
-    # services (passthrough boot control, HalProxy with hals.conf); Android 17
-    # builds them with their rc and VINTF fragment, the Qualcomm parts stay
-    # stock (boot@1.0-impl-1.2-qti, sensors.ssc and the other sub-HALs).
+    # Boot control is the Qualcomm AIDL HAL built from hardware/qcom-caf/bootctrl
+    # (vendor and recovery), with libboot_control_qti and gpt-utils from
+    # source: none of the stock HIDL chain ships.
     "android.hardware.boot@1.2-service", "android.hardware.boot@1.2-service.rc",
+    "android.hardware.boot@1.0-impl-1.2-qti.so", "libboot_control_qti.so", "librecovery_updater.so",
+    # The stock sensors multihal service is the AOSP default HalProxy with
+    # hals.conf; Android 17 builds it with its rc and VINTF fragment, the
+    # sub-HALs (sensors.ssc and others) stay stock.
     "android.hardware.sensors@2.1-service.multihal", "android.hardware.sensors@2.1-service-multihal.rc",
     # AOSP 17 HAL service wrappers and modules
     "audio.r_submix.default.so", "audio.usb.default.so", "audio.bluetooth.default.so",

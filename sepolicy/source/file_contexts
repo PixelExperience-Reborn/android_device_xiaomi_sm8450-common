@@ -1,0 +1,6 @@
+# Services built from source in this tree (not in the stock policy, which
+# tools/gen_bringup_sepolicy.py turns into sepolicy/vendor).
+
+# Qualcomm AIDL boot control (hardware/qcom-caf/bootctrl). Its recovery
+# variant runs with seclabel hal_bootctl_default from its own rc.
+/(vendor|system/vendor)/bin/hw/android\.hardware\.boot-service\.qti    u:object_r:hal_bootctl_default_exec:s0

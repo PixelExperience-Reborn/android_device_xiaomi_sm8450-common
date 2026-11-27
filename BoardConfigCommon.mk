@@ -176,6 +176,8 @@ DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += $(COMMON_PATH)/vintf/framework_com
 # boot permissive (init honours androidboot.selinux=permissive only on them);
 # user builds stay enforcing.
 BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/vendor
+# Contexts of the services built from source here (hand written).
+BOARD_VENDOR_SEPOLICY_DIRS += $(COMMON_PATH)/sepolicy/source
 ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_BOOTCONFIG += androidboot.selinux=permissive
 endif

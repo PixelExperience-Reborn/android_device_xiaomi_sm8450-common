@@ -632,11 +632,6 @@ vendor/lib64/vendor.qti.hardware.display.demura@2.0.so|2be26082ebd952ed4e200a5a4
 vendor/lib64/vendor.qti.hardware.display.mapperextensions@1.2.so|fc5f7b60e81b1d7764484a0bc7e19ed314a47309815515eae7843271150c0611
 vendor/lib64/vendor.xiaomi.hardware.displayfeature@1.0.so|6e6d5c9941b18218748a99022cca4012d316e882ed61b192a3ce60331ea22f54
 
-# === Boot control HAL 1.2 ===
-# A/B slot control of the Qualcomm bootloader (GPT attributes).
-vendor/lib64/hw/android.hardware.boot@1.0-impl-1.2-qti.so|31a592dcce84cd871daa4b09208ca9f22c0d82eefe603a604e106b1c32676e80
-vendor/lib64/libboot_control_qti.so|3e68d667bfb4b160ae268c1167dba4f745a475ac8913098f66f92bb2566846ee
-vendor/lib64/librecovery_updater.so|0cd1a6414263aa8711b6a7cca2e27fe674cd59886278bc62790259982981df94
 
 # === Qualcomm perf HAL ===
 # Performance boosts the power HAL (AIDL power 2-3, built from source) applies; the stock

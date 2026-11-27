@@ -55,7 +55,7 @@ VINTF (`vintf_fragments` модулей).
 
 | HAL | В стоке | Матрица A17 ур. 7 | Решение |
 |---|---|---|---|
-| boot | HIDL 1.2 | HIDL 1.2 | служба AOSP 17 из исходников (стоковая — та же служба AOSP) с её rc и фрагментом VINTF; реализация — стоковая passthrough `boot@1.0-impl-1.2-qti` (переключение слотов Qualcomm) |
+| boot | HIDL 1.2 | HIDL 1.2 / AIDL | из исходников: AIDL boot control Qualcomm (`hardware/qcom-caf/bootctrl`, LineageOS lineage-24.0-caf) — слоты A/B в атрибутах GPT и загрузочный LUN UFS через ufs-bsg, как стоковый `librecovery_updater`; вариант `.recovery` работает в recovery (ADB sideload, `fastboot set_active`). Стоковая HIDL-цепочка (`boot@1.0-impl-1.2-qti`, `libboot_control_qti`, `librecovery_updater`) не ставится |
 | health | HIDL 2.1 | **только AIDL 1** | из исходников: AIDL health + режим зарядки |
 | power | AIDL v1 | AIDL 2–3 | из исходников: `vendor/qcom/opensource/power`; стоковый perf HAL остаётся |
 | thermal | HIDL 1.0/2.0 (`thermal@2.0-service.qti-v2`) | HIDL 2.0 | сток; 1.0 объявлен рядом с 2.0, как в стоке (для клиентов @1.0) |

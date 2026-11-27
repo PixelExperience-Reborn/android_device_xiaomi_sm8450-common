@@ -329,9 +329,6 @@ FIXUPS = {
     "vendor/bin/hw/android.hardware.security.keymint-service-qti": [
         ("add_needed", ["android.hardware.security.rkp-V1-ndk.so"])],
     "vendor/lib64/libqtikeymint.so": [("add_needed", ["android.hardware.security.rkp-V1-ndk.so"])],
-    # Boot control: android::base::Basename(const std::string&) became
-    # Basename(std::string_view); libbase_shim (compat/) has the old one.
-    "vendor/lib64/libboot_control_qti.so": [("add_needed", ["libbase_shim.so"])],
     # Camera: SetTaskProfiles had C linkage before Android 14;
     # libprocessgroup_shim (compat/) exports it.
     "vendor/lib64/libcamxcommonutils.so": [("add_needed", ["libprocessgroup_shim.so"])],

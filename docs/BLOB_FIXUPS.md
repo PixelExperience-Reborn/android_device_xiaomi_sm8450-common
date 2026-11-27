@@ -13,7 +13,6 @@ XML (`xmllint`), поэтому то, что изменилось в платф�
 | Блоб | Что изменилось в Android 17 | Решение |
 |---|---|---|
 | `android.hardware.security.keymint-service-qti`, `libqtikeymint.so` | `IRemotelyProvisionedComponent` вынесен из библиотеки keymint в `android.hardware.security.rkp` (keymint-V1 её не импортирует). Без неё сервис KeyMint не загрузится: не будет ключей и расшифровки `/data` | `add_needed android.hardware.security.rkp-V1-ndk.so` |
-| `libboot_control_qti.so` (boot control A/B) | `android::base::Basename(const std::string&)` стал `Basename(std::string_view)` | `add_needed libbase_shim.so` (`compat/libbase_shim.cpp`) |
 | `libcamxcommonutils.so`, `hw/com.qti.chi.override.so` (камера) | `SetTaskProfiles` раньше был с C-линковкой, теперь C++-перегрузки | `add_needed libprocessgroup_shim.so` (`compat/libprocessgroup_shim.cpp`) |
 | `libMiVideoFilter.so`, `libTrueSight.so`, `libalLDC.so`, `libalhLDC.so` | `libnativewindow` для vendor собирается без версий символов (LLNDK `unversioned`) | импорты версии `LIBNATIVEWINDOW` делаются неверсионными; на устройстве они связываются с версией по умолчанию в настоящей библиотеке |
 | `etc/camera/mondrian_*motiontuning.xml`, `pureView_parameter.xml` | битый XML у Xiaomi (`<?xml=version`, атрибуты без кавычек) | правка только этих мест, остальное (в том числе CRLF) не меняется |

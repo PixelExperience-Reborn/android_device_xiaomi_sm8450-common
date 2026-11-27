@@ -126,14 +126,22 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     device/xiaomi/sm8450-common/rootdir/etc/init/android.hardware.audio.service_sm8450.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.audio.service_sm8450.rc
 
-# Boot control and sensors: the stock services are the AOSP default services
-# (passthrough boot control, the sensors multihal HalProxy), built here with
-# their rc and VINTF fragment. They load the stock Qualcomm parts:
-# android.hardware.boot@1.0-impl-1.2-qti and the sensors sub-HALs of
-# /vendor/etc/sensors/hals.conf. The multihal keeps the stock socket of the
+# Boot control: the Qualcomm AIDL boot control HAL, built from
+# hardware/qcom-caf/bootctrl (LineageOS lineage-24.0-caf): A/B slots in the
+# GPT attributes and the UFS boot LUN (ufs-bsg), in Android (update_engine)
+# and in recovery (ADB sideload through update_engine_sideload, fastbootd
+# set_active). Each service carries its rc and VINTF fragment.
+PRODUCT_SOONG_NAMESPACES += \
+    hardware/qcom-caf/bootctrl
+PRODUCT_PACKAGES += \
+    android.hardware.boot-service.qti \
+    android.hardware.boot-service.qti.recovery
+
+# Sensors: the stock service is the AOSP default multihal (HalProxy), built
+# here with its rc and VINTF fragment; it loads the stock sub-HALs of
+# /vendor/etc/sensors/hals.conf. It keeps the stock socket of the
 # ultrasound proximity sensor (rootdir/etc/init).
 PRODUCT_PACKAGES += \
-    android.hardware.boot@1.2-service \
     android.hardware.sensors@2.1-service.multihal
 PRODUCT_COPY_FILES += \
     device/xiaomi/sm8450-common/rootdir/etc/init/android.hardware.sensors@2.1-service-multihal_sm8450.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.sensors@2.1-service-multihal_sm8450.rc
