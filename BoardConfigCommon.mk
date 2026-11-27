@@ -112,6 +112,10 @@ TARGET_COPY_OUT_SYSTEM_EXT := system_ext
 TARGET_COPY_OUT_VENDOR := vendor
 TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
 
+# Vendor AIDs (vendor_qti_diag, vendor_qrtr, ...) and file capabilities of
+# the stock vendor daemons, as in its etc/passwd and fs_config_files.
+TARGET_FS_CONFIG_GEN := $(COMMON_PATH)/config.fs
+
 # A/B: the images this build makes. The stock firmware images (abl, aop,
 # modem, tz, xbl, ...) are added with the proprietary files of the device.
 AB_OTA_UPDATER := true

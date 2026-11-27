@@ -5,3 +5,42 @@
 
 soong_namespace {
 }
+
+// Android 12 symbols that stock blobs import and Android 17 exports with
+// another signature or linkage. tools/blob_fixups.py adds these libraries
+// to the DT_NEEDED of the blobs (FIXUPS).
+cc_library_shared {
+    name: "libbase_shim",
+    vendor: true,
+    srcs: ["compat/libbase_shim.cpp"],
+    shared_libs: ["libbase"],
+}
+
+cc_library_shared {
+    name: "libprocessgroup_shim",
+    vendor: true,
+    srcs: ["compat/libprocessgroup_shim.cpp"],
+    shared_libs: ["libprocessgroup"],
+}
+
+// HIDL interfaces of stock services that ship only as prebuilts. The host
+// init verifier checks the interface lines of their .rc files against the
+// known HIDL interfaces.
+prebuilt_hidl_interfaces {
+    name: "hidl_interfaces_sm8450_stock",
+    interfaces: [
+        "vendor.display.color@1.0::IDisplayColor",
+        "vendor.display.color@1.1::IDisplayColor",
+        "vendor.display.color@1.2::IDisplayColor",
+        "vendor.display.color@1.3::IDisplayColor",
+        "vendor.display.color@1.4::IDisplayColor",
+        "vendor.display.color@1.5::IDisplayColor",
+        "vendor.display.color@1.6::IDisplayColor",
+        "vendor.display.color@1.7::IDisplayColor",
+        "vendor.display.postproc@1.0::IDisplayPostproc",
+        "vendor.qti.hardware.AGMIPC@1.0::IAGM",
+        "vendor.qti.hardware.dsp@1.0::IDspService",
+        "vendor.qti.hardware.limits@1.0::ILimits",
+        "vendor.qti.hardware.limits@1.1::ILimits",
+    ],
+}

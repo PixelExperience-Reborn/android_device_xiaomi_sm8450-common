@@ -37,7 +37,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from blob_fixups import rename_ndk_platform  # noqa: E402
+from blob_fixups import apply as apply_fixups, rename_ndk_platform  # noqa: E402
 # <file>[;<extract-utils argument>...]|<sha256>, e.g. ;SYMLINK=<link> or
 # ;MODULE_SUFFIX=_vendor; the arguments shape the build rules only.
 LINE = re.compile(r"^((?:vendor|odm)/[A-Za-z0-9_@+.,/-]+)(?:;[A-Z_]+(?:=[A-Za-z0-9_@+.,/-]+)?)*\|([0-9a-f]{64})$")
@@ -246,9 +246,14 @@ def main() -> int:
                     target.parent.mkdir(parents=True, exist_ok=True)
                     shutil.copyfile(src_file, target)
                     renamed = rename_ndk_platform(target)
-                    if renamed:
-                        fixups[str(lst.name)][entry.path] = {"needed_renamed": renamed,
-                                                            "sha256": sha256(target)}
+                    applied = apply_fixups(entry.path, target)
+                    if renamed or applied:
+                        record = {"sha256": sha256(target)}
+                        if renamed:
+                            record["needed_renamed"] = renamed
+                        if applied:
+                            record["fixups"] = applied
+                        fixups[str(lst.name)][entry.path] = record
             print(f"{lst}: {len(entries)} files checked")
         problems += firmware(args.ota, source, fw_lists, args.images_dir, args.verify_only, args.jobs)
         if problems:
