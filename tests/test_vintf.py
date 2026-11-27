@@ -54,6 +54,9 @@ LEVEL7 = [
     ("hidl", "android.hardware.usb", "IUsb", ["1.0-3"], ["default"]),
     ("hidl", "android.hardware.wifi", "IWifi", ["1.3-6"], ["default"]),
     ("hidl", "android.hardware.camera.provider", "ICameraProvider", ["2.4-7"], ["~[^/]+/[0-9]+"]),
+    ("hidl", "android.hardware.audio", "IDevicesFactory", ["6.0", "7.0-1"], ["default"]),
+    ("hidl", "android.hardware.audio.effect", "IEffectsFactory", ["6.0", "7.0"], ["default"]),
+    ("hidl", "android.hardware.soundtrigger", "ISoundTriggerHw", ["2.3"], ["default"]),
 ]
 # HIDL parents the device may serve next to a child the matrix accepts
 # (libvintf checks the children of a manifest instance).
@@ -131,6 +134,23 @@ SERVERS = {
     "vendor.qti.hardware.qteeconnector": ["vendor/bin/hw/vendor.qti.hardware.qteeconnector@1.0-service"],
     "vendor.qti.ims.factory": ["vendor/bin/imsdaemon"],
     "vendor.qti.imsrtpservice": ["vendor/bin/ims_rtp_daemon"],
+    "vendor.qti.ims.callinfo": ["vendor/bin/imsdaemon", "vendor/lib64/lib-imsservice.so"],
+    "com.qualcomm.qti.imscmservice": ["vendor/bin/imsdaemon", "vendor/lib64/lib-imsrcsservice.so"],
+    "com.qualcomm.qti.uceservice": ["vendor/bin/imsdaemon", "vendor/lib64/lib-imsrcsservice.so"],
+    "vendor.qti.hardware.data.connection": QCRIL + ["vendor/lib64/libqcrilDataModule.so"],
+    "vendor.qti.hardware.data.iwlan": QCRIL + ["vendor/lib64/libqcrilDataModule.so"],
+    "vendor.qti.hardware.data.connectionfactory": QCRIL + ["vendor/lib64/libqcrildataaidl.so"],
+    "vendor.qti.hardware.radio.internal.deviceinfo": QCRIL + ["vendor/lib64/deviceInfoServiceModuleNr.so"],
+    # Served by the AOSP audio service (BUILT) with the stock modules.
+    "android.hardware.audio": ["vendor/lib64/hw/audio.primary.taro.so"],
+    "android.hardware.audio.effect": ["vendor/lib64/soundfx/libqcompostprocbundle.so"],
+    "android.hardware.soundtrigger": ["vendor/lib64/hw/sound_trigger.primary.taro.so"],
+}
+# Declared HALs whose service is built from AOSP 17 (PRODUCT_PACKAGES of common.mk).
+BUILT = {
+    "android.hardware.audio": ["android.hardware.audio.service", "android.hardware.audio@7.0-impl"],
+    "android.hardware.audio.effect": ["android.hardware.audio.effect@7.0-impl"],
+    "android.hardware.soundtrigger": ["android.hardware.soundtrigger@2.3-impl"],
 }
 # Stock HALs Android 17 does not accept at level 7, or that come from source
 # with their own VINTF fragments, or that this build does not ship.
@@ -141,7 +161,8 @@ NOT_DECLARED = [
     ("aidl", r"android\.hardware\.power"), ("aidl", r"android\.hardware\.vibrator"),
     ("hidl", r"android\.hardware\.(dumpstate|media\.omx|atrace|keymaster)"),
     ("hidl", r"android\.hardware\.biometrics\.fingerprint"),
-    (None, r"vendor\.(xiaomi|dolby|nxp)\..*"), (None, r"com\..*"),
+    (None, r"vendor\.(xiaomi|dolby|nxp)\..*"), (None, r"com\.(fingerprints|dsi)\..*"),
+    (None, r"vendor\.qti\.hardware\.(eid|qccvndhal|wifidisplaysession|fm|bluetooth_sar|soter|tui_comm|vpp|qxr)"),
 ]
 
 
@@ -238,7 +259,7 @@ class VintfTest(unittest.TestCase):
     def test_every_instance_is_in_a_framework_matrix(self):
         for fmt, name, version, interface, instance in self.instances:
             with self.subTest(name=name, version=version, instance=instance):
-                if name.startswith("vendor."):
+                if not name.startswith("android."):
                     self.assertTrue(accepts(self.fcm, fmt, name, version, interface, instance))
                     continue
                 ok = accepts(LEVEL7, fmt, name, version, interface, instance)
@@ -247,11 +268,11 @@ class VintfTest(unittest.TestCase):
                 self.assertTrue(ok)
 
     def test_framework_matrix_extension_matches_the_manifest(self):
-        declared = {(f, n, i, x) for f, n, _, i, x in self.instances if n.startswith("vendor.")}
+        declared = {(f, n, i, x) for f, n, _, i, x in self.instances if not n.startswith("android.")}
         in_fcm = {(f, n, i, x) for f, n, i, _, xs in self.fcm for x in xs}
         self.assertEqual(declared, in_fcm)
         for fmt, name, interface, versions, instances in self.fcm:
-            self.assertTrue(name.startswith("vendor."), name)
+            self.assertFalse(name.startswith("android."), name)
             for v in versions:
                 ver = version_range(v, fmt)
                 self.assertEqual(ver[1], ver[2], (name, v))
@@ -264,6 +285,12 @@ class VintfTest(unittest.TestCase):
                 self.assertIn(name, SERVERS)
                 for path in SERVERS[name]:
                     self.assertIn(path, self.listed)
+
+    def test_aosp_built_servers_are_in_the_product(self):
+        common = (ROOT / "common.mk").read_text()
+        for name in {n for _, n, _, _, _ in self.instances} & set(BUILT):
+            for module in BUILT[name]:
+                self.assertRegex(common, rf"(?m)^\s+{re.escape(module)}( \\)?$", (name, module))
 
     def test_left_out_stays_out(self):
         for fmt, name, _, _, _ in self.instances:

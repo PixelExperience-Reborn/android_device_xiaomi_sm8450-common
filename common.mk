@@ -83,6 +83,31 @@ PRODUCT_COPY_FILES += \
     device/xiaomi/sm8450-common/rootdir/etc/init.target.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.target.rc \
     device/xiaomi/sm8450-common/rootdir/etc/charger_fstab.qti:$(TARGET_COPY_OUT_VENDOR)/etc/charger_fw_fstab.qti
 
+# Audio: the AOSP 17 audio service (HIDL audio 7.0, effects 7.0, sound
+# trigger 2.3) loading the stock audio.primary.taro, sound_trigger.primary.taro
+# and effect modules, 64-bit like the stock service; the stock socket of the
+# ultrasound proximity sensor (rootdir/etc/init). The audio configuration of
+# the SKU comes from the device (sku_cape on mondrian).
+$(call soong_config_set,android_hardware_audio,run_64bit,true)
+PRODUCT_PACKAGES += \
+    android.hardware.audio.service \
+    android.hardware.audio@7.0-impl \
+    android.hardware.audio.effect@7.0-impl \
+    android.hardware.soundtrigger@2.3-impl \
+    audio.r_submix.default \
+    audio.usb.default \
+    default_volume_tables.xml \
+    r_submix_audio_policy_configuration.xml \
+    libbundlewrapper \
+    libdownmix \
+    libdynproc \
+    libeffectproxy \
+    libldnhncr \
+    libreverbwrapper \
+    libvisualizer
+PRODUCT_COPY_FILES += \
+    device/xiaomi/sm8450-common/rootdir/etc/init/android.hardware.audio.service_sm8450.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.audio.service_sm8450.rc
+
 # Symbolic links of the stock vendor: the remote file system (rfs) of the
 # DSPs and the modem, and the WLAN configuration the qca_cld3 driver loads
 # (rootdir/Android.bp). The firmware mount points come from rootdir/Android.mk.

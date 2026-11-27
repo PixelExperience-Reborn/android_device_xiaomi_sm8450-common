@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# PixelExperience-Reborn Android 17: the AOSP audio service with the socket of
+# the stock OS3.0.8.0 audio HAL service, read after the AOSP script
+# (android.hardware.audio.service.rc) and overriding it. The stock audio HAL
+# and the ultrasound proximity sensor talk over audio_us_socket_0; it is
+# 0660 system:system here (both sides run as system or with the system group)
+# instead of the world-accessible 0666 of stock.
+
+service vendor.audio-hal /vendor/bin/hw/android.hardware.audio.service
+    override
+    class hal
+    user audioserver
+    # media gid needed for /dev/fm (radio) and for /data/misc/media (tee)
+    group audio camera drmrpc inet media mediadrm net_bt net_bt_admin net_bw_acct wakelock context_hub system
+    capabilities BLOCK_SUSPEND SYS_NICE
+    # setting RLIMIT_RTPRIO allows binder RT priority inheritance
+    rlimit rtprio 10 10
+    ioprio rt 4
+    task_profiles ProcessCapacityHigh HighPerformance
+    socket audio_us_socket_0 seqpacket 0660 system system
+    onrestart restart audioserver

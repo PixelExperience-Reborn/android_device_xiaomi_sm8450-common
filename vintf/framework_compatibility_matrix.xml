@@ -5,10 +5,26 @@
     PixelExperience-Reborn Android 17: framework compatibility matrix extension
     for the Qualcomm vendor HALs of vintf/manifest.xml. Android 17 checks every
     instance of the device manifest against the framework matrices; the
-    vendor.* HALs are not in the AOSP ones. Versions and instances are exactly
-    those of the manifest.
+    vendor.* and com.qualcomm.* HALs are not in the AOSP ones. Versions and
+    instances are exactly those of the manifest.
 -->
 <compatibility-matrix version="1.0" type="framework">
+    <hal format="hidl">
+        <name>com.qualcomm.qti.imscmservice</name>
+        <version>2.2</version>
+        <interface>
+            <name>IImsCmService</name>
+            <instance>qti.ims.connectionmanagerservice</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>com.qualcomm.qti.uceservice</name>
+        <version>2.3</version>
+        <interface>
+            <name>IUceService</name>
+            <instance>com.qualcomm.qti.uceservice</instance>
+        </interface>
+    </hal>
     <hal format="hidl">
         <name>vendor.display.color</name>
         <version>1.7</version>
@@ -63,6 +79,33 @@
         <interface>
             <name>ICapabilityConfigStore</name>
             <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>vendor.qti.hardware.data.connection</name>
+        <version>1.1</version>
+        <interface>
+            <name>IDataConnection</name>
+            <instance>slot1</instance>
+            <instance>slot2</instance>
+        </interface>
+    </hal>
+    <hal format="aidl">
+        <name>vendor.qti.hardware.data.connectionfactory</name>
+        <version>1</version>
+        <interface>
+            <name>IFactory</name>
+            <instance>slot0</instance>
+            <instance>slot1</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>vendor.qti.hardware.data.iwlan</name>
+        <version>1.1</version>
+        <interface>
+            <name>IIWlan</name>
+            <instance>slot1</instance>
+            <instance>slot2</instance>
         </interface>
     </hal>
     <hal format="hidl">
@@ -160,6 +203,14 @@
         </interface>
     </hal>
     <hal format="hidl">
+        <name>vendor.qti.hardware.radio.internal.deviceinfo</name>
+        <version>1.0</version>
+        <interface>
+            <name>IDeviceInfo</name>
+            <instance>deviceinfo</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
         <name>vendor.qti.hardware.radio.lpa</name>
         <version>1.2</version>
         <interface>
@@ -228,6 +279,14 @@
         <version>1.2</version>
         <interface>
             <name>IServicetracker</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>vendor.qti.ims.callinfo</name>
+        <version>1.0</version>
+        <interface>
+            <name>IService</name>
             <instance>default</instance>
         </interface>
     </hal>

@@ -31,6 +31,11 @@ init.qcom.rc            (дерево, BSD The Linux Foundation, вычищен 
 | `vendor.nv_mac` | init.target.rc | MAC Wi-Fi и Bluetooth из NV модема |
 | `vendor.ssr_setup` | init.qcom.rc | уровень перезапуска подсистем |
 | `qti-media` (`init.qti.media.sh`) | стоковый rc | списки кодеков `_cape` |
+| `init.qti.qcv.sh` | стоковый `init.qti.qcv.rc` | `ro.vendor.qti.soc_name=cape` и `ro.boot.product.vendor.sku=cape` по `soc_id`: по SKU ищутся аудиоконфиги `sku_cape` |
+| `qti_display_boot` (`init.qti.display_boot.sh`) | стоковый rc | `vendor.gralloc.use_dma_buf_heaps=1` (в GKI 5.10 нет ION) и параметры дисплея SoC |
+| `write /dev/ipa 1` | стоковый `ipa_fws.rc` | загрузка прошивки IPA: путь данных модема и раздача |
+| `vendor.audioadsprpcd_audiopd` | стоковый rc | аудиодомен ADSP |
+| `vendor.audio-hal` (служба AOSP) | `rootdir/etc/init/android.hardware.audio.service_sm8450.rc` | сокет `audio_us_socket_0` ультразвукового датчика приближения, `0660` вместо стоковых `0666` |
 | режим зарядки: прошивки и ADSP | init.target.rc | состояние батареи при выключенном телефоне |
 | каталоги `/data/vendor/*`, права узлов | init.qcom.rc, init.target.rc | данные стоковых служб |
 

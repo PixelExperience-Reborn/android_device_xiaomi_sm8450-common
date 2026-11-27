@@ -63,15 +63,15 @@ VINTF (`vintf_fragments` модулей).
 | graphics.composer | HIDL 2.4 + `IQtiComposer` 3.1 | HIDL 2.1–2.4 | сток; плюс `vendor.display.config` 2.0 (`libdisplayconfig.qti`) и AIDL `display.config` v5 |
 | graphics.allocator / mapper | HIDL 4.0 | HIDL 4.0 | сток (`mapper` passthrough 32+64) |
 | display color | `vendor.display.color` 1.7, `postproc` 1.0 | — (vendor) | сток |
-| audio / effect / soundtrigger | HIDL 7.0 / 7.0 / 2.3 | HIDL 7.0–7.1 / 7.0 / 2.3 | этап C: служба аудио AOSP 17 со стоковыми модулями; тогда же `vendor.qti.hardware.pal` |
+| audio / effect / soundtrigger | HIDL 7.0 / 7.0 / 2.3 | HIDL 7.0–7.1 / 7.0 / 2.3 | служба аудио AOSP 17 (`android.hardware.audio.service`, 64 бит) со стоковыми `audio.primary.taro`, `sound_trigger.primary.taro` и эффектами; `vendor.qti.hardware.pal` не регистрируется (PAL работает внутри процесса HAL) |
 | AGM | `vendor.qti.hardware.AGMIPC` 1.0 | — (vendor) | сток |
 | bluetooth (HCI) | HIDL 1.0 | HIDL 1.0–1.1 | сток (служба + passthrough `bluetooth@1.0-impl-qti`, `btconfigstore@2.0-impl`) |
 | bluetooth.audio | HIDL 2.0 | **только AIDL 2** | из исходников: AIDL Bluetooth Audio |
 | wifi | HIDL 1.5 | HIDL 1.3–1.6 | сток |
 | wifi.supplicant / hostapd | HIDL 1.4 / 1.3 | **только AIDL** | из исходников: `wpa_supplicant`/`hostapd` AOSP 17 + `lib_driver_cmd_qcwcn` |
 | radio / radio.config | HIDL 1.6 + ISap 1.2 / config 1.3 | те же | сток (QCRIL `libqcrilNr`), телефония A17 поддерживает HIDL 1.6 |
-| QTI radio | qtiradio 1.0/2.6 + AIDL v5, IMS radio AIDL v7, uim, lpa, am, qcrilhook | — (vendor) | сток, все экземпляры, которые регистрирует QCRIL |
-| IMS | `ims.factory` 1.1/2.2, `imsrtpservice` 3.0 | — (vendor) | сток (`imsdaemon`, `ims_rtp_daemon`) |
+| QTI radio | qtiradio 1.0/2.6 + AIDL v5, IMS radio AIDL v7, uim, lpa, am, qcrilhook, deviceinfo, data.connection/iwlan 1.1, data.connectionfactory AIDL | — (vendor) | сток, все экземпляры, которые регистрирует QCRIL с его модулями (`libqcrilDataModule`, `deviceInfoServiceModuleNr`) |
+| IMS | `ims.factory` 1.1/2.2, `imsrtpservice` 3.0, `callinfo` 1.0, `imscmservice` 2.2, `uceservice` 2.3 | — (vendor) | сток (`imsdaemon` с `lib-imsservice`/`lib-imsrcsservice`, `ims_rtp_daemon`) |
 | tetheroffload | config 1.0, control 1.1 | те же | сток (`ipacm`) |
 | nfc | HIDL 1.2 (`vendor.nxp.hardware.nfc` 2.0) | HIDL 1.2 или AIDL | этап C: `android.hardware.nfc-service.nxp` (AOSP 17) |
 | secure_element | HIDL 1.2 SIM1/SIM2/eSE1 | HIDL 1.0–1.2 | сток: SIM1/SIM2 — QCRIL, eSE1 — служба QTI; плюс `esepowermanager` 1.1 |
@@ -96,10 +96,9 @@ VINTF (`vintf_fragments` модулей).
 Сервера этих HAL в нашей сборке нет. Если объявить HAL без сервера, клиенты
 будут ждать его бесконечно:
 
-- `vendor.qti.hardware.data.connection`, `data.iwlan`, `eid`,
-  `vendor.qti.data.factory`, `data.connectionfactory`, CNE, DPM, imscm/uce,
-  `wifidisplaysession`, FM, ANT, Bluetooth SAR, `qccvndhal`, `soter`, `tui_comm`,
-  `vpp`, `qxr`, `diaghal`, `sensorscalibrate`, `alarm`.
+- `eid`, `vendor.qti.data.factory`, CNE, DPM, `wifidisplaysession`, FM, ANT,
+  Bluetooth SAR, `qccvndhal`, `soter`, `tui_comm`, `vpp`, `qxr`, `diaghal`,
+  `sensorscalibrate`, `alarm`.
 - Все `vendor.xiaomi.*`, `vendor.dolby.*`, `vendor.nxp.*`.
 
 ## Правила
