@@ -71,7 +71,8 @@ VINTF (`vintf_fragments` модулей).
 | wifi.supplicant / hostapd | HIDL 1.4 / 1.3 | **только AIDL** | из исходников: `wpa_supplicant`/`hostapd` AOSP 17 + `lib_driver_cmd_qcwcn` |
 | radio / radio.config | HIDL 1.6 + ISap 1.2 / config 1.3 | те же | сток (QCRIL `libqcrilNr`), телефония A17 поддерживает HIDL 1.6 |
 | QTI radio | qtiradio 1.0/2.6 + AIDL v5, IMS radio AIDL v7, uim, lpa, am, qcrilhook, deviceinfo, data.connection/iwlan 1.1, data.connectionfactory AIDL | — (vendor) | сток, все экземпляры, которые регистрирует QCRIL с его модулями (`libqcrilDataModule`, `deviceInfoServiceModuleNr`) |
-| IMS | `ims.factory` 1.1/2.2, `imsrtpservice` 3.0, `callinfo` 1.0, `imscmservice` 2.2, `uceservice` 2.3 | — (vendor) | сток (`imsdaemon` с `lib-imsservice`/`lib-imsrcsservice`, `ims_rtp_daemon`) |
+| IMS | `ims.factory` 1.1/2.2, `imsrtpservice` 3.0, `callinfo` 1.0, `imscmservice` 2.2, `uceservice` 2.3 | — (vendor) | сток (`imsdaemon` с `lib-imsservice`/`lib-imsrcsservice`, `ims_rtp_daemon`); клиенты — стоковые приложения IMS system_ext (docs/IMS.md) |
+| CNE и Wi-Fi Calling | `vendor.qti.data.factory` 2.5, `data.latency` 1.0, `mwqemadapter` 1.0, `cacert` 1.0 | — (vendor) | сток: `cnd` (libcne) и `CACertService` |
 | tetheroffload | config 1.0, control 1.1 | те же | сток (`ipacm`) |
 | nfc | HIDL 1.2 (`vendor.nxp.hardware.nfc` 2.0) | HIDL 1.2 или AIDL | этап C: `android.hardware.nfc-service.nxp` (AOSP 17) |
 | secure_element | HIDL 1.2 SIM1/SIM2/eSE1 | HIDL 1.0–1.2 | сток: SIM1/SIM2 — QCRIL, eSE1 — служба QTI; плюс `esepowermanager` 1.1 |
@@ -96,7 +97,7 @@ VINTF (`vintf_fragments` модулей).
 Сервера этих HAL в нашей сборке нет. Если объявить HAL без сервера, клиенты
 будут ждать его бесконечно:
 
-- `eid`, `vendor.qti.data.factory`, CNE, DPM, `wifidisplaysession`, FM, ANT,
+- `eid`, DPM, `wifidisplaysession`, FM, ANT,
   Bluetooth SAR, `qccvndhal`, `soter`, `tui_comm`, `vpp`, `qxr`, `diaghal`,
   `sensorscalibrate`, `alarm`.
 - Все `vendor.xiaomi.*`, `vendor.dolby.*`, `vendor.nxp.*`.

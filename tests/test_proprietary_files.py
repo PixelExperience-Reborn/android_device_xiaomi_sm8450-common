@@ -28,7 +28,8 @@ payload = load("ota_payload")
 # Services, engines and platform files that are deliberately not taken from the OTA.
 FORBIDDEN = [
     r"libmialgoengine\.so$", r"/com\.xiaomi\.plugin\.", r"campostproc", r"/camera\.xiaomi\.so$",
-    r"/bin/cnd$", r"/libcne\.so$", r"/bin/[^/]*dpm", r"soter", r"mlipay", r"trustedui",
+    # DPM: dpmd and tcmd are system_ext services whose SELinux domains are not defined yet.
+    r"/bin/[^/]*dpm", r"/bin/tcmd$", r"dpmframework", r"soter", r"mlipay", r"trustedui",
     r"tui_comm", r"wfd", r"vppservice|/libvpp|/rfsa/adsp/libVpp", r"dolby", r"/bin/hw/vendor\.xiaomi\.",
     r"vendor\.qti\.hardware\.factory", r"diag-router|diag_mdlog", r"ATFWD", r"qvr", r"sxr",
     r"^vendor/etc/vintf/", r"/init\.(qcom|target)\.rc$",
@@ -186,6 +187,38 @@ class Tools(unittest.TestCase):
             result = subprocess.run(cmd, capture_output=True, text=True)
             self.assertEqual(result.returncode, 1)
             self.assertIn("hash mismatch: vendor/lib64/libx.so", result.stdout)
+
+    def test_system_partitions_and_system_as_root(self):
+        # The IMS apps come from system_ext and product; one library from the
+        # system image, whose files are under <image root>/system.
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            digest = lambda b: hashlib.sha256(b).hexdigest()
+            system = tmp / "system_img"
+            (system / "system/lib64").mkdir(parents=True)
+            (system / "system/build.prop").write_text("ro.build.type=user\n")
+            (system / "system/lib64/liba.so").write_bytes(b"a")
+            system_ext = tmp / "system_ext"
+            (system_ext / "priv-app/ims").mkdir(parents=True)
+            (system_ext / "priv-app/ims/ims.apk").write_bytes(b"apk")
+            product = tmp / "product"
+            (product / "framework").mkdir(parents=True)
+            (product / "framework/p.jar").write_bytes(b"jar")
+            lst = tmp / "list.txt"
+            lst.write_text(f"# === S ===\n# why\nproduct/framework/p.jar|{digest(b'jar')}\n"
+                           f"system/lib64/liba.so|{digest(b'a')}\n"
+                           f"system_ext/priv-app/ims/ims.apk;REQUIRED=QtiTelephonyCompat|{digest(b'apk')}\n")
+            self.assertEqual([e.path for e in extract.read_list(lst)],
+                             ["product/framework/p.jar", "system/lib64/liba.so", "system_ext/priv-app/ims/ims.apk"])
+            out = tmp / "out"
+            subprocess.run([sys.executable, "-I", str(ROOT / "tools/extract_proprietary.py"),
+                            "--system-dir", str(system), "--system_ext-dir", str(system_ext),
+                            "--product-dir", str(product), "--list", f"{lst}={out}"], check=True, capture_output=True)
+            self.assertEqual((out / "proprietary/system/lib64/liba.so").read_bytes(), b"a")
+            self.assertEqual((out / "proprietary/system_ext/priv-app/ims/ims.apk").read_bytes(), b"apk")
+            self.assertEqual((out / "proprietary/product/framework/p.jar").read_bytes(), b"jar")
+            self.assertEqual(extract.partition_root("system", system), system / "system")
+            self.assertEqual(extract.partition_root("vendor", system), system)
 
     def test_manifest_parser(self):
         def varint(n):

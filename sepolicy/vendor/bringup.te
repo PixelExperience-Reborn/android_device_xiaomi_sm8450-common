@@ -14,6 +14,9 @@ init_daemon_domain(vendor_port-bridge)
 type vendor_qms_exec, exec_type, vendor_file_type, file_type;
 type vendor_qms, domain;
 init_daemon_domain(vendor_qms)
+type vendor_cnd_exec, exec_type, vendor_file_type, file_type;
+type vendor_cnd, domain;
+init_daemon_domain(vendor_cnd)
 type vendor_time_daemon_exec, exec_type, vendor_file_type, file_type;
 type vendor_time_daemon, domain;
 init_daemon_domain(vendor_time_daemon)
@@ -148,16 +151,20 @@ type vendor_hal_imsrcsd_hwservice, hwservice_manager_type;
 type vendor_hal_display_color_hwservice, hwservice_manager_type;
 type vendor_hal_display_config_hwservice, hwservice_manager_type;
 type vendor_hal_display_postproc_hwservice, hwservice_manager_type;
+type vendor_hal_datafactory_hwservice, hwservice_manager_type;
 type vendor_hal_esepowermanager_hwservice, hwservice_manager_type;
 type vendor_agm_hwservice, hwservice_manager_type;
 type vendor_hal_btconfigstore_hwservice, hwservice_manager_type;
+type vendor_hal_cacert_hwservice, hwservice_manager_type;
 type vendor_hal_capabilityconfigstore_qti_hwservice, hwservice_manager_type;
 type vendor_hal_dataconnection_hwservice, hwservice_manager_type;
 type vendor_hal_dataconnection_service, service_manager_type, protected_service;
 type vendor_hal_iwlan_hwservice, hwservice_manager_type;
+type vendor_hal_latency_hwservice, hwservice_manager_type;
 type vendor_hal_vnddisplayconfig_service, service_manager_type, protected_service;
 type vendor_hal_dspmanager_hwservice, hwservice_manager_type;
 type vendor_hal_limits_hwservice, hwservice_manager_type;
+type vendor_hal_mwqemadapter_hwservice, hwservice_manager_type;
 type vendor_hal_perf_hwservice, hwservice_manager_type;
 type vendor_hal_qseecom_hwservice, hwservice_manager_type;
 type vendor_hal_qteeconnector_hwservice, hwservice_manager_type;

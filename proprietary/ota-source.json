@@ -31,6 +31,21 @@
       "sha256": "0aec960356c28ff6cf1e601966beacaa39ce96c39f7468bff4eaa501b790d0db",
       "filesystem": "erofs"
     },
+    "system_ext": {
+      "size": 771280896,
+      "sha256": "9b7eeea9702bd37ade6ac22d7f86b19ce75f516323096b5f71134fb98fdf86ed",
+      "filesystem": "erofs"
+    },
+    "product": {
+      "size": 4769984512,
+      "sha256": "b87f99a4dc667ef899f7390cbc7b5f456678d4cbbf44575f9f7910966d5c09f8",
+      "filesystem": "erofs"
+    },
+    "system": {
+      "size": 760152064,
+      "sha256": "6f6606e8c776abc4ec739202a643823b6ad9cea3dbcdd727120cf19b9f8fafa5",
+      "filesystem": "erofs"
+    },
     "abl": {
       "size": 204800,
       "sha256": "592214bb5c1afc896c77d7468bbb64e9ed70d4dc045ce1d639b25e4c250af7e7",

@@ -108,6 +108,7 @@ vendor/etc/qcril_database/upgrade/other/6_version_change_property_table_qcrilnr.
 vendor/etc/qcril_database/upgrade/other/7_version_update_ecc_table_qcrilnr.sql|7a8d15303f29eddc33b12c105083abc1d3f567048899714d1710ffa721384815
 vendor/etc/qcril_database/upgrade/other/8_version_update_ecc_table.sql|e01cd6adcd745ef28f134ed29baed19ed2eb2d8b43adb2bfbf0da671003ab02e
 vendor/etc/qcril_database/upgrade/other/9_version_update_ecc_table.sql|71919236584cdb999c298cbb197b8574f1571f623500fad7749a2bfa027f7207
+vendor/etc/seccomp_policy/imsrtp.policy|6d52bba745f1ea806e0b17793ef3541dda52ee3f6aaf4b6eda77af0ae497aafb
 vendor/etc/seccomp_policy/qcrilnr@2.0.policy|7b61e56108910262cbd4190063945732eb8532ba0fcd21f77a14d0c67f705e6e
 vendor/etc/xiaomi_ecc_list.xml|1a3cf97bdb14d40d8070a44bcc70f6a19b99be9ad3a066df063484f3c246a086
 vendor/etc/xiaomi_ecc_list_preference.xml|e20828ff3963590272962c17aad0bef49bb4872c3c346cbfe99920408915ccec
@@ -231,8 +232,131 @@ vendor/lib64/vendor.qti.ims.rcsuce@1.0.so|fee848b2b3dce98ed791ef05cd97a52e6e6f2f
 vendor/lib64/vendor.qti.ims.rcsuce@1.1.so|9baef71eb016b5560526edcb08c5d295cd692ba6ee5180b59ec409245d2d0e28
 vendor/lib64/vendor.qti.ims.rcsuce@1.2.so|e57987f5fc9006e1fce1c9c72c1497623ff3889ad732ddd9b6aa2afb883d2b4a
 vendor/lib64/vendor.qti.imsrtpservice@3.0-service-Impl.so|b20bd788202010a89a6a3e1742f624f88f2dcda9cc40dfa7d4f482039d0bd105
-vendor/lib64/vendor.qti.imsrtpservice@3.0.so|340021f1be4dee22394e2662f8974660ebbe3cfb58e6b014d96975d8ce721510
+vendor/lib64/vendor.qti.imsrtpservice@3.0.so;MODULE_SUFFIX=_vendor|340021f1be4dee22394e2662f8974660ebbe3cfb58e6b014d96975d8ce721510
 vendor/lib64/vendor.qti.latency@2.0.so|9a16dc292d4f57c159f85fd2612be1158a707e278112468f7e83a0c9c58eb4c5
+
+# === IMS: Qualcomm ImsService, telephony extensions and RCS (system_ext, product) ===
+# No source exists. VoLTE, video calling (VT) and Wi-Fi calling run in org.codeaurora.ims (the
+# ImsService telephony binds, overlay/TelephonyResSm8450), which talks to qcrilNrd and imsdaemon
+# (Radio section) over vendor.qti.hardware.radio.ims. Its shared libraries ims-ext-common,
+# qti-telephony-utils, qti-telephony-hidl-wrapper and extphonelib are built from
+# vendor/codeaurora/telephony (Qualcomm LA.QSSI.17.0); Xiaomi's apps call
+# android.telephony.TelephonyBaseUtilsStub (telephony/, boot jar). Apps are signed with the platform key.
+product/app/uimgbaservice/uimgbaservice.apk|513cd83022a2748b7bdab21b08bcd43cb3e16271686a15858ea50dc19cb5553d
+product/etc/permissions/UimGba.xml|137a7d3bbf496f19b63571517329edc8c5575a5238c272a55c5f04720102c31c
+product/etc/permissions/UimGbaManager.xml|5bb9e15ddd1462e19f80f95025137b8141227dd1e09ceb53ce4c06c7d7819508
+product/etc/permissions/UimService.xml|a58cd0fa2cf73fe082bd62987fe5a94377d2ec54db6600a253f818da121a3edc
+product/framework/uimgbalibrary.jar|f6db57503e661366763df20a10853bbd032f231d8fe03196c8e8c7671fd769e7
+product/framework/uimgbamanagerlibrary.jar|1acc6d4868f7e5f8e89cdbdc5f8c84c67c15fc3c895977fc1f23e958dc09f714
+product/framework/uimservicelibrary.jar|64339a0f3f8f9dc847a5574432050fa7378aa709220a8d65472f785f66e066cf
+system/lib64/vendor.qti.diaghal-V1-ndk.so|ca6e932c7c5f99f677c99093b136facd0ae0e956a15dcb36193c668c3e724f79
+system_ext/app/ImsRcsService/ImsRcsService.apk|a05816b5bb4acdc12d7bc014a9d182da9e2e25e5960da6af60ff5faf20fbcc98
+system_ext/app/QtiTelephonyService/QtiTelephonyService.apk|9e4f1e32f986122dbfc4b6f4e0e27e4d774df701339d27037817e416864b090f
+system_ext/etc/permissions/qcrilhook.xml|30f2d18283025a215e823cd286a89673280077791d22ce5ccabcbb5a6e71bf5f
+system_ext/etc/permissions/qti_permissions.xml|888a73574ad91867ad2b0f6b48fddf0a98d2b9aebaa3fa6f0760c1d3970836c8
+system_ext/etc/permissions/telephony_system-ext_privapp-permissions-qti.xml|ffaa94243f4c011922f6c98d3bc417ebfaacad052a198bd10eddfe4c6e605260
+system_ext/etc/permissions/vendor.qti.ims.rcsservice.xml|5872de69f4ca9fde586564af5b5c22dd85e8655f3e0ece22a1c28bb5f2245c92
+system_ext/etc/sysconfig/qti_telephony_system_packages_config.xml|44e138cc1a7f3fcb5a7456590c2ac44e861c5fa086e65790aefb08b2c7ee5138
+system_ext/framework/qcrilhook.jar|7568af2429495be39e84e783c8f4186c03fc82c61832d2d5f724efd009232c66
+system_ext/framework/vendor.qti.ims.connection-V1.0-java.jar|301970cbf4ae406e07b664c9d6694e4b0a441e7610478437476508260cde3441
+system_ext/framework/vendor.qti.ims.connectionaidlservice-V1-java.jar|324b987d96f0444a64fc508de2641d5e55987fc1c95fb6ddb2422340ec758ea6
+system_ext/framework/vendor.qti.ims.factory-V2.0-java.jar|9d6d849e6b3a2b641fc618064ba01b5ad8279e70de16f9d7f520d8c7e19b1d61
+system_ext/framework/vendor.qti.ims.factory-V2.1-java.jar|e80d53cd6ac0755e48dc58df78817907c21ce9db7f59911bf861449361d64204
+system_ext/framework/vendor.qti.ims.factory-V2.2-java.jar|e105faa67c085da3a7ac488c22eb6f10f7d014cc17ceaa5dd12b55837b9b53cd
+system_ext/framework/vendor.qti.ims.factoryaidlservice-V1-java.jar|982d7a1fa04b3eb58953c946cafbed4a621555f3d270fe55450b061204dfe5b7
+system_ext/framework/vendor.qti.ims.rcssip-V1.0-java.jar|deb65ead95f7fc88d7b8e5c5676eee3ce2be7b35f00df616e517298c410cd01a
+system_ext/framework/vendor.qti.ims.rcssip-V1.1-java.jar|a4c8c8f45e3f2c0fa48f1283163cc4e3d6abca5b1e982966e5b21c690b2e3069
+system_ext/framework/vendor.qti.ims.rcssip-V1.2-java.jar|2b54af12f6a9c8b1b8508cbc6045bf60e48ecd1b793ae74e9329e3a229e07432
+system_ext/framework/vendor.qti.ims.rcssipaidlservice-V1-java.jar|d0c34c3c8b605db4dfbdb807afdb50af1286b0eba7e016ff903ff48a981b4311
+system_ext/framework/vendor.qti.ims.rcsuce-V1.0-java.jar|c40f565fcc2651f42839078759222dd43cfd73d2668613a528094c02e85f48dc
+system_ext/framework/vendor.qti.ims.rcsuce-V1.1-java.jar|3eba0cd9707321ff442a89d3f15144ea23439c8f78ba4a506e966fac7002ba62
+system_ext/framework/vendor.qti.ims.rcsuce-V1.2-java.jar|9b74e888a1367bad5a5f1404c8df548ae3eba724aeba1eca111c79b243a38d16
+system_ext/framework/vendor.qti.ims.rcsuceaidlservice-V1-java.jar|a7017c0e1add299c83c1c233afabf09103d6bf10590cb3a1bbe8001ed05ce18a
+system_ext/lib64/lib-imsvideocodec.so|1225bfc45e3a24d4571193f548e1f852c1776c847c2def921f3fb513afa75016
+system_ext/lib64/lib-imsvt.so|18c2485c035a6ca3d41cd545cfccffff26425adcbd3e487c1318fd83eaeb49d2
+system_ext/lib64/lib-imsvtextutils.so|0bc10e7fd068d7e2a2a8a5684abb28c9f66a4bfb9f69cfc1cffac23440c0f1be
+system_ext/lib64/lib-imsvtutils.so|a059c268d24d9fb94be978bd53dc536c67b77321f02d6edbd806870da8dc5b48
+system_ext/lib64/libdiag_system.so|318366e2c17e3f072d78f65b53316f2e8783d624ae6c45eb8943e3c5654d62ac
+system_ext/lib64/libimscamera_jni.so;SYMLINK=system_ext/priv-app/ims/lib/arm64/libimscamera_jni.so|c941f91321c4b5ad358f6c7c145fd787d9ca4c8d61e170cabbe88077171743a9
+system_ext/lib64/libimsmedia_jni.so;SYMLINK=system_ext/priv-app/ims/lib/arm64/libimsmedia_jni.so|6cf533e3abb59d8a7044ab4c3d25b93bb4b9703455acf44d03bd07e223e43086
+system_ext/lib64/vendor.qti.ImsRtpService-V1-ndk.so|daf00ee8d94c2a27f8575e9767e5881376d46b89323f5690a757aa79205abbdd
+system_ext/lib64/vendor.qti.diaghal@1.0.so|6f0b1991ca88adb199b9926eaa708f4085fc53ef88d4e5860e7c4a519fbee238
+system_ext/lib64/vendor.qti.imsrtpservice@3.0.so|e51f0d25aed6a2de98bbf4cb41dde65ab37173c0c6b5e7885aa1577fdf9d9c23
+system_ext/lib64/vendor.qti.imsrtpservice@3.1.so|62e8ec0f029a8554cbd506278865d9b78c307cfcbe0b1c81afe8e87520827792
+system_ext/priv-app/QtiTelephony/QtiTelephony.apk;REQUIRED=QtiTelephonyCompat|abf06fe544515396e07bdb7cf2c305c998b730b3626a460f914100d3058222f7
+system_ext/priv-app/ims/ims.apk;REQUIRED=QtiTelephonyCompat|4a81ccdb8146f7fef8b7572bc8edccdb995bb98455a0075a1a6d42df15252a64
+system_ext/priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk|1dd801e97f22d84d22526430730e916d153caf762ccb64c4273ec3437c5c9227
+
+# === CNE and IWLAN: connectivity engine and Wi-Fi calling data path ===
+# No source exists. vendor.qti.iwlan (IWlanService) is the WLAN data, network and qualified
+# networks service of telephony (overlay/FrameworksResSm8450) for Wi-Fi calling; it uses the
+# IWLAN HAL of qcrilNrd (libqcrilDataModule). cnd and CneApp measure the Wi-Fi link quality
+# for the IMS handover between LTE/NR and Wi-Fi; CACertService serves the ePDG certificates.
+# CneApp, IWlanService and CACertService share com.qualcomm.qti.qtidataservices (one key).
+vendor/app/CACertService/CACertService.apk|04e6fe959aa38e323f7e67ff4d8064c27a1422c4c8fb08e2968042a75f795978
+vendor/app/CneApp/CneApp.apk|a8be284c2d9cefa658cf4053d544246304f4b06f371f9c72afbab067e674dc76
+vendor/app/IWlanService/IWlanService.apk|b66c63ad65b9f863135c6e0c948339431d70eaa19943ea9ece55bce5e26ed72a
+vendor/bin/cnd|ab97d18a0f4bde6d58ded497516480033c6f122b254246cc2ab3ed295ff50fe8
+vendor/etc/cne/mwqem.conf|06f5f3921860f42c533175b5b22835094fe7f4c50c850ae9a2ea640142b2cc9e
+vendor/etc/cne/profileMwqem.xml|484757bca39596eccd5a19da9a0065a4f450264cc160fd3ebbaefc03800304dd
+vendor/etc/cne/wqeclient/ATT/ATT_profile1.xml|5d61155739014995ef185fa05d1ea9bacc4146bf5c4bd46a613eb40727e06781
+vendor/etc/cne/wqeclient/ATT/ATT_profile2.xml|9d61c70a9b4fbfe741fe3129fae2df3023ee56366a724b782a6e3a73fe0e10a7
+vendor/etc/cne/wqeclient/ATT/ATT_profile3.xml|2623db98e564a94bbb2b5717cd1d61ecc976c9ed62fa7e951f010ba2440690b1
+vendor/etc/cne/wqeclient/ATT/ATT_profile4.xml|5f6ebbce30435d7ed09b5112e4d843d28d9e2226a0f6b03020d5f23a1618244b
+vendor/etc/cne/wqeclient/ATT/ATT_profile5.xml|a870688729f3c25843af96c40955317b3f4a026ce3152d4e652ac916c4a3cfb3
+vendor/etc/cne/wqeclient/ATT/ATT_profile6.xml|9ef480fc2ef5c58dae924125750889311c446e2c19f293073b9eae83210299e6
+vendor/etc/cne/wqeclient/ATT/ATT_profile7.xml|d454f91f2c2f24c349a1fddf469ed558f5e1126afce0a0cd50c4ec9cf551da95
+vendor/etc/cne/wqeclient/ROW/ROW_profile1.xml|e0fedd793c3e490d9dcf67ac45b244660d065bda31ac2f0249deb49ecf0cd637
+vendor/etc/cne/wqeclient/ROW/ROW_profile15.xml|d90f219026a81182ce2b2fba7f137c45bf372489219a58eadb7862a304e34e25
+vendor/etc/cne/wqeclient/ROW/ROW_profile16.xml|4a093d2e3013e520a36a7afdc1f9509844233ce505264567e9f8dde0ca2168be
+vendor/etc/cne/wqeclient/ROW/ROW_profile17.xml|e7c2e6a559f7841b6aa9dcd8ce1651a648198f5193508228b36466ef7f479737
+vendor/etc/cne/wqeclient/ROW/ROW_profile18.xml|c84a85310e5fcf8f6a04251b719e9fcc9647cfed4c4e1720c0017af2aa3dc779
+vendor/etc/cne/wqeclient/ROW/ROW_profile19.xml|70e8e0991d9f9a8f0ee087412436836694d981434659c70b43f29ca29e24f445
+vendor/etc/cne/wqeclient/ROW/ROW_profile2.xml|a1fed516bbdccb987ba9d7a3a3ac99a4060508dcb46355b2bb3242e2f2831bd1
+vendor/etc/cne/wqeclient/ROW/ROW_profile20.xml|81e72d606198f328c7171c2dbb6562370e96dbbb0aadc55aaee8cee0a0a47e3a
+vendor/etc/cne/wqeclient/ROW/ROW_profile21.xml|f5f04a396faf4a6da665540d0b8bca88fef7d931d15974a0c768f6d6e968c9c2
+vendor/etc/cne/wqeclient/ROW/ROW_profile3.xml|49bb9d472555e2738c8303e41429e90abaabed8b2f985366d58b7d411c4eeb78
+vendor/etc/cne/wqeclient/ROW/ROW_profile32.xml|c190b337c979bffdcad012192d2de1d83f021298570d3c713e222430bd57e0cf
+vendor/etc/cne/wqeclient/ROW/ROW_profile4.xml|2623db98e564a94bbb2b5717cd1d61ecc976c9ed62fa7e951f010ba2440690b1
+vendor/etc/cne/wqeclient/ROW/ROW_profile5.xml|ec46bf85e0160f66b970c52a9322a8b839be5c5c4fdadcfb7f629fc592e45dbd
+vendor/etc/cne/wqeclient/ROW/ROW_profile6.xml|6f996e5bb9e6dd10e111c6dbbfdef70c2e72c7812a653721cd87a6ef5ca3f9c3
+vendor/etc/cne/wqeclient/ROW/ROW_profile7.xml|d9841111688fe6da58a574fc3f353aea9bb8452e0a87c620df3739f1ddd74a49
+vendor/etc/cne/wqeclient/VZW/VZW_profile1.xml|7c920d295835ec424e253b5e62ea1796f21fb1c432f537ebd9c6498b038167aa
+vendor/etc/cne/wqeclient/VZW/VZW_profile2.xml|6d4ae0e27e2530cc072e0fde67bce63e2654fe40389d0d304d7539e216de6866
+vendor/etc/cne/wqeclient/VZW/VZW_profile3.xml|0340d27f447eaf5a4ab733f638bb6dda0a5f994c98d6d508c563f14e239390fe
+vendor/etc/cne/wqeclient/VZW/VZW_profile4.xml|158919d47cdcde533bb5e2473f8dffcf665c2ca1f5aedf0154464482958ab0f3
+vendor/etc/cne/wqeclient/VZW/VZW_profile5.xml|5d0b49eb4fe3df53612805dead76df501de5fe72f2e1394369c6b552607b1672
+vendor/etc/cne/wqeclient/VZW/VZW_profile6.xml|d6b9d21d239d57d1e21320631be2df3501f23ae168ccaec3cf1f4cef56a46170
+vendor/etc/cne/wqeclient/VZW/VZW_profile7.xml|6bf6de9715ddcdcfc24a991062e69613c0324594af02e74b449829a3235f4925
+vendor/etc/default-permissions/com.qualcomm.qti.cne.xml|ebcd59392748fb89cf4c74457351fae18b42550519b9587b70ee2e9b3b9b6e7d
+vendor/etc/init/cnd.rc|1f861f9e0431640549e58fbb1733f57d1f2db1ef0956d05c8777f10aa7e5cf62
+vendor/lib64/libcne.so|b28f6f7064cdfbdd76d07529e2e9c640fcbb4e3a2a103e54c85c4798d12395f3
+vendor/lib64/libcneoplookup.so|ce7beadf25f7c1d533a93fff631319e5363848990691c972d54a80f161f53872
+vendor/lib64/libcneqmiutils.so|633f4123c91973d81ca6198a7b9b106d14ff1e54325a35834c9716de5dadf742
+vendor/lib64/libjnihelper.so|6a693ed5de8a9f0d1f2caf239f82473b47fac67a8f018d8513056e6daa6414a7
+vendor/lib64/libmasc.so|b024b7a064b8ddff09e6b3df4608e077a30b42114ba0cf1d0c7807fb948404b3
+vendor/lib64/libnetmgrext_interface_client.so|972331234f9febd53c968f97b5ad54feee55175f4ca4802196b702232b889dfc
+vendor/lib64/libshsc.so|e20663c2a7d4936736f759812dc63770cd415dd5e25cdada319379376aa30b40
+vendor/lib64/libvndfwk_detect_jni.qti_vendor.so;SYMLINK=vendor/app/CneApp/lib/arm64/libvndfwk_detect_jni.qti_vendor.so|4f280121630eae1ddfc188d5a486546815c750f2eaa652173de7cf7d9024e776
+vendor/lib64/libwms.so|9816a4fc032b6e38e054025206f026d9a9a36b3d9224b2adaa459ce276c0dc5f
+vendor/lib64/libwqe.so|0c3d0f469b77e76f1916d6e9b74d548ad301c5fc403b0b2b102180bd6c01be0a
+vendor/lib64/vendor.qti.data.factory@2.1.so|3a572239c72cdcd63c07650b08ef073f8256770d2cc22fe030772a8f83d6cabd
+vendor/lib64/vendor.qti.data.factory@2.2.so|0895636fe2cab142b2779d8fa074df6ccf1dca9d8a80ca9b71320813ca29d90d
+vendor/lib64/vendor.qti.data.factory@2.3.so|237ed74860918462fa3bfb354d2d16bf1ee04e17854e539f377a06ec0f566caa
+vendor/lib64/vendor.qti.data.factory@2.4.so|9c2d8ff64586de84a788841c9209a9fdff3e66e7b487262e12d510ed72f8f0e6
+vendor/lib64/vendor.qti.data.factory@2.5.so|bc303be7a33212a223081374c4e3eb3320b7df29fa8ae9dfff07a6119d77102f
+vendor/lib64/vendor.qti.data.mwqem@1.0.so|60dc14d4d85d650276f8186207d953d889dfdb6e322d3aff61bf0807c6b684a0
+vendor/lib64/vendor.qti.data.slm@1.0.so|836752e0c80a34ea2a90e788e6695ed1dcd839351bef6046017653c49c04f634
+vendor/lib64/vendor.qti.hardware.data.cne.internal.server@1.1.so|4654c9f5d421d45b6f67a023588030d94b17664cc7a3060bd39c4c0cd4b765e0
+vendor/lib64/vendor.qti.hardware.data.cne.internal.server@1.2.so|7644e3609f68bde30d00087f80aadcb13ed0e72127abb4fedc55c936114cf914
+vendor/lib64/vendor.qti.hardware.data.dynamicdds@1.1.so|d08f34141a9e7f824fae402fc1f2489637c192f03e56ee4971bc7ead1bf513d7
+vendor/lib64/vendor.qti.hardware.data.flow@1.0.so|bafc0e9bc4aad25730729c18f752e3fe05da9b77b94587cde8e14cbff31ffcc3
+vendor/lib64/vendor.qti.hardware.data.latency@1.0.so|67a3af0a60395d2a139bc521faa590b0ca6c0604fade211576b3ff283f41aa26
+vendor/lib64/vendor.qti.hardware.data.lce@1.0.so|4a0465215a09cba988a3ffb81b06478dae810441e93eac4f224d91d924ed7d41
+vendor/lib64/vendor.qti.hardware.mwqemadapter@1.0.so|105ba507f222b4d415c5c45f219f436fdde5dc0f6938480b653719800c52c6ce
+vendor/lib64/vendor.qti.hardware.slmadapter@1.0.so|ddb9882cc94fc6116ecb165c9b2cd162105ae3639fc2ea2666f6d70ce027798d
+vendor/lib64/vendor.qti.ims.rcsconfig@1.1.so|cec34ecee32d20884a2a487fdb589c05134c0450953ef86a31e24bdbc4b8879c
+vendor/lib64/vendor.qti.latency@2.1.so|afcedc7fcf601553005ec564534204a17ec16a8198e70114470849e1d89cf3b6
 
 # === Modem and DSP infrastructure: PD mapper, QRTR, EFS (rmt_storage/tftp), time ===
 # No source exists in our tree. Needed by modem, ADSP and CDSP subsystem restart.
@@ -783,7 +907,8 @@ vendor/lib64/vendor.qti.esepowermanager@1.1.so|b1dcd16a17c6a59bf59fdd69e7b2064c3
 vendor/lib64/vendor.xiaomi.hardware.mtdservice@1.0.so|f4708c97b2bb08fb00f6c95de0b3ba7ca44306c52fe43785b68bd410ccbb8788
 
 # === Data: IPA (ipacm, tethering offload), ADPL, QTI, data and netmgr configuration ===
-# CNE and DPM are not listed: they need Qualcomm system frameworks the AOSP base does not have.
+# CNE has its own section. DPM is not listed: dpmd and tcmd are system_ext services whose
+# SELinux domains this build does not define; CNE, IMS and IWLAN do not use it.
 # ipa_fws.rc triggers the IPA firmware load (/dev/ipa) the modem data path needs.
 vendor/bin/adpl|ff22997adaadd3bf2bd0a1c784198a13a45871b13a7c82707825550364a94954
 vendor/bin/ipacm|37c8733f26ff836d0b2c401664463c57fef10215ef850c0e261de9c3cb8212e2

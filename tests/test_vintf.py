@@ -144,6 +144,12 @@ SERVERS = {
     "com.qualcomm.qti.uceservice": ["vendor/bin/imsdaemon", "vendor/lib64/lib-imsrcsservice.so"],
     "vendor.qti.hardware.data.connection": QCRIL + ["vendor/lib64/libqcrilDataModule.so"],
     "vendor.qti.hardware.data.iwlan": QCRIL + ["vendor/lib64/libqcrilDataModule.so"],
+    # CNE: cnd (libcne) serves the data factory, link latency and MWQEM adapter;
+    # CACertService (a Java vendor app) serves the ePDG certificate HAL of Wi-Fi calling.
+    "vendor.qti.data.factory": ["vendor/bin/cnd", "vendor/lib64/vendor.qti.data.factory@2.5.so"],
+    "vendor.qti.hardware.data.latency": ["vendor/bin/cnd", "vendor/lib64/vendor.qti.hardware.data.latency@1.0.so"],
+    "vendor.qti.hardware.mwqemadapter": ["vendor/bin/cnd", "vendor/lib64/vendor.qti.hardware.mwqemadapter@1.0.so"],
+    "vendor.qti.hardware.cacert": ["vendor/app/CACertService/CACertService.apk"],
     "vendor.qti.hardware.data.connectionfactory": QCRIL + ["vendor/lib64/libqcrildataaidl.so"],
     "vendor.qti.hardware.radio.internal.deviceinfo": QCRIL + ["vendor/lib64/deviceInfoServiceModuleNr.so"],
     # Served by the AOSP audio service (BUILT) with the stock modules.

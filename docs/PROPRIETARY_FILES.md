@@ -70,11 +70,17 @@ system side.
 | `mondrian/proprietary-files.txt` (device-specific, incl. one `odm` file) | 899 | 1195 MB |
 
 Deliberately excluded: the MIUI camera app engine (`libmialgoengine`,
-`com.xiaomi.plugin.*`, `campostproc`, `camera.xiaomi.so`), CNE daemon, DPM,
+`com.xiaomi.plugin.*`, `campostproc`, `camera.xiaomi.so`), DPM,
 WiFi Display, Perf/IOP, Soter, Mlipay, Trusted UI, Dolby, VPP, XR tracking,
 diagnostics, factory tests and the `vendor.xiaomi.*` services. Client
 libraries the radio stack links directly (for example `libcneapiclient`)
 stay, because their users cannot load without them.
+
+IMS (VoLTE, video calling, Wi-Fi calling) adds the stock Qualcomm apps and
+libraries of system_ext and product, one library of the system image and
+CNE/IWLAN of vendor (docs/IMS.md). `tools/extract_proprietary.py` reads these
+partitions too; the system image is system-as-root (`system/<path>` is
+`<image root>/system/<path>`).
 
 The camera is taken as the complete Xiaomi HAL: `com.qti.chiusecaseselector`
 and `camera.qcom.so` reference 24 Xiaomi CHI nodes themselves, so removing

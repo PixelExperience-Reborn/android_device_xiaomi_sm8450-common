@@ -44,4 +44,17 @@
         <item>EvDo_A:4094,87380,524288,4096,16384,262144</item>
         <item>EvDo_B:4094,87380,524288,4096,16384,262144</item>
     </string-array>
+    <!-- IMS on the stock Qualcomm stack (stock FrameworksResCommon_Sys): VoLTE, video
+         calling and Wi-Fi calling are device features, carriers enable them in
+         CarrierConfig; vendor.qti.iwlan is the IWLAN data, network and qualified
+         networks service (proprietary-files.txt, CNE and IWLAN section). -->
+    <bool name="config_device_volte_available">true</bool>
+    <bool name="config_carrier_volte_available">true</bool>
+    <bool name="config_device_vt_available">true</bool>
+    <bool name="config_device_wfc_ims_available">true</bool>
+    <bool name="config_enable_iwlan_handover_policy">false</bool>
+    <bool name="config_enhanced_iwlan_handover_check">false</bool>
+    <string name="config_wlan_data_service_package" translatable="false">vendor.qti.iwlan</string>
+    <string name="config_wlan_network_service_package" translatable="false">vendor.qti.iwlan</string>
+    <string name="config_qualified_networks_service_package" translatable="false">vendor.qti.iwlan</string>
 </resources>

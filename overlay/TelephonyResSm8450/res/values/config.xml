@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- The ImsService packages telephony binds (stock TelephonyResCommon_Sys of
+     OS3.0.8.0): the Qualcomm MMTEL ImsService and the Qualcomm RCS service. -->
+<resources>
+    <string name="config_ims_mmtel_package" translatable="false">org.codeaurora.ims</string>
+    <string name="config_ims_rcs_package" translatable="false">vendor.qti.imsrcs</string>
+</resources>

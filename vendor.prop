@@ -196,6 +196,11 @@ persist.vendor.vcb.enable=false
 ro.camera.enableCamera1MaxZsl=1
 
 # Radio: QCRIL, IMS, 5G
+# persist.dbg.*_avail_ovr: the IMS features are offered for every carrier; the
+# modem (MBN of the carrier) and CarrierConfig decide whether IMS registers.
+persist.dbg.volte_avail_ovr=1
+persist.dbg.vt_avail_ovr=1
+persist.dbg.wfc_avail_ovr=1
 persist.radio.multisim.config=dsds
 persist.vendor.radio.apm_sim_not_pwdn=1
 persist.vendor.radio.custom_ecc=1
@@ -211,6 +216,13 @@ ro.vendor.miui.build.region=cn
 ro.vendor.radio.5g=3
 ro.vendor.radio.build_profile=v-stable
 ro.vendor.radio.features_common=3
+telephony.lteOnCdmaDevice=1
+
+# Data: netmgrd (mobile data), with QTI and ADPL (USB tethering, DPL) started
+# by init.class_main.sh in concurrent mode; CNE (Wi-Fi quality for Wi-Fi calling).
+# Stock sets these in the system build.prop.
+persist.vendor.cne.feature=1
+persist.vendor.data.mode=concurrent
 
 # Bluetooth
 bluetooth.profile.asha.central.enabled=true

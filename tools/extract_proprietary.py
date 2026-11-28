@@ -6,10 +6,13 @@ closed file with the SHA-256 it has in the OTA pinned by
 proprietary/ota-source.json. This tool copies exactly those files into the
 vendor repositories and refuses any file whose hash differs.
 
-Entries start with the partition they come from (vendor/ or odm/). Sources,
-in order of preference, per partition:
-  --vendor-dir DIR / --odm-dir DIR       an already extracted partition
-  --vendor-image IMG / --odm-image IMG   the partition image (EROFS; needs fsck.erofs)
+Entries start with the partition they come from (vendor/, odm/, or system_ext/,
+product/ and system/ for the Qualcomm IMS and telephony apps and libraries). The
+system image is system-as-root: system/<path> is <image root>/system/<path>.
+Sources, in order of preference, per partition:
+  --<partition>-dir DIR                  an already extracted partition (--vendor-dir,
+                                         --odm-dir, --system_ext-dir, --product-dir, --system-dir)
+  --<partition>-image IMG                the partition image (EROFS; needs fsck.erofs)
   --ota ZIP|URL                          the official OTA itself (default: the pinned URLs)
 
 Default layout inside an Android tree:
@@ -45,8 +48,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from blob_fixups import apply as apply_fixups, rename_ndk_platform  # noqa: E402
 # <file>[;<extract-utils argument>...]|<sha256>, e.g. ;SYMLINK=<link> or
 # ;MODULE_SUFFIX=_vendor; the arguments shape the build rules only.
-LINE = re.compile(r"^((?:vendor|odm)/[A-Za-z0-9_@+.,/-]+)(?:;[A-Z_]+(?:=[A-Za-z0-9_@+.,/-]+)?)*\|([0-9a-f]{64})$")
-PARTITIONS = ("vendor", "odm")
+LINE = re.compile(r"^((?:vendor|odm|system_ext|product|system)/[A-Za-z0-9_@+.,/-]+)(?:;[A-Z_]+(?:=[A-Za-z0-9_@+.,/-]+)?)*\|([0-9a-f]{64})$")
+PARTITIONS = ("vendor", "odm", "system_ext", "product", "system")
 FIRMWARE_LINE = re.compile(r"^([a-z0-9_-]+)\|([0-9a-f]{64})$")
 
 
@@ -75,7 +78,7 @@ def read_list(path: Path) -> list[Entry]:
             continue
         match = LINE.match(line)
         if not match:
-            raise ListError(f"{path}:{number}: expected '<vendor|odm>/<path>|<sha256>': {raw!r}")
+            raise ListError(f"{path}:{number}: expected '<vendor|odm|system_ext|product|system>/<path>|<sha256>': {raw!r}")
         if section is None:
             raise ListError(f"{path}:{number}: entry before the first section header")
         if match.group(1) in seen:
@@ -171,6 +174,11 @@ def firmware(location: str | None, source: dict, lists, images: Path | None, ver
     return problems
 
 
+def partition_root(name: str, tree: Path) -> Path:
+    """The directory list paths of `name` are relative to (system is system-as-root)."""
+    return tree / "system" if name == "system" and (tree / "system/build.prop").is_file() else tree
+
+
 def tree_from_image(image: Path, work: Path, name: str) -> Path:
     if shutil.which("fsck.erofs") is None:
         raise SystemExit("fsck.erofs (erofs-utils) is required to read the EROFS partition image")
@@ -196,7 +204,7 @@ def trees_from_ota(location: str | None, source: dict, work: Path, jobs: int,
                 ota.extract(name, image, jobs,
                             lambda done, total, n=name: print(f"\r  {n}: {done}/{total}", end="", flush=True))
                 print()
-                trees[name] = tree_from_image(image, work, name)
+                trees[name] = partition_root(name, tree_from_image(image, work, name))
             return trees
         except (OtaError, OSError) as error:
             errors.append(f"{url}: {error}")
@@ -237,9 +245,9 @@ def main() -> int:
         trees, from_ota = {}, []
         for name in needed:
             if getattr(args, f"{name}_dir"):
-                trees[name] = getattr(args, f"{name}_dir")
+                trees[name] = partition_root(name, getattr(args, f"{name}_dir"))
             elif getattr(args, f"{name}_image"):
-                trees[name] = tree_from_image(getattr(args, f"{name}_image"), work, name)
+                trees[name] = partition_root(name, tree_from_image(getattr(args, f"{name}_image"), work, name))
             else:
                 from_ota.append(name)
         if from_ota:

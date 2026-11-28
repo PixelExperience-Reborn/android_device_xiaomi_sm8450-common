@@ -65,10 +65,41 @@ PRODUCT_PACKAGES += \
 # stock OS3.0.8.0 QTI common overlays that Android 17 still defines
 # (docs/OVERLAYS.md). The device tree adds its display and model overlays.
 PRODUCT_PACKAGES += \
+    CarrierConfigResSm8450 \
     FrameworksResSm8450 \
     SettingsResSm8450 \
     SystemUIResSm8450 \
+    TelephonyResSm8450 \
     WifiResSm8450
+
+# IMS (VoLTE, video calling, Wi-Fi calling) on the stock Qualcomm stack: the
+# ImsService org.codeaurora.ims, QtiTelephony, qcrilmsgtunnel and the RCS
+# service are stock system_ext apps (proprietary-files.txt, IMS section) that
+# talk to qcrilNrd and imsdaemon. Their shared libraries come from
+# vendor/codeaurora/telephony (Qualcomm LA.QSSI.17.0, built for Android 17);
+# the Xiaomi apps also need telephony/ (TelephonyBaseUtilsStub on the boot
+# classpath, QtiTelephonyCompat). The overlays name the ImsService and the
+# IWLAN services for telephony.
+PRODUCT_PACKAGES += \
+    extphonelib \
+    extphonelib-product \
+    extphonelib.xml \
+    extphonelib_product.xml \
+    ims-ext-common \
+    ims_ext_common.xml \
+    qti-telephony-hidl-wrapper \
+    qti-telephony-hidl-wrapper-prd \
+    qti_telephony_hidl_wrapper.xml \
+    qti_telephony_hidl_wrapper_prd.xml \
+    qti-telephony-utils \
+    qti-telephony-utils-prd \
+    qti_telephony_utils.xml \
+    qti_telephony_utils_prd.xml \
+    QtiTelephonyCompat \
+    xiaomi-telephony-stub
+
+PRODUCT_BOOT_JARS += \
+    xiaomi-telephony-stub
 
 # AOSP-owned storage, generic ramdisk and virtual A/B with vendor_boot.
 # These are platform make fragments, not LineageOS product inheritance.

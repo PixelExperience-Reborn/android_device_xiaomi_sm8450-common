@@ -1,0 +1,30 @@
+//
+// SPDX-FileCopyrightText: PixelExperience-Reborn
+// SPDX-FileCopyrightText: 2024-2025 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+// Java pieces the stock Xiaomi/Qualcomm telephony apps of OS3.0.8.0 need on
+// an AOSP framework (proprietary-files.txt, IMS section). Same modules as
+// LineageOS lineage-24.0 (hardware/xiaomi/telephony and
+// hardware/qcom-caf/common/qtitelephony-compat).
+
+// ims.apk and QtiTelephony.apk call android.telephony.TelephonyBaseUtilsStub
+// .isMiuiRom()Z, a HyperOS framework class. On the boot classpath
+// (PRODUCT_BOOT_JARS in common.mk) so every process that loads them finds it.
+java_library {
+    name: "xiaomi-telephony-stub",
+    installable: true,
+    provides_uses_lib: "xiaomi-telephony-stub",
+    sdk_version: "system_current",
+    srcs: ["stub/src/**/*.java"],
+}
+
+// Declares the broadcasts QtiTelephony.apk sends as protected, as the
+// Qualcomm framework does: an undeclared broadcast from a system process is
+// refused on Android 17.
+android_app {
+    name: "QtiTelephonyCompat",
+    manifest: "compat/AndroidManifest.xml",
+    sdk_version: "current",
+    system_ext_specific: true,
+}

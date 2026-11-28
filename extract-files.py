@@ -28,10 +28,18 @@ namespace_imports = [
 # the same vendor path is a duplicate install. What the stock KeyMint uses of
 # libkeymaster_messages has the same layout in Android 12 and 17
 # (tests/test_proprietary_files.py, SOURCE_BUILT).
+def lib_fixup_vendor_suffix(lib: str, partition: str, *args, **kwargs):
+    return f'{lib}_{partition}' if partition == 'vendor' else None
+
+
 lib_fixups: lib_fixups_user_type = {
     # The stock libprotobuf-cpp-{lite,full}-3.9.1 ship in the lists, so the
     # blobs link them as they are instead of a -vendorcompat module.
     **{k: v for k, v in lib_fixups.items() if k != libs_proto_3_9_1},
+    # Libraries shipped both in system_ext (for the IMS apps) and in vendor
+    # (for the IMS daemons): the vendor module carries MODULE_SUFFIX=_vendor
+    # in proprietary-files.txt, and vendor blobs link that module.
+    ('vendor.qti.imsrtpservice@3.0',): lib_fixup_vendor_suffix,
 }
 
 module = ExtractUtilsModule(

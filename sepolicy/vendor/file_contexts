@@ -30,6 +30,7 @@
 /vendor/bin/adsprpcd            u:object_r:vendor_adsprpcd_exec:s0
 /vendor/bin/audioadsprpcd       u:object_r:vendor_audioadsprpcd_exec:s0
 /vendor/bin/cdsprpcd            u:object_r:vendor_cdsprpcd_exec:s0
+/vendor/bin/cnd                 u:object_r:vendor_cnd_exec:s0
 /vendor/bin/cnss-daemon         u:object_r:vendor_wcnss_service_exec:s0
 /vendor/bin/dspservice          u:object_r:vendor_dspservice_exec:s0
 /vendor/bin/hw/android.hardware.thermal@2.0-service.qti-v2      u:object_r:hal_thermal_default_exec:s0

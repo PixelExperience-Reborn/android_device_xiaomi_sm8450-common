@@ -6,9 +6,11 @@ Android 17 настраивает устройство через ресурсы
 
 | Модуль | Раздел | Цель | Что задаёт |
 |---|---|---|---|
-| `FrameworksResSm8450` | vendor | `android` | автояркость доступна, AOD доступен (выключен по умолчанию), Doze, аппаратная цветокоррекция, телефония (5G SA/NSA, буферы TCP, таблицы SMS для mcc 234/262) |
+| `FrameworksResSm8450` | vendor | `android` | автояркость доступна, AOD доступен (выключен по умолчанию), Doze, аппаратная цветокоррекция, телефония (5G SA/NSA, буферы TCP, таблицы SMS для mcc 234/262), VoLTE/VT/Wi-Fi Calling и сервисы IWLAN `vendor.qti.iwlan` |
 | `SystemUIResSm8450` | vendor | SystemUI | дисплей поддерживает состояния doze |
 | `SettingsResSm8450` | vendor | Settings | время ручного поиска сети модемом |
+| `TelephonyResSm8450` | vendor | Phone | ImsService MMTEL `org.codeaurora.ims` и RCS `vendor.qti.imsrcs` (docs/IMS.md) |
+| `CarrierConfigResSm8450` | vendor | CarrierConfig | `vendor.xml`: параметры операторов для IMS Qualcomm (редакция LineageOS) |
 | `WifiResSm8450` | vendor | Wi-Fi | возможности QCA6490 и SoftAP (Wi-Fi 6/6E, WPA3, OWE, ACS), MAC-рандомизация, китайские SSID (GBK) |
 | `FrameworksResMondrian` | odm | `android` | яркость, кривая автояркости, 120 Гц, защита OLED от выгорания, 2 SIM, вырез камеры, скругления, статус-бар, профиль питания (Redmi K60, 5500 мА·ч) |
 | `FrameworksResMondrianGlobal` | odm | `android` | профиль питания POCO F5 Pro (5160 мА·ч), при `ro.boot.hwc=GL` |
@@ -56,7 +58,6 @@ Android 17 настраивает устройство через ресурсы
 
 | Что | Почему |
 |---|---|
-| VoLTE/VoWiFi/VT, пакеты IMS (`org.codeaurora.ims`), CarrierConfig `vendor.xml` | стоковые приложения IMS и iwlan в первую сборку не входят; флаги без них дали бы нерабочие переключатели. Отдельный этап |
 | Цветовые режимы (`config_availableColorModes`) | номера режимов QDCM панели в AOSP можно узнать только на устройстве (`dumpsys SurfaceFlinger`); до этого режим AOSP Natural (sRGB) |
 | UDFPS (положение сенсора, doze по отпечатку) | HAL отпечатка ещё не собран |
 | NFC (`config_skuSupportsSecureNfc`) | HAL NFC ещё не собран |
