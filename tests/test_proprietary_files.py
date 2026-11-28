@@ -220,6 +220,32 @@ class Tools(unittest.TestCase):
             self.assertEqual(extract.partition_root("system", system), system / "system")
             self.assertEqual(extract.partition_root("vendor", system), system)
 
+    def test_partition_cache_holds_only_the_pinned_image(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Path(tmp)
+            body = b"erofs image"
+            digest = hashlib.sha256(body).hexdigest()
+            source = {"partitions": {"product": {"size": len(body), "sha256": digest}}}
+            self.assertIsNone(extract.cached_image(None, "product", source))
+            self.assertIsNone(extract.cached_image(cache, "product", source))
+            image = cache / f"product-{digest}.img"
+            image.write_bytes(body)
+            self.assertEqual(extract.cached_image(cache, "product", source), image)
+            image.write_bytes(b"erofs imagE")  # same size, other content
+            self.assertIsNone(extract.cached_image(cache, "product", source))
+
+    def test_progress_is_reported_every_ten_percent(self):
+        import contextlib
+        import io
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            report = extract.progress_printer("product")
+            for done in range(1, 2276):
+                report(done, 2275)
+        lines = out.getvalue().splitlines()
+        self.assertLessEqual(len(lines), 11)
+        self.assertEqual(lines[-1], "  product: 2275/2275 operations")
+
     def test_manifest_parser(self):
         def varint(n):
             out = b""

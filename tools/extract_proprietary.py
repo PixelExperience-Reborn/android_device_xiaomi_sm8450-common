@@ -189,21 +189,58 @@ def tree_from_image(image: Path, work: Path, name: str) -> Path:
     return out
 
 
+def cached_image(cache: Path | None, name: str, source: dict) -> Path | None:
+    """The cached image of partition `name`, if it is the pinned one."""
+    if cache is None:
+        return None
+    image = cache / f"{name}-{source['partitions'][name]['sha256']}.img"
+    if image.is_file() and image.stat().st_size == source["partitions"][name]["size"] \
+            and sha256(image) == source["partitions"][name]["sha256"]:
+        return image
+    return None
+
+
+def progress_printer(name: str):
+    """Report every 10 % (a CI log keeps each line)."""
+    last = [-1]
+
+    def report(done, total):
+        step = done * 10 // max(total, 1)
+        if step != last[0]:
+            last[0] = step
+            print(f"  {name}: {done}/{total} operations", flush=True)
+    return report
+
+
 def trees_from_ota(location: str | None, source: dict, work: Path, jobs: int,
-                   names: list[str]) -> dict[str, Path]:
+                   names: list[str], cache: Path | None = None) -> dict[str, Path]:
     sys.path.insert(0, str(ROOT / "tools"))
     from ota_payload import Ota, OtaError, rank_urls  # noqa: E402
 
+    trees, missing = {}, []
+    for name in names:
+        image = cached_image(cache, name, source)
+        if image:
+            print(f"  {name}: pinned image from the cache {image}")
+            trees[name] = partition_root(name, tree_from_image(image, work, name))
+        else:
+            missing.append(name)
+    if not missing:
+        return trees
     errors = []
     for url in ([location] if location else rank_urls(source["ota"]["urls"])):
         try:
             ota = Ota(url, source)
-            trees = {}
-            for name in names:
+            for name in missing:
                 image = work / f"{name}.img"
-                ota.extract(name, image, jobs,
-                            lambda done, total, n=name: print(f"\r  {n}: {done}/{total}", end="", flush=True))
-                print()
+                ota.extract(name, image, jobs, progress_printer(name))
+                if cache is not None:
+                    # Keep the verified image (extract() checked its SHA-256 against the pin).
+                    cache.mkdir(parents=True, exist_ok=True)
+                    kept = cache / f"{name}-{source['partitions'][name]['sha256']}.img"
+                    shutil.move(str(image), kept.with_suffix(".tmp"))
+                    kept.with_suffix(".tmp").rename(kept)
+                    image = kept
                 trees[name] = partition_root(name, tree_from_image(image, work, name))
             return trees
         except (OtaError, OSError) as error:
@@ -226,6 +263,8 @@ def main() -> int:
     p.add_argument("--images-dir", type=Path, help="already extracted OTA partition images (<name>.img)")
     p.add_argument("--verify-only", action="store_true", help="check every file, write nothing")
     p.add_argument("--work", type=Path, help="scratch directory for the OTA partition")
+    p.add_argument("--cache", type=Path,
+                   help="keep the verified partition images here (<name>-<sha256>.img) and reuse them")
     p.add_argument("--jobs", type=int, default=6)
     args = p.parse_args()
 
@@ -251,7 +290,7 @@ def main() -> int:
             else:
                 from_ota.append(name)
         if from_ota:
-            trees.update(trees_from_ota(args.ota, source, work, args.jobs, from_ota))
+            trees.update(trees_from_ota(args.ota, source, work, args.jobs, from_ota, args.cache))
 
         problems = []
         fixups = {str(lst.name): {} for lst, _, _ in lists}
