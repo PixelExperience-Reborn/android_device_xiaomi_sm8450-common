@@ -182,5 +182,16 @@ ifneq ($(TARGET_BUILD_VARIANT),user)
 BOARD_BOOTCONFIG += androidboot.selinux=permissive
 endif
 
+# Bring-up diagnostics, userdebug and eng only. A fatal init error (first
+# stage, SELinux, a critical service) reboots to recovery instead of the
+# bootloader: the reboot is warm, so the kernel log stays in pstore, and
+# rootdir/etc/init/debug/pe_bootlog.rc keeps it on /metadata. printk.devkmsg=on
+# lifts the rate limit on what init writes to the kernel log, so none of the
+# first stage messages is dropped.
+ifneq ($(TARGET_BUILD_VARIANT),user)
+BOARD_BOOTCONFIG += androidboot.init_fatal_reboot_target=recovery
+BOARD_KERNEL_CMDLINE += printk.devkmsg=on
+endif
+
 # Proprietary files
 include vendor/xiaomi/sm8450-common/BoardConfigVendor.mk

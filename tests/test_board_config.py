@@ -59,6 +59,12 @@ def assignments(name):
     return values
 
 
+# userdebug/eng only: SELinux permissive bring-up, and fatal init errors reboot to
+# recovery with the full init kernel log (rootdir/etc/init/debug/pe_bootlog.rc).
+DEBUG_BOOTCONFIG = ("androidboot.selinux=permissive", "androidboot.init_fatal_reboot_target=recovery")
+DEBUG_CMDLINE = ("printk.devkmsg=on",)
+
+
 class BoardConfigAgainstStockTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -90,11 +96,11 @@ class BoardConfigAgainstStockTest(unittest.TestCase):
                     "BOARD_KERNEL_TAGS_OFFSET", "BOARD_DTB_OFFSET"):
             flag = "--" + key[len("BOARD_"):].lower().replace("kernel_tags", "tags")
             self.assertIn(f"{flag} $({key})", b["BOARD_MKBOOTIMG_ARGS"])
-        # Plus the permissive bring-up of userdebug/eng only (tests/test_sepolicy.py checks the
-        # condition, which this parser does not evaluate).
-        self.assertEqual(set(b["BOARD_BOOTCONFIG"].split()) - {"androidboot.selinux=permissive"},
-                         STOCK_BOOTCONFIG)
-        self.assertEqual(b["BOARD_KERNEL_CMDLINE"].split(),
+        # Plus the permissive bring-up and the boot diagnostics of userdebug/eng only
+        # (test_bringup_diagnostics_are_off_user_builds checks the condition, which this
+        # parser does not evaluate).
+        self.assertEqual(set(b["BOARD_BOOTCONFIG"].split()) - set(DEBUG_BOOTCONFIG), STOCK_BOOTCONFIG)
+        self.assertEqual([a for a in b["BOARD_KERNEL_CMDLINE"].split() if a not in DEBUG_CMDLINE],
                          ["video=vfb:640x400,bpp=32,memsize=3072000", "disable_dma32=on"])
         self.assertEqual(b["BOARD_EXCLUDE_KERNEL_FROM_RECOVERY_IMAGE"], "true")
         self.assertEqual(b["BOARD_INCLUDE_DTB_IN_BOOTIMG"], "true")
@@ -154,6 +160,31 @@ class BoardConfigAgainstStockTest(unittest.TestCase):
             text = "\n".join(l.split("#", 1)[0] for l in (ROOT / name).read_text().splitlines()).lower()
             for token in ("vendor/lineage", "vendor.lineage", "org.lineageos"):
                 self.assertNotIn(token, text, name)
+
+
+class BringupDiagnosticsTest(unittest.TestCase):
+    def test_bringup_diagnostics_are_off_user_builds(self):
+        board = (ROOT / "BoardConfigCommon.mk").read_text()
+        block = ("ifneq ($(TARGET_BUILD_VARIANT),user)\n"
+                 "BOARD_BOOTCONFIG += androidboot.init_fatal_reboot_target=recovery\n"
+                 "BOARD_KERNEL_CMDLINE += printk.devkmsg=on\n"
+                 "endif\n")
+        self.assertIn(block, board)
+        self.assertEqual(board.count("init_fatal_reboot_target"), 1)
+        common = (ROOT / "common.mk").read_text()
+        self.assertIn("ifneq ($(TARGET_BUILD_VARIANT),user)\nPRODUCT_COPY_FILES += \\\n"
+                      "    device/xiaomi/sm8450-common/rootdir/etc/init/debug/pe_bootlog.rc:"
+                      "$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/pe_bootlog.rc\nendif", common)
+
+    def test_boot_log_stays_small_on_metadata(self):
+        rc = (ROOT / "rootdir/etc/init/debug/pe_bootlog.rc").read_text()
+        self.assertIn("copy /sys/fs/pstore/console-ramoops-0 /metadata/pe_bootlog/last_kmsg.txt", rc)
+        service = re.search(r"(?m)^service pe_bootlog (.*)$", rc).group(1).split()
+        self.assertEqual(service[0], "/system/bin/logcat")
+        size_kib, files = int(service[service.index("-r") + 1]), int(service[service.index("-n") + 1])
+        # /metadata (16 MiB) also holds the vold keys and the OTA snapshot state.
+        self.assertLessEqual(size_kib * (files + 1), 2048)
+        self.assertIn("    disabled\n", rc)
 
 
 if __name__ == "__main__":

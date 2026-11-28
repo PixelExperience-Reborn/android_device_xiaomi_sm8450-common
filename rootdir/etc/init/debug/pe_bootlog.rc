@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# PixelExperience-Reborn bring-up, userdebug and eng builds only (common.mk):
+# keep the log of the boot in progress and the kernel log of the previous
+# boot on /metadata. /metadata is mounted by first stage init, is not under
+# file-based encryption, and recovery mounts it, so the logs of a boot that
+# never reaches the launcher can be read in recovery even when /data cannot
+# be decrypted there.
+#
+#   /metadata/pe_bootlog/last_kmsg.txt   kernel log of the previous boot
+#                                        (pstore console-ramoops-0; a warm
+#                                        reboot keeps it)
+#   /metadata/pe_bootlog/logcat.txt*     logcat -b all of this boot, rotated:
+#                                        at most 4 files of 512 KiB (/metadata is 16 MiB)
+#
+# logd starts on init, so logcat can read from post-fs on.
+
+on post-fs
+    mkdir /metadata/pe_bootlog 0770 root log
+    copy /sys/fs/pstore/console-ramoops-0 /metadata/pe_bootlog/last_kmsg.txt
+    copy /sys/fs/pstore/console-ramoops /metadata/pe_bootlog/last_kmsg.txt
+    start pe_bootlog
+
+service pe_bootlog /system/bin/logcat -b all -v threadtime -f /metadata/pe_bootlog/logcat.txt -r 512 -n 3
+    user root
+    group log
+    seclabel u:r:su:s0
+    disabled
+    oneshot

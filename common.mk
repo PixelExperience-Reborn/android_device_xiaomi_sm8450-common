@@ -194,6 +194,13 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.fastboot-service.example_recovery
 
+# Bring-up log on /metadata, readable in recovery (userdebug and eng only;
+# see BoardConfigCommon.mk for the reboot target of fatal init errors).
+ifneq ($(TARGET_BUILD_VARIANT),user)
+PRODUCT_COPY_FILES += \
+    device/xiaomi/sm8450-common/rootdir/etc/init/debug/pe_bootlog.rc:$(TARGET_COPY_OUT_SYSTEM_EXT)/etc/init/pe_bootlog.rc
+endif
+
 # Xiaomi mondrian uses dynamic partitions and A/B. The board-level EROFS
 # selections live in BoardConfigCommon.mk, not in a disabled boot-only fragment.
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
