@@ -61,7 +61,29 @@ class SepolicyTest(unittest.TestCase):
         for path in ("init\\.qti\\.qcv\\.sh", "init\\.class_main\\.sh", "init\\.qti\\.kernel\\.sh",
                      "hw/qcrilNrd", "qseecomd"):
             self.assertIn(path, fc)
-        self.assertNotIn("allow ", te)
+        rules = [l for l in te.splitlines() if l.startswith("allow ")]
+        for rule in rules:
+            self.assertRegex(rule, r"^allow (\w+) self:filesystem associate;$")
+
+    def test_mount_contexts_are_declared(self):
+        # context= with an undeclared type fails the mount with EINVAL, even permissive.
+        aosp = {"oemfs", "app_fusefs"}
+        te = (ROOT / "sepolicy/vendor/bringup.te").read_text()
+        types = declared() | aosp
+        for tree in TREES:
+            for f in sorted((tree / "rootdir").rglob("*")):
+                if not f.is_file() or not (f.suffix == ".rc" or "fstab" in f.name):
+                    continue
+                for line in f.read_text(errors="replace").splitlines():
+                    if line.lstrip().startswith("#"):
+                        continue
+                    for ctype in re.findall(r"context=u:object_r:(\w+):s0", line):
+                        with self.subTest(file=f.name, type=ctype):
+                            self.assertIn(ctype, types)
+                            if ctype not in aosp:
+                                self.assertIn(f"allow {ctype} self:filesystem associate;", te)
+        self.assertIn("type firmware_file, file_type, contextmount_type, vendor_file_type;", te)
+        self.assertIn("type bt_firmware_file, file_type, contextmount_type, vendor_file_type;", te)
 
     def test_permissive_only_off_user_builds(self):
         board = "\n".join(l for l in (ROOT / "BoardConfigCommon.mk").read_text().splitlines()

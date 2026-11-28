@@ -19,10 +19,18 @@
 - переход `init → vendor_qti_init_shell` для служб, запускаемых через
   `/vendor/bin/sh` (как в стоке);
 - метки исполняемых файлов из стокового `vendor_file_contexts`;
-- `hwservice_contexts` и `service_contexts` HAL, объявленных в нашем VINTF.
+- `hwservice_contexts` и `service_contexts` HAL, объявленных в нашем VINTF;
+- типы всех `context=` из fstab и init-скриптов дерева, с атрибутами и
+  `associate` как в стоке: `firmware_file` (раздел `modem` на
+  `/vendor/firmware_mnt`), `bt_firmware_file` (`bluetooth`), `vendor_qmcs_file`
+  (`qmcs`). Монтирование с контекстом, которого нет в политике, падает с EINVAL
+  даже в permissive (`security_context_str_to_sid ... errno=-22`). До
+  28.11.2026 этих типов не было: раздел `modem` не монтировался ни в обычной
+  загрузке, ни в recovery, и ADSP/CDSP/модем/IPA оставались без прошивки.
 
 Типы, которые уже определяет политика AOSP 17 (`hal_*_default`, `rild`, `tee`,
-`mediacodec`, `vendor_modprobe`, ...), не дублируются. Правил `allow` нет.
+`mediacodec`, `vendor_modprobe`, ...), не дублируются. Правил `allow` нет,
+кроме стоковых `allow <тип> self:filesystem associate` для типов монтирования.
 
 init не запускает службу без перехода в домен даже в permissive, поэтому эти
 объявления нужны с первой загрузки. Сборки userdebug/eng грузятся с

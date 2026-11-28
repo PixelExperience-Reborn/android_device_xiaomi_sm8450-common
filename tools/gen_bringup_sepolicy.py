@@ -11,11 +11,16 @@ what the services this build ships need:
   server attributes it gives them), the transitions from init, and the
   vendor shell transition of the platform scripts;
 * the stock file contexts of their executables;
-* the stock hwservice/service contexts of the HALs our VINTF manifests declare.
+* the stock hwservice/service contexts of the HALs our VINTF manifests declare;
+* the file types our fstabs and init scripts mount with ``context=`` (the modem,
+  bluetooth and qmcs partitions). A mount with a context the policy does not
+  declare fails with EINVAL even permissive, which would leave the ADSP, CDSP,
+  modem and IPA firmware of /vendor/firmware_mnt unmounted.
 
 Types the AOSP 17 platform policy already defines are not redeclared. Allow
-rules are not generated: they come from the denials of the device, before
-SELinux is switched to enforcing.
+rules are not generated, except the stock ``associate`` of a mount context type
+with itself: they come from the denials of the device, before SELinux is
+switched to enforcing.
 
 Usage: gen_bringup_sepolicy.py --stock <extracted OTA root> --aosp <system/sepolicy>
        [--check]
@@ -124,6 +129,22 @@ def services(tree, stock_root, files):
     return found
 
 
+MOUNT_ATTRS = ("file_type", "fs_type", "contextmount_type", "vendor_file_type", "data_file_type")
+
+
+def mount_contexts(tree):
+    """Types named by context= mount options in the tree's fstabs and init scripts."""
+    found = []
+    for f in sorted((tree / "rootdir").rglob("*")):
+        if f.is_file() and (f.suffix == ".rc" or "fstab" in f.name):
+            for line in f.read_text(errors="replace").splitlines():
+                if not line.lstrip().startswith("#"):
+                    for t in re.findall(r"context=u:object_r:(\w+):s0", line):
+                        if t not in found:
+                            found.append(t)
+    return found
+
+
 def manifest_hals(tree):
     out = []
     path = tree / "vintf/manifest.xml"
@@ -157,6 +178,11 @@ def generate(tree, stock, stock_root, aosp, platform_types, aosp_fc, aosp_hwsc, 
         elif kind == "service":
             extra = [a for a in ("hal_service_type", "protected_service") if a in stock.attrs.get(t, ())]
             te.append(f"type {t}, {', '.join(['service_manager_type'] + extra)};")
+        elif kind == "mount":
+            attrs = [a for a in MOUNT_ATTRS if a in stock.attrs.get(t, ())]
+            te.append(f"type {t}, {', '.join(attrs)};")
+            if re.search(rf"(?m)^\(allow {t} self \(filesystem \(associate\)\)\)", stock.cil):
+                te.append(f"allow {t} self:filesystem associate;")
 
     done_paths = set()
     for exe, seclabel, script in services(tree, stock_root, files):
@@ -189,6 +215,8 @@ def generate(tree, stock, stock_root, aosp, platform_types, aosp_fc, aosp_hwsc, 
                 te.append(rule)
         elif seclabel:
             declare(seclabel, "domain")
+    for t in mount_contexts(tree):
+        declare(t, "mount")
     for fmt, name, fq in manifest_hals(tree):
         if fmt == "hidl":
             m = re.fullmatch(r"@[\d.]+::(\w+)/.+", fq)
