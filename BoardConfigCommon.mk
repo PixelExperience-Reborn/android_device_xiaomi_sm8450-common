@@ -96,8 +96,13 @@ BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := \
 TARGET_USERIMAGES_USE_EROFS := true
 TARGET_USERIMAGES_USE_F2FS := true
 TARGET_USERIMAGES_USE_EXT4 := true
+# EROFS in the on-disk format of the stock OS3.0.8.0 images: superblock
+# feature_incompat 0x1 only, legacy LZ4 with 4 KiB physical clusters. The
+# Android 12 GKI 5.10 supports big pclusters only as a backport it logs as
+# "EXPERIMENTAL big pcluster feature in use"; Xiaomi does not use them on this
+# kernel, and neither do we (legacy-compress, no BOARD_EROFS_PCLUSTER_SIZE).
+BOARD_EROFS_USE_LEGACY_COMPRESSION := true
 BOARD_EROFS_COMPRESSOR := lz4hc,9
-BOARD_EROFS_PCLUSTER_SIZE := 65536
 BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := erofs
 BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := erofs

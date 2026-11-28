@@ -137,6 +137,15 @@ class BoardConfigAgainstStockTest(unittest.TestCase):
         self.assertEqual({r["fs"] for r in rows if r["mount"] == "/data"}, {"f2fs"})
         self.assertEqual({r["fs"] for r in rows if r["mount"] == "/metadata"}, {"ext4"})
 
+    def test_erofs_is_the_stock_on_disk_format(self):
+        # Stock images: feature_incompat 0x1 (legacy LZ4, 4 KiB pclusters) for
+        # the GKI 5.10, whose big pcluster support is an EXPERIMENTAL backport.
+        b = self.board
+        self.assertEqual(b.get("BOARD_EROFS_USE_LEGACY_COMPRESSION"), "true")
+        self.assertNotIn("BOARD_EROFS_PCLUSTER_SIZE", b)
+        for part in LOGICAL:
+            self.assertNotIn(f"BOARD_{part}IMAGE_EROFS_PCLUSTER_SIZE", b)
+
     def test_avb_chain_is_the_stock_chain(self):
         b = self.board
         self.assertEqual(b["BOARD_AVB_ENABLE"], "true")

@@ -31,9 +31,20 @@ every `/data` option and the installation; `--stock PATH` compares the file with
 the stock fstab line by line (it matches except for the documented differences).
 `tests/test_fstab.py` covers it, including negative cases.
 
-Open before the first flash: the mount point directories `/vendor/firmware_mnt`,
-`/vendor/dsp` and `/vendor/bt_firmware` must exist in the vendor image, and the
-SELinux types used by the `context=` options must be defined.
+The mount point directories `/vendor/firmware_mnt`, `/vendor/dsp` and
+`/vendor/bt_firmware` are created in the vendor image by `rootdir/Android.mk`;
+the verify stage of the build checks them in the built `vendor.img`. The
+SELinux types of the `context=` options (`firmware_file`, `bt_firmware_file`,
+`vendor_qmcs_file`) are declared by `tools/gen_bringup_sepolicy.py` since
+28.11.2026; before that the kernel rejected the contexts (errno -22) and the
+modem partition, with the ADSP, CDSP, modem, IPA and Wi-Fi firmware, was never
+mounted.
+
+The logical partitions are EROFS in the format of the stock images
+(`feature_incompat` 0x1: `BOARD_EROFS_USE_LEGACY_COMPRESSION`, 4 KiB physical
+clusters). The GKI 5.10 of the stock kernel mounts big pclusters only through a
+backport it logs as "EXPERIMENTAL big pcluster feature in use"; the stock
+images do not use them on this kernel, and neither do ours.
 
 
 These choices are deliberate candidates based on the LF52406 mondrian
