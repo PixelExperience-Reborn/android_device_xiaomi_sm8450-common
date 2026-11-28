@@ -41,8 +41,9 @@ modem partition, with the ADSP, CDSP, modem, IPA and Wi-Fi firmware, was never
 mounted.
 
 The logical partitions are EROFS in the format of the stock images
-(`feature_incompat` 0x1: `BOARD_EROFS_USE_LEGACY_COMPRESSION`, 4 KiB physical
-clusters). The GKI 5.10 of the stock kernel mounts big pclusters only through a
+(`feature_incompat` 0x1: LZ4 with 0padding, 4 KiB physical clusters, that is no
+`BOARD_EROFS_PCLUSTER_SIZE`; `BOARD_EROFS_USE_LEGACY_COMPRESSION` would also drop
+0padding and give 0x0, which the verify stage of build 0659 showed). The GKI 5.10 of the stock kernel mounts big pclusters only through a
 backport it logs as "EXPERIMENTAL big pcluster feature in use"; the stock
 images do not use them on this kernel, and neither do ours.
 

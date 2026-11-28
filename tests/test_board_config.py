@@ -144,11 +144,13 @@ class BoardConfigAgainstStockTest(unittest.TestCase):
         self.assertEqual({r["fs"] for r in rows if r["mount"] == "/metadata"}, {"ext4"})
 
     def test_erofs_is_the_stock_on_disk_format(self):
-        # Stock images: feature_incompat 0x1 (legacy LZ4, 4 KiB pclusters) for
-        # the GKI 5.10, whose big pcluster support is an EXPERIMENTAL backport.
+        # Stock images: feature_incompat 0x1 (LZ4 with 0padding, 4 KiB pclusters)
+        # for the GKI 5.10, whose big pcluster support is an EXPERIMENTAL
+        # backport. legacy-compress would also drop 0padding (0x0).
         b = self.board
-        self.assertEqual(b.get("BOARD_EROFS_USE_LEGACY_COMPRESSION"), "true")
+        self.assertNotIn("BOARD_EROFS_USE_LEGACY_COMPRESSION", b)
         self.assertNotIn("BOARD_EROFS_PCLUSTER_SIZE", b)
+        self.assertTrue(b["BOARD_EROFS_COMPRESSOR"].startswith("lz4"))
         for part in LOGICAL:
             self.assertNotIn(f"BOARD_{part}IMAGE_EROFS_PCLUSTER_SIZE", b)
 
