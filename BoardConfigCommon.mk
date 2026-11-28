@@ -15,8 +15,11 @@ COMMON_PATH := device/xiaomi/sm8450-common
 # (LSE atomics, dot product, PAC/BTI branch protection) without SVE2, which
 # armv9-a would let the compiler emit although Qualcomm does not enable SVE
 # on this SoC. Soong has no Cortex-A510/A710 tuning; cortex-a76 is its
-# closest one. The bionic runtime variants are those of the stock vendor
-# (ro.bionic.cpu_variant=kryo300, ro.bionic.2nd_cpu_variant=cortex-a75).
+# closest one, for the 64-bit and the 32-bit code alike: both run on the same
+# cores, and Soong of Android 17 compiles cortex-a75 and cortex-a76 with the
+# same -mcpu (cc/config/arm_device.go, arm64_device.go). The bionic runtime
+# variants are those of the stock vendor (ro.bionic.cpu_variant=kryo300,
+# ro.bionic.2nd_cpu_variant=cortex-a75).
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-5a
 TARGET_CPU_ABI := arm64-v8a
@@ -27,7 +30,7 @@ TARGET_2ND_ARCH := arm
 TARGET_2ND_ARCH_VARIANT := armv8-2a
 TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
-TARGET_2ND_CPU_VARIANT := cortex-a75
+TARGET_2ND_CPU_VARIANT := cortex-a76
 TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a75
 
 # Platform

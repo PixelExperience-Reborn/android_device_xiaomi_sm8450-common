@@ -78,6 +78,10 @@ class BoardConfigAgainstStockTest(unittest.TestCase):
         self.assertEqual(b["TARGET_BOARD_PLATFORM"], "taro")
         self.assertIn(b["TARGET_ARCH_VARIANT"], SOONG_ARM64_ARCH)
         self.assertIn(b["TARGET_CPU_VARIANT"], SOONG_ARM64_CPU)
+        # The 32-bit code runs on the same cores: the same build tuning.
+        self.assertEqual(b["TARGET_2ND_ARCH"], "arm")
+        self.assertEqual(b["TARGET_2ND_CPU_VARIANT"], b["TARGET_CPU_VARIANT"])
+        self.assertEqual(b["TARGET_2ND_ARCH_VARIANT"], "armv8-2a")  # newest 32-bit arm variant of Soong
         # No SVE: Qualcomm does not enable it on SM8475.
         self.assertFalse(b["TARGET_ARCH_VARIANT"].startswith("armv9"))
         for key, value in STOCK_BIONIC.items():
