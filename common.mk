@@ -77,8 +77,9 @@ PRODUCT_PACKAGES += \
 # service are stock system_ext apps (proprietary-files.txt, IMS section) that
 # talk to qcrilNrd and imsdaemon. Their shared libraries come from
 # vendor/codeaurora/telephony (Qualcomm LA.QSSI.17.0, built for Android 17);
-# the Xiaomi apps also need telephony/ (TelephonyBaseUtilsStub on the boot
-# classpath, QtiTelephonyCompat). The overlays name the ImsService and the
+# the Xiaomi apps also need TelephonyBaseUtilsStub on the boot classpath
+# (hardware/xiaomi/telephony, root Soong namespace) and QtiTelephonyCompat
+# (telephony/). The overlays name the ImsService and the
 # IWLAN services for telephony.
 PRODUCT_PACKAGES += \
     extphonelib \

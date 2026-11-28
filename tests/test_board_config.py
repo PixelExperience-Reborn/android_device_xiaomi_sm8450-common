@@ -187,5 +187,20 @@ class BringupDiagnosticsTest(unittest.TestCase):
         self.assertIn("    disabled\n", rc)
 
 
+class BootJarsTest(unittest.TestCase):
+    def test_boot_jars_are_not_in_this_namespace(self):
+        # platform-bootclasspath (frameworks/base) resolves PRODUCT_BOOT_JARS in
+        # the root Soong namespace; this tree is a soong_namespace, so a boot jar
+        # defined here is an undefined module for it.
+        common = (ROOT / "common.mk").read_text()
+        jars = re.findall(r"(?m)^PRODUCT_BOOT_JARS \+= \\\n((?:\s+\S+ \\\n)*\s+\S+)\n", common)
+        names = {n for block in jars for n in block.replace("\\", " ").split()}
+        self.assertEqual(names, {"xiaomi-telephony-stub"})
+        defined = set()
+        for bp in ROOT.rglob("Android.bp"):
+            defined.update(re.findall(r'(?s)java_library \{\s+name: "([^"]+)"', bp.read_text()))
+        self.assertFalse(names & defined, "boot jars must live outside the namespaced device tree")
+
+
 if __name__ == "__main__":
     unittest.main()

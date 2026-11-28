@@ -31,8 +31,12 @@ Telephony привязывает ImsService по `config_ims_mmtel_package` и
 
 - **`android.telephony.TelephonyBaseUtilsStub.isMiuiRom()`** — класс
   фреймворка HyperOS. Его вызывают `ims.apk` и `QtiTelephony.apk` (проверено
-  по dex). Заглушка `xiaomi-telephony-stub` (`telephony/`) стоит в boot
-  classpath (`PRODUCT_BOOT_JARS`), чтобы класс находился в любом процессе.
+  по dex). Заглушка `xiaomi-telephony-stub` (`hardware/xiaomi/telephony`, как у
+  LineageOS) стоит в boot classpath (`PRODUCT_BOOT_JARS`), чтобы класс
+  находился в любом процессе. Boot jar должен быть в корневом пространстве
+  имён Soong: `platform-bootclasspath` не видит модули из `soong_namespace`
+  (у LineageOS это делает их собственный патч Soong), поэтому заглушка не в
+  дереве устройства.
 - **`QtiTelephonyCompat`** объявляет защищёнными broadcast'ы, которые
   отправляет QtiTelephony (`RADIO_POWER_STATE`, `ESSENTIAL_RECORDS_LOADED`).
 - **Подпись платформы.** Приложения подписываются ключом сборки: `ims.apk` и
